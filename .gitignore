@@ -1,0 +1,3 @@
+venv/
+*TMP/
+__pycache__/
