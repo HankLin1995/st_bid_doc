@@ -11,7 +11,7 @@ import shutil
 
 st.set_page_config(page_title="工程招標文件處理工具")
 
-st.sidebar.title("工程招標文件處理工具V1.0")
+st.sidebar.title("工程招標文件處理工具V1.1")
 st.sidebar.info("作者: HankLin")
 
 def num_to_chinese(amount):
