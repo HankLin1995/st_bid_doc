@@ -280,7 +280,7 @@ if submitted:
 
         for root, dirs, files in os.walk(doc_folder):
             for file in files:
-
+                print(file)
                 file_path = os.path.join(root, file) # 取得文件的完整路徑
                 relative_path = os.path.relpath(file_path, doc_folder) # 取得相對路徑
                 output_file_path=os.path.join(output_dir,relative_path) # 取得輸出文件的完整路徑
