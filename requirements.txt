@@ -1,2 +1,5 @@
 python-docx
 pywin32
+streamlit
+opencc-python-reimplemented
+cn2na

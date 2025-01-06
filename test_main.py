@@ -71,6 +71,6 @@ class TestReplaceText(unittest.TestCase):
         doc = Document(os.path.join(self.tmp_folder_path, "test.docx"))
         for para in doc.paragraphs:
             self.assertIn("這是一個測試。", para.text)
-
+            
 if __name__ == '__main__':
     unittest.main()

@@ -2,6 +2,8 @@ import os
 import win32com.client
 from concurrent.futures import ProcessPoolExecutor
 
+## 利用windows的win32com套件將doc轉換成docx
+
 class WordConverter:
     def __init__(self):
         self.word = win32com.client.Dispatch("Word.Application")
