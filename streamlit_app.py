@@ -5,13 +5,12 @@ from data_storage import convert_data, deal_bool
 
 import cn2an
 import opencc
+import io
+import zipfile
 
 st.set_page_config(page_title="工程招標文件處理工具")
 
 st.title("工程招標文件處理工具")
-# st.markdown("這個工具可以幫助你處理工程標案相關文件。")
-
-# 將數字金額轉換成台幣金額
 
 def num_to_chinese(amount):
 
@@ -206,35 +205,6 @@ general_box, specified_box, runoff_box, general_date, specified_date, runoff_dat
 contractor_a, contractor_a1, contractor_a2, contractor_a3, contractor_b = get_employ_type(contractor_qual)
 purchase_a, purchase_b, purchase_c = get_cost_type(purchase_level)
 
-# st.subheader("工程類型")
-
-# col3, col4, col5 = st.columns(3)
-
-# with col3:
-#     general_box = st.checkbox("一般BOX")
-#     specified_box = st.checkbox("指定BOX")
-#     runoff_box = st.checkbox("逕流BOX")
-    
-# with col4:
-#     purchase_a = st.checkbox("採購A-BOX")
-#     purchase_b = st.checkbox("採購B-BOX")
-#     purchase_c = st.checkbox("採購C-BOX")
-    
-# with col5:
-#     contractor_a = st.checkbox("廠商A-BOX")
-#     contractor_a1 = st.checkbox("廠商A甲-BOX")
-#     contractor_a2 = st.checkbox("廠商A乙-BOX")
-#     contractor_a3 = st.checkbox("廠商A丙-BOX")
-#     contractor_b = st.checkbox("廠商B土包-BOX")
-
-#     # 文件夾選擇
-#     doc_folder = st.text_input("文件夾路徑", value=r"D:\Python\st_docx\src\廠商投標表單")
-    
-#     submitted = st.form_submit_button("處理文件")
-
-# if submitted:
-#     # 建立資料字典
-    
 data = {
     '標案名稱': project_name,
     '標案案號': project_number,
@@ -269,38 +239,66 @@ data = {
     
 }
 
-import data_storage
+data = convert_data(data)
 
+# 處理文件
+doc_folder = st.text_input("文件夾路徑", value=r"D:\Python\st_docx\src\廠商投標表單")
+submitted = st.button("處理文件")
 
-
-st.sidebar.json(data_storage.convert_data(data))
-    
-#     # 轉換資料
-#     data = convert_data(data)
-    
-#     # 處理文件
-#     if os.path.exists(doc_folder):
-#         progress_bar = st.progress(0)
-#         status_text = st.empty()
+if submitted:
+    if os.path.exists(doc_folder):
+        progress_bar = st.progress(0)
+        status_text = st.empty()
         
-#         files_processed = 0
-#         total_files = sum(1 for _, _, files in os.walk(doc_folder) 
-#                          for file in files if file.endswith(".docx"))
+        files_processed = 0
+        total_files = sum(1 for _, _, files in os.walk(doc_folder) 
+                         for file in files if file.endswith(".docx"))
         
-#         for root, dirs, files in os.walk(doc_folder):
-#             for file in files:
-#                 if file.endswith(".docx"):
-#                     file_path = os.path.join(root, file)
-#                     status_text.text(f"正在處理: {file}")
-#                     try:
-#                         replace_text_within_percent_signs(file_path, data, data["標案名稱"])
-#                         files_processed += 1
-#                         progress_bar.progress(files_processed / total_files)
-#                     except Exception as e:
-#                         st.error(f"處理文件 {file} 時發生錯誤：{str(e)}")
+        # 確保輸出目錄存在
+        output_dir = os.path.join(os.getcwd(), f"{data['標案名稱']}_TMP")
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
         
-#         if files_processed > 0:
-#             st.success(f"完成處理 {files_processed} 個文件！")
-#             st.info(f"處理後的文件已保存在: {data['標案名稱']}_TMP 資料夾中")
-#     else:
-#         st.error("找不到指定的文件夾路徑！")
+        for root, dirs, files in os.walk(doc_folder):
+            for file in files:
+                if file.endswith(".docx"):
+                    file_path = os.path.join(root, file)
+                    status_text.text(f"正在處理: {file}")
+                    try:
+                        replace_text_within_percent_signs(file_path, data, data["標案名稱"])
+                        files_processed += 1
+                        progress_bar.progress(files_processed / total_files)
+                    except Exception as e:
+                        st.error(f"處理文件 {file} 時發生錯誤：{str(e)}")
+        
+        # Clear progress indicators
+        status_text.empty()
+        progress_bar.empty()
+        
+        if files_processed > 0:
+            st.success(f"完成處理 {files_processed} 個文件！")
+            st.info(f"處理後的文件已保存在: {output_dir}")
+            
+            # Create ZIP file for download
+            memory_file = io.BytesIO()
+            with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zf:
+                for root, _, files in os.walk(output_dir):
+                    for file in files:
+                        file_path = os.path.join(root, file)
+                        # 使用相對路徑來保存文件
+                        rel_path = os.path.basename(file_path)
+                        zf.write(file_path, rel_path)
+            
+            memory_file.seek(0)
+            
+            # Add download button
+            st.download_button(
+                label="下載處理後的文件 (ZIP)",
+                data=memory_file,
+                file_name=f"{data['標案名稱']}.zip",
+                mime="application/zip"
+            )
+        else:
+            st.warning("沒有文件被成功處理！")
+    else:
+        st.error("找不到指定的文件夾路徑！")
