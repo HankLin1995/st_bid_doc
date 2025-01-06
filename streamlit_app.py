@@ -253,7 +253,7 @@ if mode=="一般工程":
 else:
     doc_folder=r".\src\廠商投標表單(開口)"
 
-# st.toast(doc_folder)
+st.toast(doc_folder)
 
 output_dir=r".\\"+data['標案名稱']
 # output_dir=r".\output2"
