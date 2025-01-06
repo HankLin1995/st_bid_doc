@@ -164,15 +164,16 @@ st.subheader("經費相關")
 
 funding_source=st.text_input("經費來源",value="固定資產建設改良擴充-土地改良物(國庫撥款)")
 budget=st.text_input("預算金額",value="0")
-bid_bond=st.text_input("押標金金額")
+
+bid_bond=st.number_input("押標金金額",value=0)
 bid_bond_chinese=num_to_chinese(bid_bond)# st.text_input("押標金金額中文") #自動轉換
 if bid_bond_chinese!="":
-    st.write(f"{bid_bond_chinese}")
+    st.toast(f"押標金金額:{bid_bond_chinese}")
 
-performance_bond=st.text_input("履約保證金")
+performance_bond=st.number_input("履約保證金",value=0)
 performance_bond_chinese=num_to_chinese(performance_bond)# st.text_input("履約保證金中文") #自動轉換
 if performance_bond_chinese!="":
-    st.write(f"{performance_bond_chinese}")
+    st.toast(f"履約保證金:{performance_bond_chinese}")
 
 if mode=="開口契約":
     purchase_limit=st.text_input("採購金額上限",value="0")
