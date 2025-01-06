@@ -246,84 +246,94 @@ data = {
 
 data = convert_data(data)
 
+def create_output_folder(output_dir):
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+        os.makedirs(os.path.join(output_dir, "投標文件"))
+    else:
+        shutil.rmtree(output_dir)
+        os.makedirs(output_dir)
+        os.makedirs(os.path.join(output_dir, "投標文件"))
+
 # 處理文件
 
 if mode=="一般工程":
-    doc_folder=r"./src/廠商投標表單"
+    doc_folder=os.path.join("src", "廠商投標表單")
 else:
-    doc_folder=r"./src/廠商投標表單(開口)"
+    doc_folder=os.path.join("src", "廠商投標表單(開口)")
 
 st.toast(doc_folder)
 
-output_dir=r".\\"+data['標案名稱']
+output_dir=os.path.join(".", data['標案名稱'])
 # output_dir=r".\output2"
 
 submitted = st.button("產製招標文件",type="primary")
 
 if submitted:
 
-    if os.path.exists(doc_folder):
-        progress_bar = st.progress(0)
-        status_text = st.empty()
+    if not os.path.exists("src"):
+        os.makedirs("src")
+    if not os.path.exists(doc_folder):
+        os.makedirs(doc_folder)
+    
+    # Create output directory
+    create_output_folder(output_dir)
+    
+    # Process files
+    progress_bar = st.progress(0)
+    status_text = st.empty()
         
-        files_processed = 0
-        total_files = sum(1 for _, _, files in os.walk(doc_folder) 
-                         for file in files if file.endswith(".docx"))
+    files_processed = 0
+    total_files = sum(1 for _, _, files in os.walk(doc_folder) 
+                     for file in files if file.endswith(".docx"))
 
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-            os.makedirs(output_dir+"/投標文件")
-        else:
-            shutil.rmtree(output_dir)
-            os.makedirs(output_dir)
-            os.makedirs(output_dir+"/投標文件")
+    for root, dirs, files in os.walk(doc_folder):
+        for file in files:
+            st.toast(file)
+            file_path = os.path.join(root, file) # 取得文件的完整路徑
+            relative_path = os.path.relpath(file_path, doc_folder) # 取得相對路徑
+            output_file_path=os.path.join(output_dir,relative_path) # 取得輸出文件的完整路徑
+            output_folder = os.path.dirname(output_file_path)
+            if not os.path.exists(output_folder):
+                os.makedirs(output_folder)
+            shutil.copy(file_path,output_file_path) # 將文件複製到輸出目錄
 
-        for root, dirs, files in os.walk(doc_folder):
-            for file in files:
-                st.toast(file)
-                file_path = os.path.join(root, file) # 取得文件的完整路徑
-                relative_path = os.path.relpath(file_path, doc_folder) # 取得相對路徑
-                output_file_path=os.path.join(output_dir,relative_path) # 取得輸出文件的完整路徑
-                shutil.copy(file_path,output_file_path) # 將文件複製到輸出目錄
-
-                if file.endswith(".docx"):
-                    replace_text_within_percent_signs(output_file_path, data)
-                    files_processed += 1
-                    progress_bar.progress(files_processed / total_files)
-                    status_text.text(f"正在處理文件: {file}")
+            if file.endswith(".docx"):
+                replace_text_within_percent_signs(output_file_path, data)
+                files_processed += 1
+                progress_bar.progress(files_processed / total_files)
+                status_text.text(f"正在處理文件: {file}")
                     
-            # Clear progress indicators
-            status_text.empty()
-            progress_bar.empty()
+        # Clear progress indicators
+        status_text.empty()
+        progress_bar.empty()
             
-        if files_processed > 0:
-            st.success(f"完成處理 {files_processed} 個文件！")
-            st.info(f"處理後的文件已保存在: {output_dir}")
+    if files_processed > 0:
+        st.success(f"完成處理 {files_processed} 個文件！")
+        st.info(f"處理後的文件已保存在: {output_dir}")
             
-            # Create ZIP file for download
-            memory_file = io.BytesIO()
-            with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zf:
-                for root, _, files in os.walk(output_dir):
-                    for file in files:
-                        file_path = os.path.join(root, file)
-                        # print(file_path)
-                        # 使用相對路徑來保存文件
-                        # rel_path = os.path.basename(file_path)
-                        zf.write(file_path,file_path)
-            
-            memory_file.seek(0)
+        # Create ZIP file for download
+        memory_file = io.BytesIO()
+        with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zf:
+            for root, dirs, files in os.walk(output_dir):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    # print(file_path)
+                    # 使用相對路徑來保存文件
+                    # rel_path = os.path.basename(file_path)
+                    zf.write(file_path,os.path.relpath(file_path, output_dir))
+        
+        memory_file.seek(0)
 
-            shutil.rmtree(output_dir)
+        shutil.rmtree(output_dir)
             
-            # Add download button
-            st.download_button(
-                key="download_processed_files",
-                label="下載處理後的文件 (ZIP)",
-                data=memory_file,
-                file_name=f"{data['標案名稱']}.zip",
-                mime="application/zip"
-            )
-        else:
-            st.warning("沒有文件被成功處理！")
+        # Add download button
+        st.download_button(
+            key="download_processed_files",
+            label="下載處理後的文件 (ZIP)",
+            data=memory_file,
+            file_name=f"{data['標案名稱']}.zip",
+            mime="application/zip"
+        )
     else:
-        st.error("找不到指定的文件夾路徑！")
+        st.warning("沒有文件被成功處理！")
