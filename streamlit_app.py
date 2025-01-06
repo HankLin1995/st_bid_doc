@@ -249,9 +249,9 @@ data = convert_data(data)
 # 處理文件
 
 if mode=="一般工程":
-    doc_folder=r".\src\廠商投標表單"
+    doc_folder=r"./src/廠商投標表單"
 else:
-    doc_folder=r".\src\廠商投標表單(開口)"
+    doc_folder=r"./src/廠商投標表單(開口)"
 
 st.toast(doc_folder)
 
@@ -272,11 +272,11 @@ if submitted:
 
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-            os.makedirs(output_dir+"\\投標文件")
+            os.makedirs(output_dir+"/投標文件")
         else:
             shutil.rmtree(output_dir)
             os.makedirs(output_dir)
-            os.makedirs(output_dir+"\\投標文件")
+            os.makedirs(output_dir+"/投標文件")
 
         for root, dirs, files in os.walk(doc_folder):
             for file in files:
