@@ -3,19 +3,19 @@ import shutil
 from docx import Document
 # from docx.enum.text import WD_COLOR_INDEX
 
-def replace_text_within_percent_signs(file_path, replace_dict, tmp_folder_name):
-    tmp_folder_path = os.path.join(os.getcwd(), f"{tmp_folder_name}_TMP")
+def replace_text_within_percent_signs(file_path, replace_dict):#, tmp_folder_name):
+    # tmp_folder_path = os.path.join(os.getcwd(), f"{tmp_folder_name}_TMP")
     
-    if not os.path.exists(tmp_folder_path):
-        os.makedirs(tmp_folder_path)
+    # if not os.path.exists(tmp_folder_path):
+        # os.makedirs(tmp_folder_path)
     
-    file_name = os.path.basename(file_path)
-    tmp_file_path = os.path.join(tmp_folder_path, file_name)
+    # file_name = os.path.basename(file_path)
+    # tmp_file_path = os.path.join(tmp_folder_path, file_name)
     
-    shutil.copy(file_path, tmp_file_path)
+    # shutil.copy(file_path, tmp_file_path)
     
     try:
-        doc = Document(tmp_file_path)
+        doc = Document(file_path)
         
         for para in doc.paragraphs:
             replace_in_paragraph(para, replace_dict)
@@ -26,10 +26,10 @@ def replace_text_within_percent_signs(file_path, replace_dict, tmp_folder_name):
                     for paragraph in cell.paragraphs:
                         replace_in_paragraph(paragraph, replace_dict)
 
-        doc.save(tmp_file_path)
+        doc.save(file_path)
     
     except Exception as e:
-        print(f"無法處理文件 {tmp_file_path}: {e}")
+        print(f"無法處理文件 {file_path}: {e}")
     
     #shutil.rmtree(tmp_folder_path)  
 

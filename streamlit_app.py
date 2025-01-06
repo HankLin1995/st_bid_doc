@@ -7,6 +7,7 @@ import cn2an
 import opencc
 import io
 import zipfile
+import shutil
 
 st.set_page_config(page_title="工程招標文件處理工具")
 
@@ -148,6 +149,8 @@ def get_employ_type(qualification: str):
 
 mode=st.radio("選擇模式",["一般工程","開口契約"])
 
+# st.write(mode)
+
 st.markdown("---")
 
 # 基本資訊部分
@@ -200,7 +203,7 @@ mode2=st.radio("開工型式",["一般流程","指定開工日","逕流廢汙水
 start_date=None
 
 if mode2=="指定開工日":
-    start_date=st.date_input("指定開工日")
+    start_date=st.date_input("指定開工日").strftime("%Y-%m-%d")
 
 general_box, specified_box, runoff_box, general_date, specified_date, runoff_date = get_work_type(mode2,work_days)
 contractor_a, contractor_a1, contractor_a2, contractor_a3, contractor_b = get_employ_type(contractor_qual)
@@ -243,10 +246,21 @@ data = {
 data = convert_data(data)
 
 # 處理文件
-doc_folder = st.text_input("文件夾路徑", value=r"D:\Python\st_docx\src\廠商投標表單")
-submitted = st.button("處理文件")
+
+if mode=="一般工程":
+    doc_folder=r".\src\廠商投標表單"
+else:
+    doc_folder=r".\src\廠商投標表單(開口)"
+
+# st.toast(doc_folder)
+
+output_dir=r".\\"+data['標案名稱']
+# output_dir=r".\output2"
+
+submitted = st.button("產製招標文件",type="primary")
 
 if submitted:
+
     if os.path.exists(doc_folder):
         progress_bar = st.progress(0)
         status_text = st.empty()
@@ -254,28 +268,33 @@ if submitted:
         files_processed = 0
         total_files = sum(1 for _, _, files in os.walk(doc_folder) 
                          for file in files if file.endswith(".docx"))
-        
-        # 確保輸出目錄存在
-        output_dir = os.path.join(os.getcwd(), f"{data['標案名稱']}_TMP")
+
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-        
+            os.makedirs(output_dir+"\\投標文件")
+        else:
+            shutil.rmtree(output_dir)
+            os.makedirs(output_dir)
+            os.makedirs(output_dir+"\\投標文件")
+
         for root, dirs, files in os.walk(doc_folder):
             for file in files:
+
+                file_path = os.path.join(root, file) # 取得文件的完整路徑
+                relative_path = os.path.relpath(file_path, doc_folder) # 取得相對路徑
+                output_file_path=os.path.join(output_dir,relative_path) # 取得輸出文件的完整路徑
+                shutil.copy(file_path,output_file_path) # 將文件複製到輸出目錄
+
                 if file.endswith(".docx"):
-                    file_path = os.path.join(root, file)
-                    status_text.text(f"正在處理: {file}")
-                    try:
-                        replace_text_within_percent_signs(file_path, data, data["標案名稱"])
-                        files_processed += 1
-                        progress_bar.progress(files_processed / total_files)
-                    except Exception as e:
-                        st.error(f"處理文件 {file} 時發生錯誤：{str(e)}")
-        
-        # Clear progress indicators
-        status_text.empty()
-        progress_bar.empty()
-        
+                    replace_text_within_percent_signs(output_file_path, data)
+                    files_processed += 1
+                    progress_bar.progress(files_processed / total_files)
+                    status_text.text(f"正在處理文件: {file}")
+                    
+            # Clear progress indicators
+            status_text.empty()
+            progress_bar.empty()
+            
         if files_processed > 0:
             st.success(f"完成處理 {files_processed} 個文件！")
             st.info(f"處理後的文件已保存在: {output_dir}")
@@ -286,14 +305,16 @@ if submitted:
                 for root, _, files in os.walk(output_dir):
                     for file in files:
                         file_path = os.path.join(root, file)
+                        # print(file_path)
                         # 使用相對路徑來保存文件
-                        rel_path = os.path.basename(file_path)
-                        zf.write(file_path, rel_path)
+                        # rel_path = os.path.basename(file_path)
+                        zf.write(file_path,file_path)
             
             memory_file.seek(0)
             
             # Add download button
             st.download_button(
+                key="download_processed_files",
                 label="下載處理後的文件 (ZIP)",
                 data=memory_file,
                 file_name=f"{data['標案名稱']}.zip",
