@@ -165,7 +165,7 @@ def get_employ_type(qualification: str):
 
 ### 主要介面
 
-msg_content()
+# msg_content()
 
 mode=st.sidebar.radio("選擇模式",["一般工程","開口契約"])
 
@@ -272,7 +272,7 @@ data = {
     '廠商A乙-BOX': contractor_a2,
     '廠商A丙-BOX': contractor_a3,
     '廠商B土包-BOX': contractor_b,
-    '保留決標': bid_award
+    '保留-BOX': bid_award
     
 }
 
@@ -333,10 +333,15 @@ if submitted:
             shutil.copy(file_path,output_file_path) # 將文件複製到輸出目錄
 
             if file.endswith(".docx"):
-                replace_text_within_percent_signs(output_file_path, data)
-                files_processed += 1
-                progress_bar.progress(files_processed / total_files)
-                status_text.text(f"正在處理文件: {file}")
+
+                status=replace_text_within_percent_signs(output_file_path, data)
+
+                if status:
+                    st.error(status)
+                else:
+                    files_processed += 1
+                    progress_bar.progress(files_processed / total_files)
+                    status_text.text(f"正在處理文件: {file}")
                     
         # Clear progress indicators
         status_text.empty()
@@ -344,7 +349,7 @@ if submitted:
             
     if files_processed > 0:
         st.success(f"完成處理 {files_processed} 個文件！")
-        st.info(f"處理後的文件已保存在: {output_dir}")
+        # st.info(f"處理後的文件已保存在: {output_dir}")
             
         # Create ZIP file for download
         memory_file = io.BytesIO()
@@ -359,7 +364,7 @@ if submitted:
         
         memory_file.seek(0)
 
-        # shutil.rmtree(output_dir)
+        shutil.rmtree(output_dir)
             
         # Add download button
         st.download_button(
