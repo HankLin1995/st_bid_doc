@@ -9,6 +9,8 @@ import io
 import zipfile
 import shutil
 
+
+
 st.set_page_config(page_title="工程招標文件處理工具")
 
 st.sidebar.title("工程招標文件處理工具V1.1")
@@ -16,6 +18,13 @@ st.sidebar.info("作者: HankLin")
 
 st.sidebar.markdown("---")
 bid_award=st.sidebar.checkbox("保留決標")
+
+
+@st.dialog("!!!系統公告")
+def msg_content():
+
+    st.warning("目前列印情況仍有問題未修復，請稍後!!")
+
 
 def num_to_chinese(amount):
 
@@ -151,6 +160,8 @@ def get_employ_type(qualification: str):
 
 ### 主要介面
 
+msg_content()
+
 mode=st.sidebar.radio("選擇模式",["一般工程","開口契約"])
 
 # st.write(mode)
@@ -262,7 +273,7 @@ data = {
 
 data = convert_data(data)
 
-st.sidebar.json(data)
+# st.sidebar.json(data)
 
 def create_output_folder(output_dir):
     if not os.path.exists(output_dir):
