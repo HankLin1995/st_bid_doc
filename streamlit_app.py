@@ -19,7 +19,7 @@ bid_award=st.sidebar.checkbox("保留決標")
 
 def num_to_chinese(amount):
 
-    if amount=="": return ""
+    if amount==0: return "免收"
 
     cc = opencc.OpenCC('s2t')  # 's2t' 表示简体转繁体
     simplified_text=cn2an.an2cn(str(amount),"up")
@@ -210,7 +210,10 @@ with st.container(border=True):
     contractor_qual=get_contractor(float(budget))
     contractor_qual=st.selectbox("廠商資格",options=["設立於雲林縣或毗鄰縣市之土木包工業，或丙等以上綜合營造業","設立於雲林縣或毗鄰縣市並依營造業法規定辦理資本額增資之土木包工業，或丙等以上綜合營造業","丙等(含)綜合營造業以上","依營造業法規定辦理資本額增資之丙等綜合營造業，或乙等以上綜合營造業","乙等(含)綜合營造業以上","依營造業法規定辦理資本額增資之乙等綜合營造業，或甲等以上綜合營造業","甲等(含)綜合營造業以上"],index=["設立於雲林縣或毗鄰縣市之土木包工業，或丙等以上綜合營造業","設立於雲林縣或毗鄰縣市並依營造業法規定辦理資本額增資之土木包工業，或丙等以上綜合營造業","丙等(含)綜合營造業以上","依營造業法規定辦理資本額增資之丙等綜合營造業，或乙等以上綜合營造業","乙等(含)綜合營造業以上","依營造業法規定辦理資本額增資之乙等綜合營造業，或甲等以上綜合營造業","甲等(含)綜合營造業以上"].index(contractor_qual))
 
-    work_days=st.text_input("工期")
+    if mode=="開口契約":
+        work_days=0
+    else:
+       work_days=st.text_input("工期")
 
     mode2=st.radio("開工型式",["一般流程","指定開工日","逕流廢汙水"])
 
@@ -258,6 +261,8 @@ data = {
 }
 
 data = convert_data(data)
+
+st.sidebar.json(data)
 
 def create_output_folder(output_dir):
     if not os.path.exists(output_dir):
@@ -338,7 +343,7 @@ if submitted:
         
         memory_file.seek(0)
 
-        shutil.rmtree(output_dir)
+        # shutil.rmtree(output_dir)
             
         # Add download button
         st.download_button(

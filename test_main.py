@@ -26,7 +26,7 @@ class TestReplaceText(unittest.TestCase):
         doc.save(file_path)
 
         # 調用函數進行替換
-        replace_text_within_percent_signs(file_path, replace_dict, self.tmp_folder_name)
+        replace_text_within_percent_signs(file_path, replace_dict)
 
         # 驗證結果
         doc = Document(os.path.join(self.tmp_folder_path, "test.docx"))
@@ -46,7 +46,7 @@ class TestReplaceText(unittest.TestCase):
         doc.save(file_path)
 
         # 調用函數進行替換
-        replace_text_within_percent_signs(file_path, replace_dict, self.tmp_folder_name)
+        replace_text_within_percent_signs(file_path, replace_dict)
 
         # 驗證結果
         doc = Document(os.path.join(self.tmp_folder_path, "test.docx"))
@@ -65,7 +65,7 @@ class TestReplaceText(unittest.TestCase):
         doc.save(file_path)
 
         # 調用函數進行替換
-        replace_text_within_percent_signs(file_path, replace_dict, self.tmp_folder_name)
+        replace_text_within_percent_signs(file_path, replace_dict)
 
         # 驗證結果
         doc = Document(os.path.join(self.tmp_folder_path, "test.docx"))

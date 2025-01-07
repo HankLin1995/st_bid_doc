@@ -35,19 +35,24 @@ def replace_text_within_percent_signs(file_path, replace_dict):#, tmp_folder_nam
 
 def replace_in_paragraph(paragraph, replace_dict):
     """替換段落中的標記文字，保留原始格式。"""
-    # 保存原始的 runs
-    original_runs = [run._element for run in paragraph.runs]
+    # 獲取原始的 runs
+    original_runs = paragraph.runs
     
-    # 尋找並替換標記
+    # 重新組合段落中的文字
     text = paragraph.text
     start_pos = text.find("%%")
-    
+
     while start_pos != -1:
         end_pos = text.find("%%", start_pos + 2)
+        
         if end_pos != -1:
             target_content = text[start_pos + 2:end_pos]
+            
             if target_content in replace_dict:
-                # 找到包含標記開始的 run
+                # 替換的文字
+                replace_with = replace_dict[target_content]
+
+                # 遍歷段落中的 runs 找到包含標記的 run 範圍
                 current_pos = 0
                 start_run_index = None
                 end_run_index = None
@@ -60,20 +65,20 @@ def replace_in_paragraph(paragraph, replace_dict):
                         end_run_index = i
                         break
                     current_pos = next_pos
-                
+
+                # 確保找到了對應的 run
                 if start_run_index is not None and end_run_index is not None:
-                    # 獲取第一個 run 的格式
+                    # 保存標記的文字格式
                     first_run = paragraph.runs[start_run_index]
                     
-                    # 替換文字
-                    replace_with = replace_dict[target_content]
-                    
-                    # 刪除包含標記的所有 runs
+                    # 刪除標記所在的 runs
                     for i in range(end_run_index, start_run_index - 1, -1):
                         paragraph._p.remove(paragraph.runs[i]._element)
                     
-                    # 插入新的 run，保持原始格式
+                    # 插入替換的文字
                     new_run = paragraph.add_run(replace_with)
+                    
+                    # 保持新文字的格式
                     new_run.font.name = first_run.font.name
                     new_run.font.size = first_run.font.size
                     new_run.font.bold = first_run.font.bold
@@ -81,12 +86,13 @@ def replace_in_paragraph(paragraph, replace_dict):
                     new_run.font.underline = first_run.font.underline
                     if hasattr(first_run.font, 'color'):
                         new_run.font.color.rgb = first_run.font.color.rgb
-                    
+
                     print(f"已將 %%{target_content}%% 替換為 {replace_with}")
                     
-                    # 更新文字內容以繼續搜索
+                    # 更新段落文本
                     text = paragraph.text
                     start_pos = text.find("%%")
                     continue
-        
+
         start_pos = text.find("%%", start_pos + 2)
+
