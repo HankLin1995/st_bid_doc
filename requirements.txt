@@ -32,6 +32,7 @@ Pygments==2.19.0
 python-dateutil==2.9.0.post0
 python-docx==1.1.2
 pytz==2024.2
+pydantic==2.5.3
 referencing==0.35.1
 requests==2.32.3
 rich==13.9.4
