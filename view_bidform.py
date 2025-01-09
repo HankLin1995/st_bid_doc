@@ -24,7 +24,7 @@ with col1:
 
 with col2:
     with st.container(border=True):
-        st.markdown("### 👜經費項目")
+        st.markdown("### 👜經費相關")
         funding_source = st.text_input("經費來源")
         approved_amount = st.number_input("核定金額", min_value=0.0)
         total_budget = st.number_input("總工程費", min_value=0.0)
