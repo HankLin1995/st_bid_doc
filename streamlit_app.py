@@ -1,6 +1,6 @@
 import streamlit as st
 
-VERSION_NUMBER = "V1.2"
+VERSION_NUMBER = "V1.2.1"
 
 st.set_page_config(page_title=f"工程招標文件{VERSION_NUMBER}", page_icon="☕", layout="wide")
 
