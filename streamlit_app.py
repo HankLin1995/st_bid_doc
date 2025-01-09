@@ -1,15 +1,13 @@
 import streamlit as st
 import os
-from main import replace_text_within_percent_signs
-from data_storage import convert_data, deal_bool
+from docx_func import replace_text_within_percent_signs
+from utils import convert_data
 
 import cn2an
 import opencc
 import io
 import zipfile
 import shutil
-
-
 
 st.set_page_config(page_title="工程招標文件處理工具")
 
@@ -162,18 +160,13 @@ def get_employ_type(qualification: str):
     return contractor_a, contractor_a1, contractor_a2, contractor_a3, contractor_b
 
 
-
 ### 主要介面
 
 # msg_content()
 
 mode=st.sidebar.radio("選擇模式",["一般工程","開口契約"])
 
-# st.write(mode)
-
-# st.markdown("---")
-
-    # 基本資訊部分
+# 基本資訊部分
 
 with st.container(border=True):
 
@@ -183,9 +176,6 @@ with st.container(border=True):
     project_name=st.text_input("標案名稱",value="例：114年度舊庄農地重劃區小排20等緊急農水路改善工程")
     project_number=st.text_input("標案案號",value="雲林113J206")
     location=st.text_input("工程地點",value="雲林縣大埤鄉")
-
-# st.markdown("---")
-
 
 with st.container(border=True):
 
@@ -214,15 +204,10 @@ with st.container(border=True):
 
     purchase_level = st.selectbox("採購級距",options=["公告金額十分之一之採購","未達公告金額而逾公告金額十分之一之採購","公告金額以上未達查核金額之採購","查核金額以上未達巨額之採購"],index=["公告金額十分之一之採購","未達公告金額而逾公告金額十分之一之採購","公告金額以上未達查核金額之採購","查核金額以上未達巨額之採購"].index(purchase_level))
 
-# st.markdown("---")
-
 with st.container(border=True):
 
     st.subheader("資格及進度")
-
-    # 保留決
     
-
     contractor_qual=get_contractor(float(budget))
     contractor_qual=st.selectbox("廠商資格",options=["設立於雲林縣或毗鄰縣市之土木包工業，或丙等以上綜合營造業","設立於雲林縣或毗鄰縣市並依營造業法規定辦理資本額增資之土木包工業，或丙等以上綜合營造業","丙等(含)綜合營造業以上","依營造業法規定辦理資本額增資之丙等綜合營造業，或乙等以上綜合營造業","乙等(含)綜合營造業以上","依營造業法規定辦理資本額增資之乙等綜合營造業，或甲等以上綜合營造業","甲等(含)綜合營造業以上"],index=["設立於雲林縣或毗鄰縣市之土木包工業，或丙等以上綜合營造業","設立於雲林縣或毗鄰縣市並依營造業法規定辦理資本額增資之土木包工業，或丙等以上綜合營造業","丙等(含)綜合營造業以上","依營造業法規定辦理資本額增資之丙等綜合營造業，或乙等以上綜合營造業","乙等(含)綜合營造業以上","依營造業法規定辦理資本額增資之乙等綜合營造業，或甲等以上綜合營造業","甲等(含)綜合營造業以上"].index(contractor_qual))
 
@@ -278,8 +263,6 @@ data = {
 
 data = convert_data(data)
 
-# st.sidebar.json(data)
-
 def create_output_folder(output_dir):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -296,10 +279,7 @@ if mode=="一般工程":
 else:
     doc_folder=os.path.join("src", "廠商投標表單(開口)")
 
-# st.toast(doc_folder)
-
 output_dir=os.path.join(".", data['標案名稱'])
-# output_dir=r".\output2"
 
 submitted = st.button("產製招標文件",type="primary")
 
@@ -322,8 +302,9 @@ if submitted:
                      for file in files if file.endswith(".docx"))
 
     for root, dirs, files in os.walk(doc_folder):
+
         for file in files:
-            # st.toast(file)
+
             file_path = os.path.join(root, file) # 取得文件的完整路徑
             relative_path = os.path.relpath(file_path, doc_folder) # 取得相對路徑
             output_file_path=os.path.join(output_dir,relative_path) # 取得輸出文件的完整路徑
@@ -357,9 +338,7 @@ if submitted:
             for root, dirs, files in os.walk(output_dir):
                 for file in files:
                     file_path = os.path.join(root, file)
-                    # print(file_path)
-                    # 使用相對路徑來保存文件
-                    # rel_path = os.path.basename(file_path)
+
                     zf.write(file_path,os.path.relpath(file_path, output_dir))
         
         memory_file.seek(0)

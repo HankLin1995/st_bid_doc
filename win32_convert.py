@@ -30,6 +30,8 @@ def convert_file(doc_file_path):
     os.remove(doc_file_path)
     converter.quit()
 
+# src_directory = r"D:\Python\st_docx\src" 
+
 def convert_all_docs_in_directory(directory):
     with ProcessPoolExecutor(max_workers=8) as executor:  # 使用 ProcessPoolExecutor
         for root, dirs, files in os.walk(directory):
@@ -41,8 +43,3 @@ def convert_all_docs_in_directory(directory):
                         executor.submit(convert_file, doc_file_path)  # 提交任務
                     except Exception as e:
                         print(f'Error converting {doc_file_path}: {e}')  # 錯誤處理
-
-if __name__ == "__main__":
-    src_directory = r"D:\Python\st_docx\src"  # 指定源文件夹路径
-    print(f"Converting all .doc files in {src_directory}")
-    convert_all_docs_in_directory(src_directory)

@@ -1,5 +1,4 @@
 import unittest
-
 import cn2an
 import opencc
 
@@ -7,10 +6,9 @@ def num_to_chinese(amount):
     cc = opencc.OpenCC('s2t')  # 's2t' 表示简体转繁体
     simplified_text=cn2an.an2cn(str(amount),"up")
     simplified_text= simplified_text.replace("叁","參")
-    return cc.convert(simplified_text)
+    return cc.convert(simplified_text)+'元整'
 
 class TestNumToChinese(unittest.TestCase):
-    
     
     def test_thousand(self):
         self.assertEqual(num_to_chinese(22000), "貳萬貳仟")
