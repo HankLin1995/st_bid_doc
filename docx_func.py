@@ -1,17 +1,7 @@
 
 from docx import Document
-# from docx.enum.text import WD_COLOR_INDEX
 
-def replace_text_within_percent_signs(file_path, replace_dict):#, tmp_folder_name):
-    # tmp_folder_path = os.path.join(os.getcwd(), f"{tmp_folder_name}_TMP")
-    
-    # if not os.path.exists(tmp_folder_path):
-        # os.makedirs(tmp_folder_path)
-    
-    # file_name = os.path.basename(file_path)
-    # tmp_file_path = os.path.join(tmp_folder_path, file_name)
-    
-    # shutil.copy(file_path, tmp_file_path)
+def replace_text_within_percent_signs(file_path, replace_dict):
     
     try:
         doc = Document(file_path)
