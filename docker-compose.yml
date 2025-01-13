@@ -10,6 +10,8 @@ services:
       - .:/app
     depends_on:
       - backend
+    networks:
+      - docx_network
 
   backend:
     build: ./backend
@@ -19,6 +21,12 @@ services:
     volumes:
       - ./backend:/app
       - ./data:/app/data
+    networks:
+      - docx_network
+
+networks:
+  docx_network:
+    driver: bridge
 
 volumes:
   sqlite_data:
