@@ -1,67 +1,109 @@
-# Word 文件文字替換工具
+# Construction Project Management System
 
-這是一個 Python 工具，用於操作 Microsoft Word 文件，主要功能是在保持原始格式的同時替換文件中的文字。
+A web-based system for managing construction project bids and documentation, built with FastAPI and Streamlit.
 
-## 功能特點
+## Features
 
-- 在保持格式的同時替換 Word 文件中的文字
-- 支持批量處理文件
-- 安全的臨時文件處理機制
-- 可自定義的文字替換映射
+- Project bid form management
+- Real-time data validation
+- Document review workflow
+- Project status tracking
+- Multi-branch office support
 
-## 系統需求
+## Tech Stack
 
-- Python 3.x
-- 必需的 Python 套件（通過 pip 安裝）：
-  ```
-  python-docx
-  pywin32
-  ```
+### Backend
+- FastAPI (REST API)
+- SQLAlchemy (ORM)
+- SQLite (Database)
+- Python-dotenv (Environment Configuration)
 
-## 安裝說明
+### Frontend
+- Streamlit (Web Interface)
+- Requests (API Communication)
 
-1. 克隆此倉庫或下載源代碼
-2. 安裝必需的套件：
-   ```bash
-   pip install -r requirements.txt
-   ```
+## Project Structure
 
-## 專案結構
-
-- `main.py`: 文字替換的核心功能
-- `convert.py`: 文件轉換工具
-- `data_storage.py`: 數據處理和存儲操作
-- `test_main.py`: 主要功能的測試用例
-
-## 使用方法
-
-```python
-from main import replace_text_within_percent_signs
-
-# 使用範例
-replace_dict = {
-    "舊文字": "新文字",
-    "佔位符": "替換文字"
-}
-
-replace_text_within_percent_signs("文件路徑/document.docx", replace_dict, "輸出資料夾")
+```
+st_docx/
+├── backend/
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   ├── main.py (FastAPI application)
+│   ├── models.py (Database models)
+│   ├── schemas.py (Pydantic models)
+│   └── database.py (Database configuration)
+├── frontend/
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── view_bidform.py (Streamlit interface)
+├── data/ (Database files)
+├── docker-compose.yml
+├── .env (Environment variables)
+└── .env.example (Environment template)
 ```
 
-## 主要特性
+## Setup and Installation
 
-- 百分號(%)之間的文字替換
-- 安全的文件處理機制，包含臨時文件處理
-- 保持原始文件格式
-- 錯誤處理和備份創建
+1. Clone the repository:
+   ```bash
+   git clone [repository-url]
+   cd st_docx
+   ```
 
-## 參與貢獻
+2. Configure environment variables:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your database settings
+   ```
 
-歡迎提交問題和功能改進建議！
+3. Start the services using Docker Compose:
+   ```bash
+   docker-compose up --build
+   ```
 
-## 授權條款
+## Accessing the Application
 
-本專案採用 MIT 授權條款 - 詳情請見 LICENSE 文件。
+- Frontend (Streamlit): http://localhost:8501
+- Backend API: http://localhost:8000
+- API Documentation: http://localhost:8000/docs
 
-## 聯絡方式
+## Environment Variables
 
-如有任何問題或疑慮，請在專案倉庫中開啟一個問題單（Issue）。
+Create a `.env` file in the root directory with the following variables:
+```env
+DBPATH=sqlite:///./data/sql_app.db
+```
+
+## Development
+
+### Running in Development Mode
+
+1. Start the backend:
+   ```bash
+   cd backend
+   pip install -r requirements.txt
+   uvicorn main:app --reload
+   ```
+
+2. Start the frontend:
+   ```bash
+   cd frontend
+   pip install -r requirements.txt
+   streamlit run view_bidform.py
+   ```
+
+## Docker Support
+
+The application is containerized using Docker:
+- Separate containers for frontend and backend
+- Volume mounting for database persistence
+- Internal network for service communication
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
