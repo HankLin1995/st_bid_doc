@@ -1,5 +1,7 @@
 streamlit
-opencc
+#opencc
 cn2an
 requests
 python-docx
+OpenCC
+opencc-python-reimplemented
