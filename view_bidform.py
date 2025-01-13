@@ -7,7 +7,13 @@ st.header("🔷預算書審查")
 # 新增/編輯表單
 with st.container(border=True):
     st.markdown("### 🎯任務分配")
-    branch_office = st.text_input("所屬分處")
+
+    # 是否委外
+    if st.checkbox("委外設計監造"):
+        outsourcing_company = st.text_input("公司名稱",placeholder="OOO工程顧問公司")
+
+    branch_office = st.selectbox("分處名稱",options=["斗六分處","虎尾分處","西螺分處","北港分處","林內分處","本處"])
+    
     supervisor = st.text_input("主辦監造")
     supervisor_personnel = st.text_input("監造人員")
 
@@ -25,7 +31,7 @@ with col1:
 with col2:
     with st.container(border=True):
         st.markdown("### 👜經費相關")
-        funding_source = st.text_input("經費來源")
+        funding_source = st.text_input("經費來源","固定資產建設改良擴充-土地改良物(國庫撥款)")
         approved_amount = st.number_input("核定金額", min_value=0.0)
         total_budget = st.number_input("總工程費", min_value=0.0)
         contract_amount = st.number_input("發包工作費", min_value=0.0)
@@ -34,6 +40,9 @@ with col2:
             ["瀝青混凝土鋪面", "控制性低強度回填材料(CLSM)", "級配粒料基層", "低密度再生透水混凝土"],
             default=[]
         )
+
+store=st.button("送出表單",type="primary")
+
 
 # if st.button("儲存"):
 #     try:
