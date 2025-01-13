@@ -62,39 +62,39 @@ with st.container(border=True):
     supervisor_personnel = st.text_input("監造人員", 
         value=st.session_state.test_data.get("supervisor_personnel", "") if 'test_data' in st.session_state else "")
 
-col1, col2 = st.columns(2)
+# col1, col2 = st.columns(2)
 
-with col1:
-    with st.container(border=True):
-        st.markdown("#### 🍪基本資料")
-        project_name = st.text_input("工程名稱", 
-            value=st.session_state.test_data.get("project_name", "") if 'test_data' in st.session_state else "")
-        project_number = st.text_input("工程編號", 
-            value=st.session_state.test_data.get("project_number", "") if 'test_data' in st.session_state else "")
-        location = st.text_input("工程地點", 
-            value=st.session_state.test_data.get("location", "") if 'test_data' in st.session_state else "")
-        duration = st.number_input("工期", min_value=1, 
-            value=st.session_state.test_data.get("duration", 1) if 'test_data' in st.session_state else 1)
-        construction_content = st.text_input("施工內容", 
-            value=st.session_state.test_data.get("construction_content", "") if 'test_data' in st.session_state else "")
+# with col1:
+with st.container(border=True):
+    st.markdown("#### 🍪基本資料")
+    project_name = st.text_input("工程名稱", 
+        value=st.session_state.test_data.get("project_name", "") if 'test_data' in st.session_state else "")
+    project_number = st.text_input("工程編號", 
+        value=st.session_state.test_data.get("project_number", "") if 'test_data' in st.session_state else "")
+    location = st.text_input("工程地點", 
+        value=st.session_state.test_data.get("location", "") if 'test_data' in st.session_state else "")
+    duration = st.number_input("工期", min_value=1, 
+        value=st.session_state.test_data.get("duration", 1) if 'test_data' in st.session_state else 1)
+    construction_content = st.text_input("施工內容", 
+        value=st.session_state.test_data.get("construction_content", "") if 'test_data' in st.session_state else "")
 
-with col2:
-    with st.container(border=True):
-        st.markdown("#### 👜經費相關")
-        funding_source = st.text_input("經費來源",
-            value=st.session_state.test_data.get("funding_source", "固定資產建設改良擴充-土地改良物(國庫撥款)") if 'test_data' in st.session_state else "固定資產建設改良擴充-土地改良物(國庫撥款)")
-        approved_amount = st.number_input("核定金額", min_value=0.0,
-            value=st.session_state.test_data.get("approved_amount", 0.0) if 'test_data' in st.session_state else 0.0)
-        total_budget = st.number_input("總工程費", min_value=0.0,
-            value=st.session_state.test_data.get("total_budget", 0.0) if 'test_data' in st.session_state else 0.0)
-        contract_amount = st.number_input("發包工作費", min_value=0.0,
-            value=st.session_state.test_data.get("contract_amount", 0.0) if 'test_data' in st.session_state else 0.0)
-        default_items = st.session_state.test_data.get("outsourcing_items", []) if 'test_data' in st.session_state else []
-        outsourcing_items = st.multiselect(
-            "移辦單項目",
-            ["瀝青混凝土鋪面", "控制性低強度回填材料(CLSM)", "級配粒料基層", "低密度再生透水混凝土"],
-            default=default_items
-        )
+# with col2:
+with st.container(border=True):
+    st.markdown("#### 👜經費相關")
+    funding_source = st.text_input("經費來源",
+        value=st.session_state.test_data.get("funding_source", "固定資產建設改良擴充-土地改良物(國庫撥款)") if 'test_data' in st.session_state else "固定資產建設改良擴充-土地改良物(國庫撥款)")
+    approved_amount = st.number_input("核定金額", min_value=0.0,
+        value=st.session_state.test_data.get("approved_amount", 0.0) if 'test_data' in st.session_state else 0.0)
+    total_budget = st.number_input("總工程費", min_value=0.0,
+        value=st.session_state.test_data.get("total_budget", 0.0) if 'test_data' in st.session_state else 0.0)
+    contract_amount = st.number_input("發包工作費", min_value=0.0,
+        value=st.session_state.test_data.get("contract_amount", 0.0) if 'test_data' in st.session_state else 0.0)
+    default_items = st.session_state.test_data.get("outsourcing_items", []) if 'test_data' in st.session_state else []
+    outsourcing_items = st.multiselect(
+        "應註記之契約項目",
+        ["瀝青混凝土鋪面", "控制性低強度回填材料(CLSM)", "級配粒料基層", "低密度再生透水混凝土"],
+        default=default_items
+    )
 
 # 送出和清除按鈕
 col_submit1, col_submit2 = st.columns([3, 1])
@@ -131,17 +131,17 @@ with col_submit1:
         except Exception as e:
             st.error(f"操作失敗：{str(e)}")
 
-# 顯示現有工程列表
-if st.button("刷新"):
-    with st.expander("查看所有工程"):
-        projects = get_projects()
-        for project in projects:
-            with st.container(border=True):
-                col1, col2 = st.columns([2,1])
-                with col1:
-                    st.write(f"**工程名稱：** {project['project_name']}")
-                    st.write(f"**工程編號：** {project['project_number']}")
-                    st.write(f"**分處：** {project['branch_office']}")
-                with col2:
-                    st.write(f"**狀態：** {project['status']}")
-                    st.write(f"**建立時間：** {datetime.fromisoformat(project['created_at']).strftime('%Y-%m-%d %H:%M')}")
+# # 顯示現有工程列表
+# if st.button("刷新"):
+#     with st.expander("查看所有工程"):
+#         projects = get_projects()
+#         for project in projects:
+#             with st.container(border=True):
+#                 col1, col2 = st.columns([2,1])
+#                 with col1:
+#                     st.write(f"**工程名稱：** {project['project_name']}")
+#                     st.write(f"**工程編號：** {project['project_number']}")
+#                     st.write(f"**分處：** {project['branch_office']}")
+#                 with col2:
+#                     st.write(f"**狀態：** {project['status']}")
+#                     st.write(f"**建立時間：** {datetime.fromisoformat(project['created_at']).strftime('%Y-%m-%d %H:%M')}")

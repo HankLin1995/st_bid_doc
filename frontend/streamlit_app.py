@@ -9,7 +9,7 @@ def msg_content():
     st.markdown("---")
     st.write("版本:"+VERSION_NUMBER )
 
-st.set_page_config(page_title=f"工程招標文件{VERSION_NUMBER}", page_icon="☕", layout="wide")
+st.set_page_config(page_title=f"工程招標文件{VERSION_NUMBER}", page_icon="☕")
 
 # st.sidebar.title("工程招標文件處理工具V1.2")
 # st.sidebar.info("作者: HankLin")

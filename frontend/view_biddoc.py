@@ -1,32 +1,110 @@
 import streamlit as st
 import os
 from docx_utils import replace_text_within_percent_signs
-
+import requests
 import cn2an
 import opencc
 import io
 import zipfile
 import shutil
+from datetime import datetime
+import pandas as pd
+import time
 
-# st.set_page_config(page_title="工程招標文件處理工具")
+# API 配置
+API_URL = "http://backend:8000"
 
-# st.sidebar.title("工程招標文件處理工具V1.2")
-# st.sidebar.info("作者: HankLin")
+def get_projects():
+    response = requests.get(f"{API_URL}/projects/")
+    return response.json() if response.status_code == 200 else []
 
+def get_project_by_id(project_id):
+    response = requests.get(f"{API_URL}/projects/{project_id}")
+    return response.json() if response.status_code == 200 else None
+
+# 側邊欄配置
+# st.sidebar.title("工程招標文件處理工具")
 # st.sidebar.markdown("---")
-bid_award=st.sidebar.checkbox("保留決標")
 
+# @st.dialog("選擇工程")
+def select_project():
 
-@st.dialog("⚠️系統公告")
-def msg_content():
+    projects = get_projects()
+    
+    if len(projects) == 0:
+        st.error("目前沒有任何專案")
+        return
 
-    st.subheader("	🐞錯誤紀錄:")
+    # 將專案資料轉換為更好的顯示格式
+    display_projects = []
+    for p in projects:
+        display_projects.append({
+            "ID": p["id"],
+            "工程名稱": p["project_name"],
+            "工程編號": p["project_number"],
+            "分處": p["branch_office"],
+            "核定金額": f"{p['approved_amount']:,.0f}",
+            "工期": p["duration"],
+            "建立時間": datetime.fromisoformat(p['created_at']).strftime('%Y-%m-%d')
+        })
+    
+    # 創建可選擇的資料表
+    project_df = pd.DataFrame(display_projects)
+    project_name=st.selectbox("請選擇要載入的工程", project_df["工程名稱"])    
+    project_id = projects[project_df[project_df["工程名稱"] == project_name].index[0]]["id"]
 
-    st.write("1.投標須知會有部分標記內容有替換問題(工程地點)")
-    st.write("2.成功替換的標記內容有部分字體會出現@NonoSanc")
+    if st.button("載入工程", key="load_project"):
+        st.session_state.project_data = get_project_by_id(project_id)
+        st.success("工程載入成功！")
+        time.sleep(1)
+        st.rerun()
 
-    st.success("請先用**單機版Excel**進行列印輸出!,謝謝")
+    # # 設置列的顯示格式
+    # st.markdown("#### 請選擇要載入的工程")
 
+    # event = st.dataframe(
+    #     project_df,
+    #     hide_index=True,
+    #     use_container_width=True,
+    #     column_config={
+    #         "工程名稱": st.column_config.TextColumn("工程名稱", width="large"),
+    #         "工程編號": st.column_config.TextColumn("工程編號", width="medium"),
+    #         "分處": st.column_config.TextColumn("分處", width="small"),
+    #         "核定金額": st.column_config.NumberColumn(
+    #             "核定金額",
+    #             help="工程核定金額",
+    #             format="NT$ %d",
+    #             width="medium"
+    #         ),
+    #         "工期": st.column_config.NumberColumn(
+    #             "工期",
+    #             help="工程天數",
+    #             format="%d 天",
+    #             width="small"
+    #         ),
+    #         "建立時間": st.column_config.DateColumn(
+    #             "建立時間",
+    #             format="YYYY-MM-DD",
+    #             width="medium"
+    #         ),
+    #     },
+    #     on_select="rerun",
+    #     selection_mode="single-row"
+    # )
+
+    # # 檢查是否有選擇專案
+    # if event:
+
+    #     if st.button("載入工程", key="load_project"):
+
+    #         project=event.selection.rows
+
+    #         st.write(project)
+    #         st.session_state.project_data = get_project_by_id(project[0]+1)
+    #         st.rerun()
+
+def handle_selection(event, projects):
+    pass
 
 def num_to_chinese(amount):
 
@@ -52,7 +130,6 @@ def deal_bool(data):
     else:
         return '□'  # 白色方格
     
-
 def get_contractor(contract_money: float) -> str:
     m = contract_money
 
@@ -179,38 +256,53 @@ def get_employ_type(qualification: str):
 
 # msg_content()
 
-mode=st.sidebar.radio("選擇模式",["一般工程","開口契約"])
+
+# if st.sidebar.button("載入工程案件",type="primary"):
+with st.sidebar:
+    select_project()
+
+# with st.popover("載入工程案件"):
+#     select_project()
 
 # 基本資訊部分
 
 st.markdown("### 🔷投標文件")
 
 with st.container(border=True):
-
     st.markdown("#### 🍪基本資料")
+    
+    mode=st.radio("選擇模式",["一般工程","開口契約"])
 
-    year=st.text_input("年度",value="114")
-    project_name=st.text_input("標案名稱",value="OOOO改善工程")
-    project_number=st.text_input("標案案號",value="OOOO")
-    location=st.text_input("工程地點",value="OOOO")
+    # 如果有選擇現有工程，使用其資料
+    if 'project_data' in st.session_state:
+        project_data = st.session_state.project_data
+        year = st.text_input("年度", value=str(project_data.get('year', '114')))
+        project_name = st.text_input("標案名稱", value=project_data['project_name'])
+        project_number = st.text_input("標案編號", value=project_data['project_number'])
+        location = st.text_input("工程地點", value=project_data['location'])
+    else:
+        year = st.text_input("年度", value="114")
+        project_name = st.text_input("標案名稱", value="OOOO改善工程")
+        project_number = st.text_input("標案編號")
+        location = st.text_input("工程地點")
 
 with st.container(border=True):
-
     st.markdown("#### 💰經費相關")
-    funding_source=st.text_input("經費來源",value="固定資產建設改良擴充-土地改良物(國庫撥款)")
-    budget=st.text_input("預算金額",value="0")
+    
+    bid_award = st.checkbox("保留決標")
+
+    if 'project_data' in st.session_state:
+        funding_source = st.text_input("經費來源", value=project_data['funding_source'])
+        budget = st.text_input("預算金額", value=str(project_data['approved_amount']))
+    else:
+        funding_source = st.text_input("經費來源", value="固定資產建設改良擴充-土地改良物(國庫撥款)")
+        budget = st.text_input("預算金額", value="0")
 
     bid_bond=st.number_input("押標金金額",value=0)
-    bid_bond_chinese=num_to_chinese(bid_bond)# st.text_input("押標金金額中文") #自動轉換
-    # if bid_bond_chinese!="":
-    #     pass
-        # st.toast(f"押標金金額:{bid_bond_chinese}")
+    bid_bond_chinese=num_to_chinese(bid_bond)
 
     performance_bond=st.number_input("履約保證金",value=0)
-    performance_bond_chinese=num_to_chinese(performance_bond)# st.text_input("履約保證金中文") #自動轉換
-    # if performance_bond_chinese!="":
-    #     pass
-        # st.toast(f"履約保證金:{performance_bond_chinese}")
+    performance_bond_chinese=num_to_chinese(performance_bond)
 
     if mode=="開口契約":
         purchase_limit=st.text_input("採購金額上限",value="0")
@@ -229,7 +321,10 @@ with st.container(border=True):
     if mode=="開口契約":
         work_days=0
     else:
-       work_days=st.text_input("工期")
+        if 'project_data' in st.session_state:
+            work_days=st.text_input("工期", value=str(project_data['duration']))
+        else:
+            work_days=st.number_input("工期", min_value=1, value=1)
 
     mode2=st.radio("開工型式",["一般流程","指定開工日","逕流廢汙水"])
 
@@ -244,7 +339,7 @@ purchase_a, purchase_b, purchase_c = get_cost_type(purchase_level)
 
 data = {
     '標案名稱': project_name,
-    '標案案號': project_number,
+    '標案編號': project_number,
     '年度': year,
     '經費來源': funding_source,
     '押標金金額': bid_bond,
