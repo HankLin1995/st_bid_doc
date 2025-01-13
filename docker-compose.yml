@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  streamlit:
+  streamlit_app:
     build: ./frontend
     container_name: st_docx
     ports:
@@ -22,6 +22,12 @@ services:
       - ./backend:/app
       - ./data:/app/data
       - ./.env:/app/.env
+    networks:
+      - docx_network
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TUNNEL_TOKEN}
     networks:
       - docx_network
 

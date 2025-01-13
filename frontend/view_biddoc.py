@@ -183,11 +183,11 @@ mode=st.sidebar.radio("選擇模式",["一般工程","開口契約"])
 
 # 基本資訊部分
 
-st.header("🔷投標文件")
+st.markdown("### 🔷投標文件")
 
 with st.container(border=True):
 
-    st.markdown("### 🍪基本資料")
+    st.markdown("#### 🍪基本資料")
 
     year=st.text_input("年度",value="114")
     project_name=st.text_input("標案名稱",value="OOOO改善工程")
@@ -196,7 +196,7 @@ with st.container(border=True):
 
 with st.container(border=True):
 
-    st.markdown("### 💰經費相關")
+    st.markdown("#### 💰經費相關")
     funding_source=st.text_input("經費來源",value="固定資產建設改良擴充-土地改良物(國庫撥款)")
     budget=st.text_input("預算金額",value="0")
 
@@ -222,7 +222,7 @@ with st.container(border=True):
 
 with st.container(border=True):
 
-    st.subheader("🍰資格及進度")
+    st.markdown("#### 🍰資格及進度")
     contractor_qual=get_contractor(float(budget))
     contractor_qual=st.selectbox("廠商資格",options=["設立於雲林縣或毗鄰縣市之土木包工業，或丙等以上綜合營造業","設立於雲林縣或毗鄰縣市並依營造業法規定辦理資本額增資之土木包工業，或丙等以上綜合營造業","丙等(含)綜合營造業以上","依營造業法規定辦理資本額增資之丙等綜合營造業，或乙等以上綜合營造業","乙等(含)綜合營造業以上","依營造業法規定辦理資本額增資之乙等綜合營造業，或甲等以上綜合營造業","甲等(含)綜合營造業以上"],index=["設立於雲林縣或毗鄰縣市之土木包工業，或丙等以上綜合營造業","設立於雲林縣或毗鄰縣市並依營造業法規定辦理資本額增資之土木包工業，或丙等以上綜合營造業","丙等(含)綜合營造業以上","依營造業法規定辦理資本額增資之丙等綜合營造業，或乙等以上綜合營造業","乙等(含)綜合營造業以上","依營造業法規定辦理資本額增資之乙等綜合營造業，或甲等以上綜合營造業","甲等(含)綜合營造業以上"].index(contractor_qual))
 
