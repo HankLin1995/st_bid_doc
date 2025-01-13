@@ -22,7 +22,7 @@ __pycache__/
 
 # Database
 *.db
-data/
+/data
 sql_app.db
 
 # Logs

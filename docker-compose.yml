@@ -21,6 +21,7 @@ services:
     volumes:
       - ./backend:/app
       - ./data:/app/data
+      - ./.env:/app/.env
     networks:
       - docx_network
 
