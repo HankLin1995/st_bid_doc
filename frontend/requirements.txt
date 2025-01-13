@@ -1,0 +1,5 @@
+streamlit
+opencc
+cn2an
+requests
+python-docx
