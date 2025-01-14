@@ -176,7 +176,7 @@ with st.container(border=True):
         project_data = st.session_state.project_data
         year = st.text_input("民國年", value=str(project_data.get('year', '114')))
         project_name = st.text_input("標案名稱", value=project_data['project_name'])
-        project_number = st.text_input("標案編號", value=project_data['project_number'])
+        project_number = st.text_input("標案案號", value=project_data['project_number'])
         location = st.text_input("工程地點", value=project_data['location'])
     else:
         year = st.text_input("年度", value="114")
