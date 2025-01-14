@@ -1,4 +1,8 @@
 import streamlit as st
+import dotenv
+import os
+
+dotenv.load_dotenv()
 
 VERSION_NUMBER = "V1.3.0"
 
@@ -11,14 +15,6 @@ def msg_content():
 
 st.set_page_config(page_title=f"工程招標文件{VERSION_NUMBER}", page_icon="☕")
 
-# st.sidebar.title("工程招標文件處理工具V1.2")
-# st.sidebar.info("作者: HankLin")
-
-bidform_page=st.Page("view_bidform.py",title="預算書審查",icon=":material/contract:")
-biddoc_page=st.Page("view_biddoc.py",title="投標文件",icon=":material/assignment:",default=True)
-
-pg=st.navigation([bidform_page,biddoc_page])
-
 if "show_info" not in st.session_state:
     st.session_state.show_info = True
 
@@ -26,4 +22,11 @@ if st.session_state.show_info:
     msg_content()
     st.session_state.show_info = False
 
+if "password" not in st.session_state:
+    st.session_state.password = ""
+
+bidform_page=st.Page("view_bidform.py",title="預算書審查",icon=":material/contract:")
+biddoc_page=st.Page("view_biddoc.py",title="投標文件",icon=":material/assignment:",default=True)
+
+pg=st.navigation([bidform_page,biddoc_page])
 pg.run()

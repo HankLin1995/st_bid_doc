@@ -10,6 +10,9 @@ import shutil
 from datetime import datetime
 import pandas as pd
 import time
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # API 配置
 API_URL = "http://backend:8000"
@@ -21,10 +24,6 @@ def get_projects():
 def get_project_by_id(project_id):
     response = requests.get(f"{API_URL}/projects/{project_id}")
     return response.json() if response.status_code == 200 else None
-
-# 側邊欄配置
-# st.sidebar.title("工程招標文件處理工具")
-# st.sidebar.markdown("---")
 
 # @st.dialog("選擇工程")
 def select_project():
@@ -50,61 +49,14 @@ def select_project():
     
     # 創建可選擇的資料表
     project_df = pd.DataFrame(display_projects)
-    project_name=st.selectbox("請選擇要載入的工程", project_df["工程名稱"])    
+    project_name=st.sidebar.selectbox("請選擇要載入的工程", project_df["工程名稱"])    
     project_id = projects[project_df[project_df["工程名稱"] == project_name].index[0]]["id"]
 
-    if st.button("載入工程", key="load_project"):
+    if st.sidebar.button("載入工程", key="load_project"):
         st.session_state.project_data = get_project_by_id(project_id)
         st.success("工程載入成功！")
         time.sleep(1)
         st.rerun()
-
-    # # 設置列的顯示格式
-    # st.markdown("#### 請選擇要載入的工程")
-
-    # event = st.dataframe(
-    #     project_df,
-    #     hide_index=True,
-    #     use_container_width=True,
-    #     column_config={
-    #         "工程名稱": st.column_config.TextColumn("工程名稱", width="large"),
-    #         "工程編號": st.column_config.TextColumn("工程編號", width="medium"),
-    #         "分處": st.column_config.TextColumn("分處", width="small"),
-    #         "核定金額": st.column_config.NumberColumn(
-    #             "核定金額",
-    #             help="工程核定金額",
-    #             format="NT$ %d",
-    #             width="medium"
-    #         ),
-    #         "工期": st.column_config.NumberColumn(
-    #             "工期",
-    #             help="工程天數",
-    #             format="%d 天",
-    #             width="small"
-    #         ),
-    #         "建立時間": st.column_config.DateColumn(
-    #             "建立時間",
-    #             format="YYYY-MM-DD",
-    #             width="medium"
-    #         ),
-    #     },
-    #     on_select="rerun",
-    #     selection_mode="single-row"
-    # )
-
-    # # 檢查是否有選擇專案
-    # if event:
-
-    #     if st.button("載入工程", key="load_project"):
-
-    #         project=event.selection.rows
-
-    #         st.write(project)
-    #         st.session_state.project_data = get_project_by_id(project[0]+1)
-    #         st.rerun()
-
-def handle_selection(event, projects):
-    pass
 
 def num_to_chinese(amount):
 
@@ -256,13 +208,12 @@ def get_employ_type(qualification: str):
 
 # msg_content()
 
+my_pass=st.sidebar.text_input("請輸入密碼",type="password")
 
-# if st.sidebar.button("載入工程案件",type="primary"):
-with st.sidebar:
-    select_project()
+if my_pass!=os.getenv("PASSWORD"):
+    st.stop()
 
-# with st.popover("載入工程案件"):
-#     select_project()
+select_project()
 
 # 基本資訊部分
 

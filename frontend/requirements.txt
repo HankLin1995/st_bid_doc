@@ -5,3 +5,4 @@ requests
 python-docx
 OpenCC
 opencc-python-reimplemented
+python-dotenv
