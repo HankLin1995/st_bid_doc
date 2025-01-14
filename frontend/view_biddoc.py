@@ -339,7 +339,7 @@ purchase_a, purchase_b, purchase_c = get_cost_type(purchase_level)
 
 data = {
     '標案名稱': project_name,
-    '標案編號': project_number,
+    '標案案號': project_number,
     '年度': year,
     '經費來源': funding_source,
     '押標金金額': bid_bond,
