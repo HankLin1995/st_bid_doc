@@ -17,7 +17,7 @@ st.set_page_config(page_title=f"工程招標文件{VERSION_NUMBER}", page_icon="
 bidform_page=st.Page("view_bidform.py",title="預算書審查",icon=":material/contract:")
 biddoc_page=st.Page("view_biddoc.py",title="投標文件",icon=":material/assignment:",default=True)
 
-pg=st.navigation([bidform_page,biddoc_page])
+pg=st.navigation([biddoc_page])
 
 if "show_info" not in st.session_state:
     st.session_state.show_info = True
