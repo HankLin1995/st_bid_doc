@@ -6,12 +6,12 @@ services:
     container_name: st_docx
     ports:
       - "8501:8501"
-    volumes:
-      - ./.env:/app/.env
     depends_on:
       - backend
     networks:
       - docx_network
+    env_file:
+      - .env
 
   backend:
     build: ./backend
@@ -21,9 +21,10 @@ services:
     volumes:
       - ./backend:/app
       - ./data:/app/data
-      - ./.env:/app/.env
     networks:
       - docx_network
+    env_file:
+      - .env
 
   cloudflared:
     image: cloudflare/cloudflared:latest
