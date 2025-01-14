@@ -25,8 +25,8 @@ if st.session_state.show_info:
 if "password" not in st.session_state:
     st.session_state.password = ""
 
-bidform_page=st.Page("view_bidform.py",title="預算書審查",icon=":material/contract:")
-biddoc_page=st.Page("view_biddoc.py",title="投標文件",icon=":material/assignment:",default=True)
+bidform_page=st.Page("view_bidform.py",title="預算書審查",icon=":material/contract:",default=True)
+biddoc_page=st.Page("view_biddoc.py",title="投標文件",icon=":material/assignment:")
 
 pg=st.navigation([bidform_page,biddoc_page])
 pg.run()
