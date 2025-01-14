@@ -1,15 +1,16 @@
 import streamlit as st
 
-VERSION_NUMBER = "V1.2.2"
+VERSION_NUMBER = "V1.2.3"
 
 @st.dialog("⭕系統公告")
 def msg_content():
     st.subheader("®️作者: HankLin") 
     st.write("這是用於產製招標文件的工具")
     st.markdown("---")
+    st.markdown("[部落格連結](https://hanksvba.com)")
     st.write("版本:"+VERSION_NUMBER )
 
-st.set_page_config(page_title=f"工程招標文件{VERSION_NUMBER}", page_icon="☕", layout="wide")
+st.set_page_config(page_title=f"工程招標文件{VERSION_NUMBER}", page_icon="☕")
 
 # st.sidebar.title("工程招標文件處理工具V1.2")
 # st.sidebar.info("作者: HankLin")

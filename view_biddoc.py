@@ -1,32 +1,15 @@
 import streamlit as st
 import os
 from docx_utils import replace_text_within_percent_signs
-
+import requests
 import cn2an
 import opencc
 import io
 import zipfile
 import shutil
-
-# st.set_page_config(page_title="工程招標文件處理工具")
-
-# st.sidebar.title("工程招標文件處理工具V1.2")
-# st.sidebar.info("作者: HankLin")
-
-# st.sidebar.markdown("---")
-bid_award=st.sidebar.checkbox("保留決標")
-
-
-@st.dialog("⚠️系統公告")
-def msg_content():
-
-    st.subheader("	🐞錯誤紀錄:")
-
-    st.write("1.投標須知會有部分標記內容有替換問題(工程地點)")
-    st.write("2.成功替換的標記內容有部分字體會出現@NonoSanc")
-
-    st.success("請先用**單機版Excel**進行列印輸出!,謝謝")
-
+from datetime import datetime
+import pandas as pd
+import time
 
 def num_to_chinese(amount):
 
@@ -52,7 +35,6 @@ def deal_bool(data):
     else:
         return '□'  # 白色方格
     
-
 def get_contractor(contract_money: float) -> str:
     m = contract_money
 
@@ -179,38 +161,46 @@ def get_employ_type(qualification: str):
 
 # msg_content()
 
-mode=st.sidebar.radio("選擇模式",["一般工程","開口契約"])
 
 # 基本資訊部分
 
-st.header("🔷投標文件")
+st.markdown("### 🔷投標文件")
 
 with st.container(border=True):
+    st.markdown("#### 🍪基本資料")
+    
+    mode=st.radio("選擇模式",["一般工程","開口契約"])
 
-    st.markdown("### 🍪基本資料")
-
-    year=st.text_input("年度",value="114")
-    project_name=st.text_input("標案名稱",value="OOOO改善工程")
-    project_number=st.text_input("標案案號",value="OOOO")
-    location=st.text_input("工程地點",value="OOOO")
+    # 如果有選擇現有工程，使用其資料
+    if 'project_data' in st.session_state:
+        project_data = st.session_state.project_data
+        year = st.text_input("民國年", value=str(project_data.get('year', '114')))
+        project_name = st.text_input("標案名稱", value=project_data['project_name'])
+        project_number = st.text_input("標案編號", value=project_data['project_number'])
+        location = st.text_input("工程地點", value=project_data['location'])
+    else:
+        year = st.text_input("年度", value="114")
+        project_name = st.text_input("標案名稱", value="OOOO改善工程")
+        project_number = st.text_input("標案編號")
+        location = st.text_input("工程地點")
 
 with st.container(border=True):
+    st.markdown("#### 💰經費相關")
+    
+    bid_award = st.checkbox("保留決標")
 
-    st.markdown("### 💰經費相關")
-    funding_source=st.text_input("經費來源",value="固定資產建設改良擴充-土地改良物(國庫撥款)")
-    budget=st.text_input("預算金額",value="0")
+    if 'project_data' in st.session_state:
+        funding_source = st.text_input("經費來源", value=project_data['funding_source'])
+        budget = st.text_input("預算金額", value=str(project_data['approved_amount']))
+    else:
+        funding_source = st.text_input("經費來源", value="固定資產建設改良擴充-土地改良物(國庫撥款)")
+        budget = st.text_input("預算金額", value="0")
 
     bid_bond=st.number_input("押標金金額",value=0)
-    bid_bond_chinese=num_to_chinese(bid_bond)# st.text_input("押標金金額中文") #自動轉換
-    # if bid_bond_chinese!="":
-    #     pass
-        # st.toast(f"押標金金額:{bid_bond_chinese}")
+    bid_bond_chinese=num_to_chinese(bid_bond)
 
     performance_bond=st.number_input("履約保證金",value=0)
-    performance_bond_chinese=num_to_chinese(performance_bond)# st.text_input("履約保證金中文") #自動轉換
-    # if performance_bond_chinese!="":
-    #     pass
-        # st.toast(f"履約保證金:{performance_bond_chinese}")
+    performance_bond_chinese=num_to_chinese(performance_bond)
 
     if mode=="開口契約":
         purchase_limit=st.text_input("採購金額上限",value="0")
@@ -222,14 +212,17 @@ with st.container(border=True):
 
 with st.container(border=True):
 
-    st.subheader("🍰資格及進度")
+    st.markdown("#### 🍰資格及進度")
     contractor_qual=get_contractor(float(budget))
     contractor_qual=st.selectbox("廠商資格",options=["設立於雲林縣或毗鄰縣市之土木包工業，或丙等以上綜合營造業","設立於雲林縣或毗鄰縣市並依營造業法規定辦理資本額增資之土木包工業，或丙等以上綜合營造業","丙等(含)綜合營造業以上","依營造業法規定辦理資本額增資之丙等綜合營造業，或乙等以上綜合營造業","乙等(含)綜合營造業以上","依營造業法規定辦理資本額增資之乙等綜合營造業，或甲等以上綜合營造業","甲等(含)綜合營造業以上"],index=["設立於雲林縣或毗鄰縣市之土木包工業，或丙等以上綜合營造業","設立於雲林縣或毗鄰縣市並依營造業法規定辦理資本額增資之土木包工業，或丙等以上綜合營造業","丙等(含)綜合營造業以上","依營造業法規定辦理資本額增資之丙等綜合營造業，或乙等以上綜合營造業","乙等(含)綜合營造業以上","依營造業法規定辦理資本額增資之乙等綜合營造業，或甲等以上綜合營造業","甲等(含)綜合營造業以上"].index(contractor_qual))
 
     if mode=="開口契約":
         work_days=0
     else:
-       work_days=st.text_input("工期")
+        if 'project_data' in st.session_state:
+            work_days=st.text_input("工期", value=str(project_data['duration']))
+        else:
+            work_days=st.number_input("工期", min_value=1, value=1)
 
     mode2=st.radio("開工型式",["一般流程","指定開工日","逕流廢汙水"])
 
