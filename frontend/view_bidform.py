@@ -52,6 +52,8 @@ with st.container(border=True):
             value=st.session_state.test_data.get("outsourcing_company", "") if 'test_data' in st.session_state else "",
             placeholder="OOO工程顧問公司")
 
+    year = st.number_input("民國年",min_value=datetime.now().year-1911)
+
     branch_office = st.selectbox("分處名稱",
         options=["斗六分處","虎尾分處","西螺分處","北港分處","林內分處","本處"],
         index=0 if 'test_data' not in st.session_state else 
@@ -116,7 +118,7 @@ with col_submit1:
                 "supervisor_personnel": supervisor_personnel,
                 "outsourcing_items": ",".join(outsourcing_items),
                 "procurement_type": "工程",  # 預設為工程
-                "year": datetime.now().year  # 預設為當前年度
+                "year": year  # 預設為當前年度
             }
             
             result = create_project(project_data)
