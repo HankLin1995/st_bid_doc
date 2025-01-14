@@ -179,10 +179,10 @@ with st.container(border=True):
         project_number = st.text_input("標案案號", value=project_data['project_number'])
         location = st.text_input("工程地點", value=project_data['location'])
     else:
-        year = st.text_input("年度", value="114")
+        year = st.text_input("民國年", value="114")
         project_name = st.text_input("標案名稱", value="OOOO改善工程")
-        project_number = st.text_input("標案編號")
-        location = st.text_input("工程地點")
+        project_number = st.text_input("標案編號", value="114-OOOO")
+        location = st.text_input("工程地點",value="OO縣OO市")
 
 with st.container(border=True):
     st.markdown("#### 💰經費相關")
@@ -194,7 +194,7 @@ with st.container(border=True):
         budget = st.text_input("預算金額", value=str(project_data['approved_amount']))
     else:
         funding_source = st.text_input("經費來源", value="固定資產建設改良擴充-土地改良物(國庫撥款)")
-        budget = st.text_input("預算金額", value="0")
+        budget = st.text_input("預算金額", value="1000000")
 
     bid_bond=st.number_input("押標金金額",value=0)
     bid_bond_chinese=num_to_chinese(bid_bond)
