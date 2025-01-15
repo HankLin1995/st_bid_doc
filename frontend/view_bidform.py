@@ -32,9 +32,9 @@ def load_test_data():
         "outsourcing_items": ["瀝青混凝土鋪面", "控制性低強度回填材料(CLSM)"]
     }
 
-if st.sidebar.button("載入測試數據"):
-    st.session_state.test_data = load_test_data()
-    st.rerun()
+# if st.sidebar.button("載入測試數據"):
+#     st.session_state.test_data = load_test_data()
+#     st.rerun()
 
 st.markdown("### 🔷預算書審查")
 

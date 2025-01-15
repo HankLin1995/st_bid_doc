@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
-from models import ProcurementType, ProjectStatus
+from models import  ProjectStatus
 
 class ProjectBase(BaseModel):
     branch_office: str
@@ -17,7 +17,7 @@ class ProjectBase(BaseModel):
     supervisor: str
     supervisor_personnel: str
     outsourcing_items: str
-    procurement_type: ProcurementType
+    # procurement_type: ProcurementType
     year: int
 
 class ProjectCreate(ProjectBase):
