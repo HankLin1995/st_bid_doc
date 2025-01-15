@@ -33,3 +33,29 @@ class Project(ProjectBase):
 
     class Config:
         from_attributes = True
+
+class UserBase(BaseModel):
+    user_id: str
+    user_name: str
+    nick_name: str
+    pic_url: str
+    role: str = "user"
+
+class UserCreate(UserBase):
+    pass
+
+class UserUpdate(UserBase):
+    user_id: Optional[str] = None
+    user_name: Optional[str] = None
+    nick_name: Optional[str] = None
+    pic_url: Optional[str] = None
+    role: Optional[str] = None
+    reviewed: Optional[int] = None
+
+class User(UserBase):
+    id: int
+    created_time: datetime
+    reviewed: int
+
+    class Config:
+        from_attributes = True
