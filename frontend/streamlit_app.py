@@ -16,11 +16,12 @@ def msg_content():
 st.set_page_config(page_title=f"工程招標文件{VERSION_NUMBER}", page_icon="☕")
 
 if "show_info" not in st.session_state:
+    msg_content()
     st.session_state.show_info = True
 
-if st.session_state.show_info:
-    msg_content()
-    st.session_state.show_info = False
+# if st.session_state.show_info:
+#     msg_content()
+#     st.session_state.show_info = False
 
 if "password" not in st.session_state:
     st.session_state.password = ""
