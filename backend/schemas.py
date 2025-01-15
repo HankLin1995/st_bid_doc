@@ -19,6 +19,7 @@ class ProjectBase(BaseModel):
     outsourcing_items: str
     # procurement_type: ProcurementType
     year: int
+    schedule_type:str
 
 class ProjectCreate(ProjectBase):
     pass

@@ -37,6 +37,7 @@ class Project(Base):
     year = Column(Integer)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     status = Column(SQLAlchemyEnum(ProjectStatus), default=ProjectStatus.PENDING)
+    schedule_type = Column(String(10), default="一般流程")
 
 class User(Base):
     __tablename__ = 'users'

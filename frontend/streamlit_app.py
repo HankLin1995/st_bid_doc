@@ -17,11 +17,22 @@ if "show_info" not in st.session_state:
     msg_content()
     st.session_state.show_info = True
 
+if "test_mode" not in st.session_state:
+    st.session_state.test_mode = False
+
+try:
+    if st.query_params["test_mode"] == "1":
+        st.session_state.test_mode =True
+
+except:
+    pass
+
 # 執行LINE登入再進入主要畫面
 
 bidform_page=st.Page("view_bidform.py",title="預算書審查",icon=":material/contract:",default=True)
+project_page=st.Page("view_project.py",title="案件總覽",icon=":material/dashboard:")
 biddoc_page=st.Page("view_biddoc.py",title="投標文件",icon=":material/assignment:")
 
-pg=st.navigation([bidform_page,biddoc_page])
+pg=st.navigation([bidform_page,project_page,biddoc_page])
 
 pg.run()

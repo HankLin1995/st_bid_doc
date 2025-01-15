@@ -29,28 +29,30 @@ def get_project_by_id(project_id):
 def select_project():
 
     projects = get_projects()
+
+    project_df=pd.DataFrame(projects)
     
     if len(projects) == 0:
         st.error("目前沒有任何專案")
         return
 
     # 將專案資料轉換為更好的顯示格式
-    display_projects = []
-    for p in projects:
-        display_projects.append({
-            "ID": p["id"],
-            "工程名稱": p["project_name"],
-            "工程編號": p["project_number"],
-            "分處": p["branch_office"],
-            "核定金額": f"{p['approved_amount']:,.0f}",
-            "工期": p["duration"],
-            "建立時間": datetime.fromisoformat(p['created_at']).strftime('%Y-%m-%d')
-        })
+    # display_projects = []
+    # for p in projects:
+    #     display_projects.append({
+    #         "ID": p["id"],
+    #         "工程名稱": p["project_name"],
+    #         "工程編號": p["project_number"],
+    #         "分處": p["branch_office"],
+    #         "核定金額": f"{p['approved_amount']:,.0f}",
+    #         "工期": p["duration"],
+    #         "建立時間": datetime.fromisoformat(p['created_at']).strftime('%Y-%m-%d')
+    #     })
     
     # 創建可選擇的資料表
-    project_df = pd.DataFrame(display_projects)
-    project_name=st.sidebar.selectbox("請選擇要載入的工程", project_df["工程名稱"])    
-    project_id = projects[project_df[project_df["工程名稱"] == project_name].index[0]]["id"]
+    # project_df = pd.DataFrame(display_projects)
+    project_name=st.sidebar.selectbox("請選擇要載入的工程", project_df["project_name"])    
+    project_id = projects[project_df[project_df["project_name"] == project_name].index[0]]["id"]
 
     if st.sidebar.button("載入工程", key="load_project"):
         st.session_state.project_data = get_project_by_id(project_id)
@@ -277,7 +279,10 @@ with st.container(border=True):
         else:
             work_days=st.number_input("工期", min_value=1, value=1)
 
-    mode2=st.radio("開工型式",["一般流程","指定開工日","逕流廢汙水"])
+    if 'project_data' in st.session_state:
+        mode2=st.radio("開工型式",["一般流程","指定開工日","逕流廢汙水"],index=["一般流程","指定開工日","逕流廢汙水"].index(project_data['schedule_type']))
+    else:
+        mode2=st.radio("開工型式",["一般流程","指定開工日","逕流廢汙水"])
 
     start_date=None
 

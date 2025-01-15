@@ -32,9 +32,11 @@ def load_test_data():
         "outsourcing_items": ["瀝青混凝土鋪面", "控制性低強度回填材料(CLSM)"]
     }
 
-# if st.sidebar.button("載入測試數據"):
-#     st.session_state.test_data = load_test_data()
-#     st.rerun()
+if st.session_state.test_mode==True:
+
+    if st.sidebar.button("載入測試數據"):
+        st.session_state.test_data = load_test_data()
+        st.rerun()
 
 st.markdown("### 🔷預算書審查")
 
@@ -79,7 +81,6 @@ with st.container(border=True):
         value=st.session_state.test_data.get("duration", 1) if 'test_data' in st.session_state else 1)
     construction_content = st.text_input("施工內容", 
         value=st.session_state.test_data.get("construction_content", "") if 'test_data' in st.session_state else "")
-
 # with col2:
 with st.container(border=True):
     st.markdown("#### 👜經費相關")
@@ -97,6 +98,8 @@ with st.container(border=True):
         ["瀝青混凝土鋪面", "控制性低強度回填材料(CLSM)", "級配粒料基層", "低密度再生透水混凝土"],
         default=default_items
     )
+    schedule_type=st.radio("開工型式",options=["一般流程","指定開工日","逕流廢汙水"])
+    # st.write(schedule_type)
 
 # 送出和清除按鈕
 col_submit1, col_submit2 = st.columns([3, 1])
@@ -118,7 +121,8 @@ with col_submit1:
                 "supervisor_personnel": supervisor_personnel,
                 "outsourcing_items": ",".join(outsourcing_items),
                 "procurement_type": "工程",  # 預設為工程
-                "year": year  # 預設為當前年度
+                "year": year,  # 預設為當前年度
+                "schedule_type": schedule_type
             }
             
             result = create_project(project_data)

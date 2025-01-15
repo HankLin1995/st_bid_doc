@@ -7,3 +7,5 @@ OpenCC
 opencc-python-reimplemented
 python-dotenv
 line-bot-sdk
+pandas
+plotly
