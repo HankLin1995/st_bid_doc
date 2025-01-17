@@ -54,7 +54,7 @@ with st.container(border=True):
             value=st.session_state.test_data.get("outsourcing_company", "") if 'test_data' in st.session_state else "",
             placeholder="OOO工程顧問公司")
 
-    year = st.number_input("民國年",min_value=datetime.now().year-1911)
+    year = st.number_input("民國年",min_value=113)
 
     branch_office = st.selectbox("分處名稱",
         options=["斗六分處","虎尾分處","西螺分處","北港分處","林內分處","本處"],
@@ -77,7 +77,7 @@ with st.container(border=True):
         value=st.session_state.test_data.get("project_number", "") if 'test_data' in st.session_state else "")
     location = st.text_input("工程地點", 
         value=st.session_state.test_data.get("location", "") if 'test_data' in st.session_state else "")
-    duration = st.number_input("工期", min_value=1, 
+    duration = st.number_input("工期(天數)", min_value=1, 
         value=st.session_state.test_data.get("duration", 1) if 'test_data' in st.session_state else 1)
     construction_content = st.text_input("施工內容", 
         value=st.session_state.test_data.get("construction_content", "") if 'test_data' in st.session_state else "")
