@@ -246,7 +246,7 @@ with st.container(border=True):
 
     if 'project_data' in st.session_state:
         funding_source = st.text_input("經費來源", value=project_data['funding_source'])
-        budget = st.text_input("預算金額", value=str(project_data['approved_amount']))
+        budget = st.text_input("預算金額", value=str(project_data['total_budget']))
     else:
         funding_source = st.text_input("經費來源", value="固定資產建設改良擴充-土地改良物(國庫撥款)")
         budget = st.text_input("預算金額", value="0")
