@@ -130,7 +130,7 @@ with col_submit1:
                 st.success("工程創建成功！")
                 if 'test_data' in st.session_state:
                     del st.session_state.test_data
-                st.rerun()
+                # st.rerun()
             else:
                 st.error("創建失敗，請檢查資料是否正確")
                 
