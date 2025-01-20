@@ -1,5 +1,6 @@
 
 from docx import Document
+from docx.shared import RGBColor
 
 def replace_text_within_percent_signs(file_path, replace_dict):
     
@@ -55,7 +56,8 @@ def replace_in_paragraph(paragraph, replace_dict):
         first_run.font.underline = original_run.font.underline
         if hasattr(original_run.font, 'color'):
             first_run.font.color.rgb = original_run.font.color.rgb
-
+        # Set the font color to red
+        first_run.font.color.rgb = RGBColor(255, 0, 0)  # Red color
 # check if the file content is all replaced (contains no %%)
 
 def check_replaced(file_path, replace_dict):
