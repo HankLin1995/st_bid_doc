@@ -251,7 +251,11 @@ with st.container(border=True):
         funding_source = st.text_input("經費來源", value="固定資產建設改良擴充-土地改良物(國庫撥款)")
         budget = st.text_input("預算金額", value="0")
 
-    formatted_budget = "{:,}".format(int(budget))
+    try:
+        budget_value = float(budget)
+        formatted_budget = "{:,.0f}".format(budget_value)  # Format as a string with commas
+    except ValueError:
+        formatted_budget = "0"  # If the input is not a valid number, display 0
 
     bid_bond=st.number_input("押標金金額",value=0)
     bid_bond_chinese=num_to_chinese(bid_bond)
