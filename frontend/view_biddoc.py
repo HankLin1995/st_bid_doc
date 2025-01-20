@@ -251,6 +251,8 @@ with st.container(border=True):
         funding_source = st.text_input("經費來源", value="固定資產建設改良擴充-土地改良物(國庫撥款)")
         budget = st.text_input("預算金額", value="0")
 
+    formatted_budget = "{:,}".format(int(budget))
+
     bid_bond=st.number_input("押標金金額",value=0)
     bid_bond_chinese=num_to_chinese(bid_bond)
 
@@ -302,7 +304,7 @@ data = {
     '押標金金額中文': bid_bond_chinese,
     '廠商資格': contractor_qual,
     '工程地點': location,
-    '預算金額': budget,
+    '預算金額': formatted_budget,
     '採購金額上限': purchase_limit if mode =="開口契約" else None,
     '採購級距': purchase_level,
     '履約保證金': performance_bond,
