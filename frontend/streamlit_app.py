@@ -1,6 +1,6 @@
 import streamlit as st
 
-VERSION_NUMBER = "V2.0.0"
+VERSION_NUMBER = "V2.0.1"
 
 @st.dialog("⭕系統公告")
 def msg_content():
