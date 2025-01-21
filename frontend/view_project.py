@@ -4,6 +4,8 @@ import pandas as pd
 from datetime import datetime
 import os
 from dotenv import load_dotenv
+import plotly.express as px
+import plotly.graph_objects as go
 
 load_dotenv()
 
@@ -58,8 +60,7 @@ if projects:
         if selected_office != "全部":
             df = df[df['branch_office'] == selected_office]
 
-    # Display projects in a table with custom formatting
-
+    # Display project table
     st.dataframe(
         df[[
             'project_number', 'project_name', 'branch_office', 
@@ -79,78 +80,76 @@ if projects:
         hide_index=True
     )
 
-    # select project
-
+    # Statistical Analysis Section
     st.markdown("---")
+    st.markdown("### 📈 統計分析")
 
-    st.markdown("### 🔍 專案詳細資訊")
+    # Create two columns for charts
+    col1, col2 = st.columns(2)
 
-    # Project selection
-    selected_project = st.selectbox(
-        "選擇專案",
-        options=df['project_number'].tolist(),
-        format_func=lambda x: f"{x} - {df[df['project_number']==x]['project_name'].iloc[0]}"
+    with col1:
+        # Project Status Distribution
+        status_counts = df['status'].value_counts()
+        fig_status = px.pie(
+            values=status_counts.values,
+            names=status_counts.index,
+            title='工程案件狀態分布'
         )
+        st.plotly_chart(fig_status)
 
-    with st.expander("詳細資訊"):
+    with col2:
+        # Budget Distribution by Year
+        yearly_budget = df.groupby('year')['total_budget'].sum().reset_index()
+        fig_budget = px.bar(
+            yearly_budget,
+            x='year',
+            y='total_budget',
+            title='年度預算分布',
+            labels={'year': '年度', 'total_budget': '總預算'}
+        )
+        fig_budget.update_traces(texttemplate='NT$ %{y:,.0f}', textposition='outside')
+        st.plotly_chart(fig_budget)
 
-        if selected_project:
-            project_data = df[df['project_number'] == selected_project].iloc[0]
+    # Project Timeline Analysis
+    st.markdown("### 📅 工期分析")
+    
+    # Calculate average duration by year
+    avg_duration = df.groupby('year')['duration'].mean().reset_index()
+    fig_duration = go.Figure()
+    fig_duration.add_trace(go.Scatter(
+        x=avg_duration['year'],
+        y=avg_duration['duration'],
+        mode='lines+markers+text',
+        name='平均工期',
+        text=avg_duration['duration'].round(1),
+        textposition='top center'
+    ))
+    fig_duration.update_layout(
+        title='年度平均工期(天數)',
+        xaxis_title='年度',
+        yaxis_title='平均天數'
+    )
+    st.plotly_chart(fig_duration)
 
-            with st.container():
-                st.markdown("#### 📋 基本資訊")
-                cols1 = st.columns(3)
-                with cols1[0]:
-                    st.markdown(" 🔹 **年度**")
-                    st.markdown(f"{project_data['year']}")
-                    st.markdown(" 🔹 **標案案號**")
-                    st.markdown(f"{project_data['project_number']}")
-                
-                with cols1[1]:
-                    st.markdown(" 🔹 **工程名稱**")
-                    st.markdown(f"{project_data['project_name']}")
-                    st.markdown(" 🔹 **工期**")
-                    st.markdown(f"{project_data['duration']} 天")
-                
-                with cols1[2]:
-                    st.markdown(" 🔹 **工程地點**")
-                    st.markdown(f"{project_data['location']}")
-                
-                st.markdown(" 🔹 **工程內容**")
-                st.markdown(f"{project_data['construction_content']}")
+    # Key Metrics
+    st.markdown("### 🎯 重要指標")
+    metric1, metric2, metric3, metric4 = st.columns(4)
+    
+    with metric1:
+        total_projects = len(df)
+        st.metric("總案件數", total_projects)
+    
+    with metric2:
+        total_budget = df['total_budget'].sum()
+        st.metric("總預算", format_currency(total_budget))
+    
+    with metric3:
+        avg_duration = df['duration'].mean()
+        st.metric("平均工期", f"{avg_duration:.1f} 天")
+    
+    with metric4:
+        completed_rate = (df['status'] == '已完工').mean() * 100
+        st.metric("完工率", f"{completed_rate:.1f}%")
 
-                st.markdown("---")
-
-                st.markdown("#### 💰 預算資訊")
-                cols2 = st.columns(4)
-                with cols2[0]:
-                    st.markdown(" 🔹 **經費來源**")
-                    st.markdown(f"{project_data['funding_source']}")
-                with cols2[1]:
-                    st.markdown(" 🔹 **核定金額**")
-                    st.markdown(f"{format_currency(project_data['approved_amount'])}")
-                with cols2[2]:
-                    st.markdown(" 🔹 **預算金額**")
-                    st.markdown(f"{format_currency(project_data['total_budget'])}")
-                with cols2[3]:
-                    st.markdown(" 🔹 **契約金額**")
-                    st.markdown(f"{format_currency(project_data['contract_amount'])}")
-
-                st.markdown("---")
-
-                st.markdown("#### 👥 監造資訊")
-                cols3 = st.columns(4)
-                with cols3[0]:
-                    st.markdown(" 🔹 **分處**")
-                    st.markdown(f"{project_data['branch_office']}")
-                with cols3[1]:
-                    st.markdown(" 🔹 **主辦監造**")
-                    st.markdown(f"{project_data['supervisor']}")
-                with cols3[2]:
-                    st.markdown(" 🔹 **監造人員**")
-                    st.markdown(f"{project_data['supervisor_personnel']}")
-                with cols3[3]:
-                    st.markdown(" 🔹 **狀態**")
-                    st.markdown(f"{project_data['status']}")
 else:
     st.info("目前沒有工程案件資料")

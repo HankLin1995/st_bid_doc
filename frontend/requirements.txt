@@ -8,4 +8,4 @@ opencc-python-reimplemented
 python-dotenv
 line-bot-sdk
 pandas
-plotly
+plotly>=5.18.0

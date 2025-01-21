@@ -1,6 +1,6 @@
 import streamlit as st
 
-VERSION_NUMBER = "V2.0.0"
+VERSION_NUMBER = "V2.1.1"
 
 @st.dialog("⭕系統公告")
 def msg_content():
@@ -31,8 +31,13 @@ except:
 
 bidform_page=st.Page("view_bidform.py",title="預算書審查",icon=":material/contract:",default=True)
 project_page=st.Page("view_project.py",title="案件總覽",icon=":material/dashboard:")
+project_detail_page=st.Page("view_project_detail.py",title="案件詳細資訊",icon=":material/dashboard:")
 biddoc_page=st.Page("view_biddoc.py",title="投標文件",icon=":material/assignment:")
 
-pg=st.navigation([bidform_page,project_page,biddoc_page])
+pg=st.navigation({
+    "預算管理":[bidform_page],
+    "專案管理":[project_page,project_detail_page],
+    "招標管理":[biddoc_page]
+})
 
 pg.run()
