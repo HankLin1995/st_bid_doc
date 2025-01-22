@@ -24,9 +24,9 @@ class Project(Base):
     project_name = Column(String(50))
     project_number = Column(String(20), unique=True, index=True)
     funding_source = Column(String(50))
-    approved_amount = Column(Float)
-    total_budget = Column(Float)
-    contract_amount = Column(Float)
+    approved_amount = Column(Integer)
+    total_budget = Column(Integer)
+    contract_amount = Column(Integer)
     duration = Column(Integer)
     construction_content = Column(String(255))
     location = Column(String(20))
@@ -38,6 +38,8 @@ class Project(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     status = Column(SQLAlchemyEnum(ProjectStatus), default=ProjectStatus.PENDING)
     schedule_type = Column(String(10), default="一般流程")
+    bid_bond= Column(Integer)
+    performance_bond= Column(Integer)
 
 class User(Base):
     __tablename__ = 'users'
