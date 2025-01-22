@@ -92,7 +92,7 @@ def get_contractor(contract_money: float) -> str:
     elif 6000000 <= m < 7200000:
         f = "設立於雲林縣或毗鄰縣市並依營造業法規定辦理資本額增資之土木包工業，或丙等以上綜合營造業"
     elif m <= 22500000:
-        f = "丙等(含)綜合營造業以上"
+        f = "丙等(含)以上綜合營造業"
     elif 22500000 < m <= 27000000:
         f = "依營造業法規定辦理資本額增資之丙等綜合營造業，或乙等以上綜合營造業"
     elif m <= 75000000:
@@ -178,7 +178,7 @@ def get_employ_type(qualification: str):
         contractor_a3 = True  # 丙等 or higher
         contractor_b = True  # 土包
         
-    elif qualification == "丙等(含)綜合營造業以上":
+    elif qualification == "丙等(含)以上綜合營造業":
         contractor_a = True
         contractor_a3 = True  # 丙等 or higher
     
