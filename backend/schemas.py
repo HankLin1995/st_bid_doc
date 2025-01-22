@@ -20,9 +20,16 @@ class ProjectBase(BaseModel):
     # procurement_type: ProcurementType
     year: int
     schedule_type:str
+    bid_bond: Optional[float] = None
+    performance_bond: Optional[float] = None
 
 class ProjectCreate(ProjectBase):
     pass
+
+class ProjectUpdateBond(BaseModel):
+    id: int
+    bid_bond: Optional[float] = None
+    performance_bond: Optional[float] = None
 
 class ProjectUpdate(ProjectBase):
     status: Optional[ProjectStatus] = None

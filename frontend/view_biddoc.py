@@ -2,8 +2,8 @@ import streamlit as st
 import os
 from docx_utils import replace_text_within_percent_signs
 import requests
-import cn2an
-import opencc
+# import cn2an
+# import opencc
 import io
 import zipfile
 import shutil
@@ -11,6 +11,7 @@ from datetime import datetime
 import pandas as pd
 import time
 from dotenv import load_dotenv
+from utils import get_contractor, get_cost_range,num_to_chinese
 
 load_dotenv()
 
@@ -54,20 +55,20 @@ def select_project():
     project_name=st.sidebar.selectbox("請選擇要載入的工程", project_df["project_name"])    
     project_id = projects[project_df[project_df["project_name"] == project_name].index[0]]["id"]
 
-    if st.sidebar.button("載入工程", key="load_project"):
+    if st.sidebar.button(":star:載入工程", key="load_project"):
         st.session_state.project_data = get_project_by_id(project_id)
-        st.success("工程載入成功！")
+        st.sidebar.success("工程載入成功！")
         time.sleep(1)
         st.rerun()
 
-def num_to_chinese(amount):
+# def num_to_chinese(amount):
 
-    if amount==0: return "免收"
+#     if amount==0: return "免收"
 
-    cc = opencc.OpenCC('s2t')  # 's2t' 表示简体转繁体
-    simplified_text=cn2an.an2cn(str(amount),"up")
-    simplified_text= simplified_text.replace("叁","參")
-    return cc.convert(simplified_text)+'元整'
+#     cc = opencc.OpenCC('s2t')  # 's2t' 表示简体转繁体
+#     simplified_text=cn2an.an2cn(str(amount),"up")
+#     simplified_text= simplified_text.replace("叁","參")
+#     return cc.convert(simplified_text)+'元整'
 
 def convert_data(data):
     for key in data:
@@ -84,42 +85,42 @@ def deal_bool(data):
     else:
         return '□'  # 白色方格
     
-def get_contractor(contract_money: float) -> str:
-    m = contract_money
+# def get_contractor(contract_money: float) -> str:
+#     m = contract_money
 
-    if m < 6000000:
-        f = "設立於雲林縣或毗鄰縣市之土木包工業，或丙等以上綜合營造業"
-    elif 6000000 <= m < 7200000:
-        f = "設立於雲林縣或毗鄰縣市並依營造業法規定辦理資本額增資之土木包工業，或丙等以上綜合營造業"
-    elif m <= 22500000:
-        f = "丙等(含)綜合營造業以上"
-    elif 22500000 < m <= 27000000:
-        f = "依營造業法規定辦理資本額增資之丙等綜合營造業，或乙等以上綜合營造業"
-    elif m <= 75000000:
-        f = "乙等(含)綜合營造業以上"
-    elif 75000000 < m <= 90000000:
-        f = "依營造業法規定辦理資本額增資之乙等綜合營造業，或甲等以上綜合營造業"
-    else:
-        f = "甲等(含)綜合營造業以上"
+#     if m < 6000000:
+#         f = "設立於雲林縣或毗鄰縣市之土木包工業，或丙等以上綜合營造業"
+#     elif 6000000 <= m < 7200000:
+#         f = "設立於雲林縣或毗鄰縣市並依營造業法規定辦理資本額增資之土木包工業，或丙等以上綜合營造業"
+#     elif m <= 22500000:
+#         f = "丙等(含)綜合營造業以上"
+#     elif 22500000 < m <= 27000000:
+#         f = "依營造業法規定辦理資本額增資之丙等綜合營造業，或乙等以上綜合營造業"
+#     elif m <= 75000000:
+#         f = "乙等(含)綜合營造業以上"
+#     elif 75000000 < m <= 90000000:
+#         f = "依營造業法規定辦理資本額增資之乙等綜合營造業，或甲等以上綜合營造業"
+#     else:
+#         f = "甲等(含)綜合營造業以上"
 
-    result = f
+#     result = f
 
-    # Check specific contract money cases and add a special prefix
-    if m in [6000000, 7200000, 22500000, 27000000, 75000000, 90000000]:
-        result = "!!!!!!!!!!" + f
+#     # Check specific contract money cases and add a special prefix
+#     if m in [6000000, 7200000, 22500000, 27000000, 75000000, 90000000]:
+#         result = "!!!!!!!!!!" + f
 
-    return result
+#     return result
 
-def get_cost_range(contract_money: float) -> str:
+# def get_cost_range(contract_money: float) -> str:
 
-    if contract_money < 150000:
-        return "公告金額十分之一之採購"
-    elif contract_money < 1500000:
-        return "未達公告金額而逾公告金額十分之一之採購"
-    elif contract_money < 50000000:
-        return "公告金額以上未達查核金額之採購"
-    else:
-        return "查核金額以上未達巨額之採購"
+#     if contract_money < 150000:
+#         return "公告金額十分之一之採購"
+#     elif contract_money < 1500000:
+#         return "未達公告金額而逾公告金額十分之一之採購"
+#     elif contract_money < 50000000:
+#         return "公告金額以上未達查核金額之採購"
+#     else:
+#         return "查核金額以上未達巨額之採購"
 
 def get_work_type(work_type, work_days):
     general_box = False
@@ -210,7 +211,7 @@ def get_employ_type(qualification: str):
 
 # msg_content()
 
-my_pass=st.sidebar.text_input("請輸入密碼",type="password")
+my_pass=st.sidebar.text_input("請輸入密碼",type="password",key="view_biddoc_password")
 
 if my_pass!=os.getenv("PASSWORD"):
     st.stop()
@@ -259,9 +260,11 @@ with st.container(border=True):
 
     bid_bond=st.number_input("押標金金額",value=0)
     bid_bond_chinese=num_to_chinese(bid_bond)
+    st.write(f"押標金金額為:{bid_bond_chinese}")
 
     performance_bond=st.number_input("履約保證金",value=0)
     performance_bond_chinese=num_to_chinese(performance_bond)
+    st.write(f"履約保證金為:{performance_bond_chinese}")
 
     if mode=="開口契約":
         purchase_limit=st.text_input("採購金額上限",value="0")
