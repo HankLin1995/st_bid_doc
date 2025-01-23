@@ -26,11 +26,11 @@ services:
     env_file:
       - .env
 
-  # cloudflared:
-  #   image: cloudflare/cloudflared:latest
-  #   command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TUNNEL_TOKEN}
-  #   networks:
-  #     - docx_network
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TUNNEL_TOKEN}
+    networks:
+      - docx_network
 
 networks:
   docx_network:
