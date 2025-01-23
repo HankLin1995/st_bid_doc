@@ -1,12 +1,11 @@
 import streamlit as st
 
-VERSION_NUMBER = "V2.2.0"
+VERSION_NUMBER = "V2.2.1"
 
 @st.dialog("⭕系統公告")
 def msg_content():
     st.subheader("®️作者: HankLin") 
     st.write("這是用於產製招標文件的工具")
-    # st.markdown("☕工程招標文件")
     st.markdown("---")
     st.write("版本:"+VERSION_NUMBER )
 
