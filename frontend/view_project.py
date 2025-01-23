@@ -89,11 +89,11 @@ if projects:
 
     with col1:
         # Project Status Distribution
-        status_counts = df['status'].value_counts()
+        status_counts = df['branch_office'].value_counts()
         fig_status = px.pie(
             values=status_counts.values,
             names=status_counts.index,
-            title='工程案件狀態分布'
+            title='工程案件分布'
         )
         st.plotly_chart(fig_status)
 
@@ -110,46 +110,46 @@ if projects:
         fig_budget.update_traces(texttemplate='NT$ %{y:,.0f}', textposition='outside')
         st.plotly_chart(fig_budget)
 
-    # Project Timeline Analysis
-    st.markdown("### 📅 工期分析")
+    # # Project Timeline Analysis
+    # st.markdown("### 📅 工期分析")
     
-    # Calculate average duration by year
-    avg_duration = df.groupby('year')['duration'].mean().reset_index()
-    fig_duration = go.Figure()
-    fig_duration.add_trace(go.Scatter(
-        x=avg_duration['year'],
-        y=avg_duration['duration'],
-        mode='lines+markers+text',
-        name='平均工期',
-        text=avg_duration['duration'].round(1),
-        textposition='top center'
-    ))
-    fig_duration.update_layout(
-        title='年度平均工期(天數)',
-        xaxis_title='年度',
-        yaxis_title='平均天數'
-    )
-    st.plotly_chart(fig_duration)
+    # # Calculate average duration by year
+    # avg_duration = df.groupby('year')['duration'].mean().reset_index()
+    # fig_duration = go.Figure()
+    # fig_duration.add_trace(go.Scatter(
+    #     x=avg_duration['year'],
+    #     y=avg_duration['duration'],
+    #     mode='lines+markers+text',
+    #     name='平均工期',
+    #     text=avg_duration['duration'].round(1),
+    #     textposition='top center'
+    # ))
+    # fig_duration.update_layout(
+    #     title='年度平均工期(天數)',
+    #     xaxis_title='年度',
+    #     yaxis_title='平均天數'
+    # )
+    # st.plotly_chart(fig_duration)
 
-    # Key Metrics
-    st.markdown("### 🎯 重要指標")
-    metric1, metric2, metric3, metric4 = st.columns(4)
+    # # Key Metrics
+    # st.markdown("### 🎯 重要指標")
+    # metric1, metric2, metric3, metric4 = st.columns(4)
     
-    with metric1:
-        total_projects = len(df)
-        st.metric("總案件數", total_projects)
+    # with metric1:
+    #     total_projects = len(df)
+    #     st.metric("總案件數", total_projects)
     
-    with metric2:
-        total_budget = df['total_budget'].sum()
-        st.metric("總預算", format_currency(total_budget))
+    # with metric2:
+    #     total_budget = df['total_budget'].sum()
+    #     st.metric("總預算", format_currency(total_budget))
     
-    with metric3:
-        avg_duration = df['duration'].mean()
-        st.metric("平均工期", f"{avg_duration:.1f} 天")
+    # with metric3:
+    #     avg_duration = df['duration'].mean()
+    #     st.metric("平均工期", f"{avg_duration:.1f} 天")
     
-    with metric4:
-        completed_rate = (df['status'] == '已完工').mean() * 100
-        st.metric("完工率", f"{completed_rate:.1f}%")
+    # with metric4:
+    #     completed_rate = (df['status'] == '已完工').mean() * 100
+    #     st.metric("完工率", f"{completed_rate:.1f}%")
 
 else:
     st.info("目前沒有工程案件資料")

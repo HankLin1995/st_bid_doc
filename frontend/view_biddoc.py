@@ -260,11 +260,11 @@ with st.container(border=True):
 
     bid_bond=st.number_input("押標金金額",value=0)
     bid_bond_chinese=num_to_chinese(bid_bond)
-    st.write(f"押標金金額為:{bid_bond_chinese}")
+    # st.write(f"押標金金額為:{bid_bond_chinese}")
 
     performance_bond=st.number_input("履約保證金",value=0)
     performance_bond_chinese=num_to_chinese(performance_bond)
-    st.write(f"履約保證金為:{performance_bond_chinese}")
+    # st.write(f"履約保證金為:{performance_bond_chinese}")
 
     if mode=="開口契約":
         purchase_limit=st.text_input("採購金額上限",value="0")

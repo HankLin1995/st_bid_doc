@@ -8,9 +8,9 @@ class ProjectBase(BaseModel):
     project_name: str
     project_number: str
     funding_source: str
-    approved_amount: float
-    total_budget: float
-    contract_amount: float
+    approved_amount: int
+    total_budget: int
+    contract_amount: int
     duration: int
     construction_content: str
     location: str
@@ -20,16 +20,16 @@ class ProjectBase(BaseModel):
     # procurement_type: ProcurementType
     year: int
     schedule_type:str
-    bid_bond: Optional[float] = None
-    performance_bond: Optional[float] = None
+    bid_bond: Optional[int] = None
+    performance_bond: Optional[int] = None
 
 class ProjectCreate(ProjectBase):
     pass
 
 class ProjectUpdateBond(BaseModel):
     id: int
-    bid_bond: Optional[float] = None
-    performance_bond: Optional[float] = None
+    bid_bond: Optional[int] = None
+    performance_bond: Optional[int] = None
 
 class ProjectUpdate(ProjectBase):
     status: Optional[ProjectStatus] = None

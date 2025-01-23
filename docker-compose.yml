@@ -31,7 +31,7 @@ services:
     command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TUNNEL_TOKEN}
     networks:
       - docx_network
-
+      
 networks:
   docx_network:
     driver: bridge
