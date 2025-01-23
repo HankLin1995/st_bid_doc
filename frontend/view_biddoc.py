@@ -179,7 +179,7 @@ def get_employ_type(qualification: str):
         contractor_a3 = True  # 丙等 or higher
         contractor_b = True  # 土包
         
-    elif qualification == "丙等(含)以上綜合營造業":
+    elif qualification == "丙等以上綜合營造業":
         contractor_a = True
         contractor_a3 = True  # 丙等 or higher
     
@@ -188,7 +188,7 @@ def get_employ_type(qualification: str):
         contractor_a2 = True
         contractor_a3 = True  # 乙等 or higher
         
-    elif qualification == "乙等(含)以上綜合營造業":
+    elif qualification == "乙等以上綜合營造業":
         contractor_a = True
         contractor_a2 = True  # 乙等 or higher
 
@@ -197,7 +197,7 @@ def get_employ_type(qualification: str):
         contractor_a1 = True
         contractor_a2 = True
     
-    elif qualification == "甲等(含)以上綜合營造業":
+    elif qualification == "甲等綜合營造業":
         contractor_a = True
         contractor_a1 = True
 
@@ -282,7 +282,7 @@ with st.container(border=True):
 
     st.markdown("#### 🍰資格及進度")
     contractor_qual=get_contractor(float(budget))
-    contractor_qual=st.selectbox("廠商資格",options=["設立於雲林縣或毗鄰縣市之土木包工業，或丙等以上綜合營造業","設立於雲林縣或毗鄰縣市並依營造業法規定辦理資本額增資之土木包工業，或丙等以上綜合營造業","丙等(含)以上綜合營造業","依營造業法規定辦理資本額增資之丙等綜合營造業，或乙等以上綜合營造業","乙等(含)以上綜合營造業","依營造業法規定辦理資本額增資之乙等綜合營造業，或甲等以上綜合營造業","甲等(含)以上綜合營造業"],index=["設立於雲林縣或毗鄰縣市之土木包工業，或丙等以上綜合營造業","設立於雲林縣或毗鄰縣市並依營造業法規定辦理資本額增資之土木包工業，或丙等以上綜合營造業","丙等(含)以上綜合營造業","依營造業法規定辦理資本額增資之丙等綜合營造業，或乙等以上綜合營造業","乙等(含)以上綜合營造業","依營造業法規定辦理資本額增資之乙等綜合營造業，或甲等以上綜合營造業","甲等(含)以上綜合營造業"].index(contractor_qual))
+    contractor_qual=st.selectbox("廠商資格",options=["設立於雲林縣或毗鄰縣市之土木包工業，或丙等以上綜合營造業","設立於雲林縣或毗鄰縣市並依營造業法規定辦理資本額增資之土木包工業，或丙等以上綜合營造業","丙等以上綜合營造業","依營造業法規定辦理資本額增資之丙等綜合營造業，或乙等以上綜合營造業","乙等以上綜合營造業","依營造業法規定辦理資本額增資之乙等綜合營造業，或甲等以上綜合營造業","甲等綜合營造業"],index=["設立於雲林縣或毗鄰縣市之土木包工業，或丙等以上綜合營造業","設立於雲林縣或毗鄰縣市並依營造業法規定辦理資本額增資之土木包工業，或丙等以上綜合營造業","丙等以上綜合營造業","依營造業法規定辦理資本額增資之丙等綜合營造業，或乙等以上綜合營造業","乙等以上綜合營造業","依營造業法規定辦理資本額增資之乙等綜合營造業，或甲等以上綜合營造業","甲等綜合營造業"].index(contractor_qual))
 
     if mode=="開口契約":
         work_days=0
