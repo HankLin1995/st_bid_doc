@@ -119,7 +119,7 @@ def read_tender_document(file_path, replacements=None, output_file=None):
             print("\n錯誤：仍有未被替換的項目：")
             for pattern in remaining_patterns:
                 print(f"- {pattern}")
-            return
+            return 
             
         # 如果指定了輸出文件，將處理後的內容保存到新文件
         if output_file:

@@ -22,6 +22,7 @@ class ProjectBase(BaseModel):
     schedule_type:str
     bid_bond: Optional[int] = None
     performance_bond: Optional[int] = None
+    outsourcing_company: Optional[str] = None
 
 class ProjectCreate(ProjectBase):
     pass

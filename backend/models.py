@@ -40,6 +40,7 @@ class Project(Base):
     schedule_type = Column(String(10), default="一般流程")
     bid_bond= Column(Integer)
     performance_bond= Column(Integer)
+    outsourcing_company= Column(String(50))
 
 class User(Base):
     __tablename__ = 'users'

@@ -237,7 +237,11 @@ with st.container(border=True):
     else:
         year = st.text_input("年度", value="114")
         project_name = st.text_input("標案名稱", value="OOOO改善工程")
-        project_number = st.text_input("標案編號")
+        project_number = st.text_input("標案編號",placeholder="YL114OOO")
+
+        if '雲林' in project_number:
+            st.error("請將標案編號中的「雲林」改為「YL」")
+
         location = st.text_input("工程地點")
 
 with st.container(border=True):

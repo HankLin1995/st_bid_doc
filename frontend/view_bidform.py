@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 from datetime import datetime
 from typing import List
+import time
 
 # API 配置
 API_URL = "http://backend:8000"
@@ -122,15 +123,18 @@ with col_submit1:
                 "outsourcing_items": ",".join(outsourcing_items),
                 "procurement_type": "工程",  # 預設為工程
                 "year": year,  # 預設為當前年度
-                "schedule_type": schedule_type
+                "schedule_type": schedule_type,
+                "outsourcing_company": outsourcing_company
             }
             
             result = create_project(project_data)
             if result:
                 st.success("工程創建成功！")
+                st.balloons()
+                time.sleep(2)
                 if 'test_data' in st.session_state:
                     del st.session_state.test_data
-                # st.rerun()
+                st.rerun()
             else:
                 st.error("創建失敗，請檢查資料是否正確")
                 
