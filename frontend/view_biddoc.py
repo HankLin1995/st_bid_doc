@@ -364,6 +364,19 @@ submitted = st.button("產製招標文件",type="primary")
 
 if submitted:
 
+    # call API to store bid_bond and performance_bond
+
+    if 'project_data' in st.session_state:
+
+        response = requests.put(f"{API_URL}/projects/{project_data['id']}/bonds", json={
+            "id": project_data['id'],
+            "bid_bond": bid_bond,
+            "performance_bond": performance_bond
+        })
+
+        if response.status_code != 200:
+            st.error("無法儲存押標金及履約保證金")
+
     if not os.path.exists("src"):
         os.makedirs("src")
     if not os.path.exists(doc_folder):
