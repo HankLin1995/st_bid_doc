@@ -38,9 +38,9 @@ class Project(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     status = Column(SQLAlchemyEnum(ProjectStatus), default=ProjectStatus.PENDING)
     schedule_type = Column(String(10), default="一般流程")
-    bid_bond= Column(Integer)
-    performance_bond= Column(Integer)
-    outsourcing_company= Column(String(50))
+    bid_bond= Column(Integer, default=0)
+    performance_bond= Column(Integer, default=0)
+    outsourcing_company= Column(String(50), default="無")
 
 class User(Base):
     __tablename__ = 'users'
