@@ -4,6 +4,7 @@ import pandas as pd
 import os
 from dotenv import load_dotenv
 from docx_utils import read_tender_document
+import time
 
 load_dotenv()
 
@@ -58,37 +59,41 @@ with tab1:
             st.markdown("#### 📋 基本資訊")
             cols1 = st.columns(3)
             with cols1[0]:
-                st.markdown(" 🔹 **年度**")
                 if edit_mode:
                     year = st.text_input("年度", value=project_data['year'])
                 else:
+                    st.markdown(" 🔹 **年度**")
                     st.markdown(f"{project_data['year']}")
+
                 st.markdown(" 🔹 **標案案號**")
                 st.markdown(f"{project_data['project_number']}")
             
             with cols1[1]:
-                st.markdown(" 🔹 **工程名稱**")
+
                 if edit_mode:
                     project_name = st.text_input("工程名稱", value=project_data['project_name'])
                 else:
+                    st.markdown(" 🔹 **工程名稱**")
                     st.markdown(f"{project_data['project_name']}")
-                st.markdown(" 🔹 **工期**")
+
                 if edit_mode:
                     duration = st.number_input("工期(天)", value=int(project_data['duration']))
                 else:
+                    st.markdown(" 🔹 **工期**")
                     st.markdown(f"{project_data['duration']} 天")
             
             with cols1[2]:
-                st.markdown(" 🔹 **工程地點**")
+
                 if edit_mode:
                     location = st.text_input("工程地點", value=project_data['location'])
                 else:
+                    st.markdown(" 🔹 **工程地點**"  )
                     st.markdown(f"{project_data['location']}")
-            
-            st.markdown(" 🔹 **工程內容**")
+
             if edit_mode:
                 construction_content = st.text_area("工程內容", value=project_data['construction_content'])
             else:
+                st.markdown(" 🔹 **工程內容**")
                 st.markdown(f"{project_data['construction_content']}")
 
             st.markdown("---")
@@ -96,57 +101,77 @@ with tab1:
             st.markdown("#### 💰 預算資訊")
             cols2 = st.columns(4)
             with cols2[0]:
-                st.markdown(" 🔹 **經費來源**")
+
                 if edit_mode:
                     funding_source = st.text_input("經費來源", value=project_data['funding_source'])
                 else:
+                    st.markdown(" 🔹 **經費來源**")
                     st.markdown(f"{project_data['funding_source']}")
 
             with cols2[1]:
-                st.markdown(" 🔹 **核定金額**")
+
                 if edit_mode:
-                    approved_amount = st.number_input("核定金額", value=float(project_data['approved_amount']) if pd.notna(project_data['approved_amount']) else 0.0)
+                    approved_amount = st.number_input("核定金額", value=project_data['approved_amount'] if pd.notna(project_data['approved_amount']) else 0)
                 else:
+                    st.markdown(" 🔹 **核定金額**")
                     st.markdown(f"{format_currency(project_data['approved_amount'])}")
-                st.markdown(" 🔹 **押標金金額**")
+
                 if edit_mode:
-                    bid_bond = st.number_input("押標金金額", value=float(project_data['bid_bond']) if pd.notna(project_data['bid_bond']) else 0.0)
+                    bid_bond = st.number_input("押標金金額", value=project_data['bid_bond'] if pd.notna(project_data['bid_bond']) else 0)
                 else:
+                    st.markdown(" 🔹 **押標金金額**")
                     st.markdown(f"{format_currency(project_data['bid_bond'])}")
+
             with cols2[2]:
-                st.markdown(" 🔹 **預算金額**")
+
                 if edit_mode:
-                    total_budget = st.number_input("預算金額", value=float(project_data['total_budget']) if pd.notna(project_data['total_budget']) else 0.0)
+                    total_budget = st.number_input("預算金額", value=project_data['total_budget'] if pd.notna(project_data['total_budget']) else 0)
                 else:
+                    st.markdown(" 🔹 **預算金額**")
                     st.markdown(f"{format_currency(project_data['total_budget'])}")
-                st.markdown(" 🔹 **履約保證金金額**")
+
                 if edit_mode:
-                    performance_bond = st.number_input("履約保證金金額", value=float(project_data['performance_bond']) if pd.notna(project_data['performance_bond']) else 0.0)
+                    performance_bond = st.number_input("履約保證金金額", value=project_data['performance_bond'] if pd.notna(project_data['performance_bond']) else 0)
                 else:
+                    st.markdown(" 🔹 **履約保證金金額**")   
                     st.markdown(f"{format_currency(project_data['performance_bond'])}")
+
             with cols2[3]:
-                st.markdown(" 🔹 **契約金額**")
+
                 if edit_mode:
-                    contract_amount = st.number_input("契約金額", value=float(project_data['contract_amount']) if pd.notna(project_data['contract_amount']) else 0.0)
+                    contract_amount = st.number_input("契約金額", value=project_data['contract_amount'] if pd.notna(project_data['contract_amount']) else 0)
                 else:
+                    st.markdown(" 🔹 **契約金額**")
                     st.markdown(f"{format_currency(project_data['contract_amount'])}")
 
             st.markdown("---")
 
             st.markdown("#### 👥 監造資訊")
             cols3 = st.columns(4)
+
             with cols3[0]:
-                st.markdown(" 🔹 **分處**")
+
                 if edit_mode:
                     branch_office = st.text_input("分處", value=project_data['branch_office'])
                 else:
+                    st.markdown(" 🔹 **分處**")
                     st.markdown(f"{project_data['branch_office']}")
+
             with cols3[1]:
-                st.markdown(" 🔹 **主辦監造**")
+
                 if edit_mode:
                     supervisor = st.text_input("主辦監造", value=project_data['supervisor'])
                 else:
+                    st.markdown(" 🔹 **主辦監造**")
                     st.markdown(f"{project_data['supervisor']}")
+
+            with cols3[2]:
+
+                if edit_mode:
+                    supervisor_personnel = st.text_input("監造人員", value=project_data['supervisor_personnel'])
+                else:
+                    st.markdown(" 🔹 **監造人員**")
+                    st.markdown(f"{project_data['supervisor_personnel']}")
 
             if edit_mode:
                 if st.button("儲存", type="primary"):
@@ -159,9 +184,9 @@ with tab1:
                         "construction_content": construction_content,
                         "funding_source": funding_source,
                         "approved_amount": int(approved_amount),
-                        "bid_bond": int(bid_bond) if bid_bond else None,
+                        "bid_bond": int(bid_bond),
                         "total_budget": int(total_budget),
-                        "performance_bond": int(performance_bond) if performance_bond else None,
+                        "performance_bond": int(performance_bond),
                         "contract_amount": int(contract_amount),
                         "branch_office": branch_office,
                         "supervisor": supervisor,
@@ -174,7 +199,7 @@ with tab1:
                     
                     if update_project(project_data['id'], updated_data):
                         st.success("更新成功！")
-                        st.rerun()
+                        time.sleep(2)
                     else:
                         st.error("更新失敗，請稍後再試。")
     else:
