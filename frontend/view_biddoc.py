@@ -37,10 +37,10 @@ def select_project():
         st.error("目前沒有任何專案")
         return
 
-    project_name=st.selectbox("請選擇要載入的工程", project_df["project_name"])    
+    project_name=st.sidebarselectbox("請選擇要載入的工程", project_df["project_name"])    
     project_id = projects[project_df[project_df["project_name"] == project_name].index[0]]["id"]
 
-    if st.button("載入工程", key="load_project", type="primary"):
+    if st.sidebar.button("載入工程", key="load_project", type="primary"):
         st.session_state.project_data = get_project_by_id(project_id)
         st.success("工程載入成功！")
         time.sleep(1)
