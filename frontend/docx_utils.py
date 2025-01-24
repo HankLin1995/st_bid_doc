@@ -1,6 +1,7 @@
 
 from docx import Document
 from docx.shared import RGBColor
+import streamlit as st
 
 def replace_text_within_percent_signs(file_path, replace_dict):
     
@@ -96,9 +97,9 @@ def read_tender_document(file_path, replacements=None, output_file=None):
         # 檢查是否有遺漏的替換項目
         missing_replacements = required_replacements - provided_replacements
         if missing_replacements:
-            print("\n警告：以下項目尚未提供替換值：")
+            st.write("\n警告：以下項目尚未提供替換值：")
             for item in missing_replacements:
-                print(f"- {item}")
+                st.write(f"- {item}")
             # return
             
         # # 檢查是否有多餘的替換項目
@@ -116,9 +117,9 @@ def read_tender_document(file_path, replacements=None, output_file=None):
         # 最後檢查是否還有任何未替換的%%標記
         remaining_patterns = re.findall(r'%%[^%]+%%', content)
         if remaining_patterns:
-            print("\n錯誤：仍有未被替換的項目：")
+            st.write("\n錯誤：仍有未被替換的項目：")
             for pattern in remaining_patterns:
-                print(f"- {pattern}")
+                st.write(f"- {pattern}")
             # return 
             
         # 如果指定了輸出文件，將處理後的內容保存到新文件
