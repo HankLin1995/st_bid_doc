@@ -99,7 +99,7 @@ def read_tender_document(file_path, replacements=None, output_file=None):
             print("\n警告：以下項目尚未提供替換值：")
             for item in missing_replacements:
                 print(f"- {item}")
-            return
+            # return
             
         # # 檢查是否有多餘的替換項目
         # extra_replacements = provided_replacements - required_replacements
@@ -119,7 +119,7 @@ def read_tender_document(file_path, replacements=None, output_file=None):
             print("\n錯誤：仍有未被替換的項目：")
             for pattern in remaining_patterns:
                 print(f"- {pattern}")
-            return 
+            # return 
             
         # 如果指定了輸出文件，將處理後的內容保存到新文件
         if output_file:
