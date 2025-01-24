@@ -208,6 +208,11 @@ with tab2:
 
         from utils import get_contractor, get_cost_range,num_to_chinese
 
+        if project_data.get('supervisor_personnel'):
+            supervisor_text=project_data.get('supervisor') +"主辦監造及" + project_data.get('supervisor_personnel') + "監造人員"
+        else:
+            supervisor_text=project_data.get('supervisor') +"主辦監造"
+
         # 準備替換的資料
         replacements = {
             "工程名稱": project_data['project_name'],
@@ -225,7 +230,7 @@ with tab2:
             "廠商基本資格": get_contractor(project_data.get('contract_amount')),
             "採購金額級距": get_cost_range(project_data.get('contract_amount')),
             "履約保證金": num_to_chinese(int(project_data.get('performance_bond'))) ,
-            "監造人員": project_data.get('supervisor_personnel'),
+            "監造人員": supervisor_text,
         }
         
         # st.json(project_data.to_dict())
