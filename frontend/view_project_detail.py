@@ -214,7 +214,7 @@ with tab2:
             "經費來源": project_data['funding_source'],
             "民國年": str(project_data.get('year', '113')),
             "所屬分處": project_data.get('branch_office'),
-            "委外廠商": project_data.get('outsourcing_company', ''),
+            # "委外廠商": project_data.get('outsourcing_company', ''),
             "工程編號": project_data.get('project_number', ''),#.replace("雲林","YL"),
             "採購標的": "工程",
             "核定經費": format_currency(project_data.get('approved_amount')).replace("NT$ ", "") + "元",
