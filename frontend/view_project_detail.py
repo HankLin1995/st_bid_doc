@@ -28,6 +28,12 @@ def update_project(project_id, project_data):
         print(f"Error: {response.status_code}", response.json())
     return response.status_code == 200
 
+def update_project_status(project_id, project_data):
+    response = requests.put(f"{BACKEND_URL}/projects/{project_id}/status", json=project_data)
+    if response.status_code != 200:
+        print(f"Error: {response.status_code}", response.json())
+    return response.status_code == 200
+
 projects = get_projects()
 df = pd.DataFrame(projects)
 
@@ -217,12 +223,12 @@ with tab2:
         "預算書簽-未核定-委外": "預算書簽(新)-工程-未核定-委外.txt",
         "預算書簽-未核定": "預算書簽(新)-工程-未核定.txt"
     }
-    
+
     selected_template = st.selectbox(
         "選擇文件範本",
         options=list(document_templates.keys())
     )
-    
+
     if st.button("產生文件"):
         template_path = os.path.join("src", "公文DI", document_templates[selected_template])
         output_path = os.path.join("output", f"{selected_project}_{document_templates[selected_template]}")
@@ -297,9 +303,6 @@ with tab3:
             template_path = os.path.join("src", "移辦單", selected_template)
             output_path = os.path.join("output", f"{selected_project}_{selected_template}")
 
-            st.write(f"選擇的文件範本：{template_path}")
-            st.write(f"輸出文件：{output_path}")
-
             shutil.copyfile(template_path, output_path)
 
             # 準備替換的資料
@@ -311,7 +314,7 @@ with tab3:
             # 產生文件
             replace_text_within_percent_signs(output_path, replacements)
             st.success(f"文件已產生：{output_path}")
-            
+
             # 提供下載連結
             with open(output_path, "rb") as file:
                 st.download_button(
@@ -324,3 +327,11 @@ with tab3:
             # 關閉檔案後刪除
             if os.path.exists(output_path):
                 os.remove(output_path)
+
+            # 更新狀態
+            update_project_data={
+                "status" : "上網"
+            }
+            
+            if update_project_status(project_data['id'], update_project_data)==200:
+                st.success("狀態已更新")

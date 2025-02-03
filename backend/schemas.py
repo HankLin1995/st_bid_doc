@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
-from models import  ProjectStatus
+# from models import  ProjectStatus
 
 class ProjectBase(BaseModel):
     branch_office: str
@@ -27,18 +27,21 @@ class ProjectBase(BaseModel):
 class ProjectCreate(ProjectBase):
     pass
 
+class ProjectUpdateStatus(BaseModel):
+    status: str
+
 class ProjectUpdateBond(BaseModel):
     id: int
     bid_bond: Optional[int] = None
     performance_bond: Optional[int] = None
 
 class ProjectUpdate(ProjectBase):
-    status: Optional[ProjectStatus] = None
+    status: str
 
 class Project(ProjectBase):
     id: int
     created_at: datetime
-    status: ProjectStatus
+    status: str
 
     class Config:
         from_attributes = True

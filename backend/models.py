@@ -1,20 +1,7 @@
-from sqlalchemy import Column, Integer, String, Float,DateTime, Enum as SQLAlchemyEnum
+from sqlalchemy import Column, Integer, String, Float,DateTime
 from sqlalchemy.sql import func
 from database import Base
-from datetime import datetime
-import enum
 
-# class ProcurementType(str, enum.Enum):
-#     ENGINEERING = "工程"
-#     PURCHASE = "購案"
-#     SERVICE = "勞務"
-
-class ProjectStatus(str, enum.Enum):
-    # 初稿、預算書
-    PENDING = "初稿"
-    REVIEWING = "預算書"
-    APPROVED = "上網"
-    REJECTED = "決標"
 
 class Project(Base):
     __tablename__ = "projects"
@@ -36,7 +23,7 @@ class Project(Base):
     # procurement_type = Column(SQLAlchemyEnum(ProcurementType))
     year = Column(Integer)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    status = Column(SQLAlchemyEnum(ProjectStatus), default=ProjectStatus.PENDING)
+    status = Column(String(10),default="初稿") # Column(SQLAlchemyEnum(ProjectStatus), default=ProjectStatus.PENDING)
     schedule_type = Column(String(10), default="一般流程")
     bid_bond= Column(Integer, default=0)
     performance_bond= Column(Integer, default=0)
