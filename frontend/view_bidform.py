@@ -23,9 +23,9 @@ def load_test_data():
         "duration": 90,
         "construction_content": "排水溝改善及路面修復",
         "funding_source": "固定資產建設改良擴充-土地改良物(國庫撥款)",
-        "approved_amount": 1000000.0,
-        "total_budget": 950000.0,
-        "contract_amount": 900000.0,
+        "approved_amount": 1000000,
+        "total_budget": 950000,
+        "contract_amount": 900000,
         "branch_office": "斗六分處",
         "supervisor": "王工程師",
         "supervisor_personnel": "李監造",
@@ -55,7 +55,7 @@ with st.container(border=True):
             value=st.session_state.test_data.get("outsourcing_company", "") if 'test_data' in st.session_state else "",
             placeholder="OOO工程顧問公司")
 
-    year = st.number_input("民國年",min_value=113)
+    year = st.number_input("民國年",min_value=113,value=114)
 
     branch_office = st.selectbox("分處名稱",
         options=["斗六分處","虎尾分處","西螺分處","北港分處","林內分處","本處"],
@@ -78,8 +78,8 @@ with st.container(border=True):
         value=st.session_state.test_data.get("project_number", "") if 'test_data' in st.session_state else "")
     location = st.text_input("工程地點", 
         value=st.session_state.test_data.get("location", "") if 'test_data' in st.session_state else "")
-    duration = st.number_input("工期(天數)", min_value=1, 
-        value=st.session_state.test_data.get("duration", 1) if 'test_data' in st.session_state else 1)
+    duration = st.number_input("工期(天數)", min_value=0, 
+        value=st.session_state.test_data.get("duration", 0) if 'test_data' in st.session_state else 0)
     construction_content = st.text_input("施工內容", 
         value=st.session_state.test_data.get("construction_content", "") if 'test_data' in st.session_state else "")
 # with col2:
@@ -87,18 +87,21 @@ with st.container(border=True):
     st.markdown("#### 👜經費相關")
     funding_source = st.text_input("經費來源",
         value=st.session_state.test_data.get("funding_source", "固定資產建設改良擴充-土地改良物(國庫撥款)") if 'test_data' in st.session_state else "固定資產建設改良擴充-土地改良物(國庫撥款)")
-    approved_amount = st.number_input("核定金額", min_value=0.0,
-        value=st.session_state.test_data.get("approved_amount", 0.0) if 'test_data' in st.session_state else 0.0)
-    total_budget = st.number_input("總工程費", min_value=0.0,
-        value=st.session_state.test_data.get("total_budget", 0.0) if 'test_data' in st.session_state else 0.0)
-    contract_amount = st.number_input("發包工作費", min_value=0.0,
-        value=st.session_state.test_data.get("contract_amount", 0.0) if 'test_data' in st.session_state else 0.0)
+    approved_amount = st.number_input("核定金額", min_value=0,
+        value=st.session_state.test_data.get("approved_amount", 0) if 'test_data' in st.session_state else 0)
+    total_budget = st.number_input("總工程費", min_value=0,
+        value=st.session_state.test_data.get("total_budget", 0) if 'test_data' in st.session_state else 0)
+    contract_amount = st.number_input("發包工作費", min_value=0,
+        value=st.session_state.test_data.get("contract_amount", 0) if 'test_data' in st.session_state else 0)
     default_items = st.session_state.test_data.get("outsourcing_items", []) if 'test_data' in st.session_state else []
-    outsourcing_items = st.multiselect(
-        "應註記之契約項目",
-        ["瀝青混凝土鋪面", "控制性低強度回填材料(CLSM)", "級配粒料基層", "低密度再生透水混凝土"],
-        default=default_items
-    )
+    # outsourcing_items = st.multiselect(
+    #     "應註記之契約項目",
+    #     ["瀝青混凝土鋪面", "控制性低強度回填材料(CLSM)", "級配粒料基層", "低密度再生透水混凝土"],
+    #     default=default_items
+    # )
+    # st.write(outsourcing_items)
+    outsourcing_items=st.pills("選擇契約項目",["瀝青混凝土鋪面", "控制性低強度回填材料(CLSM)", "級配粒料基層", "低密度再生透水混凝土"],selection_mode="multi")
+    # st.write(outsourcing_items)
     schedule_type=st.radio("開工型式",options=["一般流程","指定開工日","逕流廢汙水"])
     # st.write(schedule_type)
 
