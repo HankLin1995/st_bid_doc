@@ -1,6 +1,10 @@
 import streamlit as st
+import os
+from dotenv import load_dotenv
 
-VERSION_NUMBER = "V2.2.5"
+load_dotenv()
+
+VERSION_NUMBER = "V2.3.0"
 
 @st.dialog("⭕系統公告")
 def msg_content():
@@ -22,7 +26,6 @@ if "test_mode" not in st.session_state:
 try:
     if st.query_params["test_mode"] == "1":
         st.session_state.test_mode =True
-
 except:
     pass
 
@@ -33,9 +36,22 @@ project_page=st.Page("view_project.py",title="審查總表",icon=":material/dash
 project_detail_page=st.Page("view_project_detail.py",title="審查明細表",icon=":material/dashboard:")
 biddoc_page=st.Page("view_biddoc.py",title="投標文件",icon=":material/assignment:")
 
-pg=st.navigation({
-    "工務行政":[bidform_page],
-    "工程管理":[project_page,project_detail_page,biddoc_page],
-})
+if "password" not in st.session_state:
+    st.session_state.password=""
+
+st.session_state.password = st.sidebar.text_input("請輸入密碼", type="password", value=st.session_state.password)
+
+if st.session_state.password!=os.getenv("PASSWORD"):
+
+    pg=st.navigation({
+        "工務行政":[bidform_page],
+    })
+
+else:
+
+    pg=st.navigation({
+        "工務行政":[bidform_page],
+        "工程管理":[project_page,project_detail_page,biddoc_page],
+    })
 
 pg.run()

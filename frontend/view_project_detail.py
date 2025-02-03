@@ -30,10 +30,10 @@ def update_project(project_id, project_data):
 projects = get_projects()
 df = pd.DataFrame(projects)
 
-my_pass=st.sidebar.text_input("請輸入密碼",type="password")
+# my_pass=st.sidebar.text_input("請輸入密碼",type="password")
 
-if my_pass!=os.getenv("PASSWORD"):
-    st.stop()
+# if my_pass!=os.getenv("PASSWORD"):
+#     st.stop()
 
 st.markdown("### 🔍 專案詳細資訊")
 

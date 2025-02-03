@@ -152,10 +152,10 @@ def get_employ_type(qualification: str):
 
 # msg_content()
 
-my_pass=st.sidebar.text_input("請輸入密碼",type="password",key="view_biddoc_password")
+# my_pass=st.sidebar.text_input("請輸入密碼",type="password",key="view_biddoc_password")
 
-if my_pass!=os.getenv("PASSWORD"):
-    st.stop()
+# if my_pass!=os.getenv("PASSWORD"):
+#     st.stop()
 
 select_project()
 
