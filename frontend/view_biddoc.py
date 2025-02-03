@@ -203,11 +203,11 @@ with st.container(border=True):
     except ValueError:
         formatted_budget = "0"  # If the input is not a valid number, display 0
 
-    bid_bond=st.number_input("押標金金額",value=0)
+    bid_bond=st.number_input("押標金金額",value=project_data['bid_bond'] if 'project_data' in st.session_state else 0)
     bid_bond_chinese=num_to_chinese(bid_bond)
     # st.write(f"押標金金額為:{bid_bond_chinese}")
 
-    performance_bond=st.number_input("履約保證金",value=0)
+    performance_bond=st.number_input("履約保證金",value=project_data['performance_bond'] if 'project_data' in st.session_state else 0)
     performance_bond_chinese=num_to_chinese(performance_bond)
     # st.write(f"履約保證金為:{performance_bond_chinese}")
 
