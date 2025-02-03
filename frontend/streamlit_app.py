@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-VERSION_NUMBER = "V2.3.1"
+VERSION_NUMBER = "V2.3.2"
 
 @st.dialog("⭕系統公告")
 def msg_content():
@@ -23,6 +23,9 @@ if "show_info" not in st.session_state:
 if "test_mode" not in st.session_state:
     st.session_state.test_mode = False
 
+if "password" not in st.session_state:
+    st.session_state.password=""
+
 try:
     if st.query_params["test_mode"] == "1":
         st.session_state.test_mode =True
@@ -35,9 +38,6 @@ bidform_page=st.Page("view_bidform.py",title="預算書審查",icon=":material/c
 project_page=st.Page("view_project.py",title="審查總表",icon=":material/dashboard:")
 project_detail_page=st.Page("view_project_detail.py",title="審查明細表",icon=":material/dashboard:")
 biddoc_page=st.Page("view_biddoc.py",title="投標文件",icon=":material/assignment:")
-
-if "password" not in st.session_state:
-    st.session_state.password=""
 
 st.session_state.password = st.sidebar.text_input("請輸入密碼", type="password", value=st.session_state.password)
 

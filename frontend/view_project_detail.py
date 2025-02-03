@@ -197,7 +197,7 @@ with tab1:
                         "contract_amount": int(contract_amount),
                         "branch_office": branch_office,
                         "supervisor": supervisor,
-                        "supervisor_personnel": project_data['supervisor_personnel'],
+                        "supervisor_personnel": supervisor_personnel,
                         "outsourcing_items": project_data['outsourcing_items'],
                         "schedule_type": project_data['schedule_type'],
                         "outsourcing_company": project_data.get('outsourcing_company'),
@@ -296,6 +296,8 @@ with tab3:
     else:
         selected_template="採購案件移辦單(103.2.18版)-無備註.docx"
 
+    st.write("註記內容",project_data.get('outsourcing_items'))
+
     os.makedirs("output", exist_ok=True)
 
     if st.button("產生文件",key="generate_doc"):
@@ -332,6 +334,6 @@ with tab3:
             update_project_data={
                 "status" : "上網"
             }
-            
+
             if update_project_status(project_data['id'], update_project_data)==200:
                 st.success("狀態已更新")
