@@ -39,9 +39,9 @@ def get_contractor(contract_money: float) -> str:
 
     result = f
 
-    # Check specific contract money cases and add a special prefix
-    if m in [6000000, 7200000, 22500000, 27000000, 75000000, 90000000]:
-        result = "!!!!!!!!!!" + f
+    # # Check specific contract money cases and add a special prefix
+    # if m in [6000000, 7200000, 22500000, 27000000, 75000000, 90000000]:
+    #     result = "!!!!!!!!!!" + f
 
     return result
 
