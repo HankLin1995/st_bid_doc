@@ -3,8 +3,9 @@ import requests
 import pandas as pd
 import os
 from dotenv import load_dotenv
-from docx_utils import read_tender_document
+from docx_utils import read_tender_document,replace_text_within_percent_signs
 import time
+import shutil
 
 load_dotenv()
 
@@ -280,3 +281,46 @@ with tab2:
         # 關閉檔案後刪除
         if os.path.exists(output_path):
             os.remove(output_path)
+
+with tab3:
+    st.markdown("#### 📄 移辦單")
+
+    if project_data.get('outsourcing_items')!="":
+        selected_template="採購案件移辦單(103.2.18版)-有備註.docx"
+    else:
+        selected_template="採購案件移辦單(103.2.18版)-無備註.docx"
+
+    os.makedirs("output", exist_ok=True)
+
+    if st.button("產生文件",key="generate_doc"):
+            
+            template_path = os.path.join("src", "移辦單", selected_template)
+            output_path = os.path.join("output", f"{selected_project}_{selected_template}")
+
+            st.write(f"選擇的文件範本：{template_path}")
+            st.write(f"輸出文件：{output_path}")
+
+            shutil.copyfile(template_path, output_path)
+
+            # 準備替換的資料
+            replacements = {
+                "工程名稱": project_data['project_name'],
+                "再生粒料": project_data['outsourcing_items'],
+            }
+            
+            # 產生文件
+            replace_text_within_percent_signs(output_path, replacements)
+            st.success(f"文件已產生：{output_path}")
+            
+            # 提供下載連結
+            with open(output_path, "rb") as file:
+                st.download_button(
+                    label="📥 下載文件",
+                    data=file,
+                    file_name=os.path.basename(output_path),
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                )
+                
+            # 關閉檔案後刪除
+            if os.path.exists(output_path):
+                os.remove(output_path)
