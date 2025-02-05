@@ -45,6 +45,12 @@ def update_project_status(project_id, project_data):
         print(f"Error: {response.status_code}", response.json())
     return response.status_code == 200
 
+def update_project_bonds(project_id, project_data):
+    response = requests.put(f"{BACKEND_URL}/projects/{project_id}/bonds", json=project_data)
+    if response.status_code != 200:
+        print(f"Error: {response.status_code}", response.json())
+    return response.status_code == 200
+
 projects = get_projects()
 df = pd.DataFrame(projects)
 
@@ -233,143 +239,6 @@ with tab1:
         st.info("目前沒有工程案件資料")
             # st.markdown("---")
 
-with tab3: 
-    st.markdown("#### 📄 公文DI")
-    document_templates = {
-        "招標簽-已核定": "招標簽(新)-工程-已核定.txt",
-        "招標簽-未核定": "招標簽(新)-工程-未核定.txt",
-        "預算書簽-已核定-委外": "預算書簽(新)-工程-已核定-委外.txt",
-        "預算書簽-已核定": "預算書簽(新)-工程-已核定.txt",
-        "預算書簽-未核定-委外": "預算書簽(新)-工程-未核定-委外.txt",
-        "預算書簽-未核定": "預算書簽(新)-工程-未核定.txt"
-    }
-
-    selected_template = st.selectbox(
-        "選擇文件範本",
-        options=list(document_templates.keys())
-    )
-
-    if st.button("產生文件"):
-        template_path = os.path.join("src", "公文DI", document_templates[selected_template])
-        output_path = os.path.join("output", f"{selected_project}_{document_templates[selected_template]}")
-        
-        if project_data.get('total_budget', 0) < 200000000:
-            project_category = "未達二千萬之第三類工程"
-        else:
-            project_category = "二千萬元以上未達查核金額之第二類工程"
-
-        from utils import get_contractor, get_cost_range,num_to_chinese
-
-        if project_data.get('supervisor_personnel'):
-            supervisor_text=project_data.get('supervisor') +"主辦監造及" + project_data.get('supervisor_personnel') + "監造人員"
-        else:
-            supervisor_text=project_data.get('supervisor') +"主辦監造"
-
-        # 準備替換的資料
-        replacements = {
-            "工程名稱": project_data['project_name'],
-            "經費來源": project_data['funding_source'],
-            "民國年": str(project_data.get('year', '113')),
-            "所屬分處": project_data.get('branch_office'),
-            "委外廠商": project_data.get('outsourcing_company'),
-            "工程編號": project_data.get('project_number', ''),#.replace("雲林","YL"),
-            "採購標的": "工程",
-            "核定經費": format_currency(project_data.get('approved_amount')).replace("NT$ ", "") + "元",
-            "預算書總價": format_currency(project_data.get('total_budget')).replace("NT$ ", "") + "元",
-            "發包工作費總額": format_currency(project_data.get('contract_amount')).replace("NT$ ", "") + "元",
-            "工程分類": project_category,
-            "押標金額度": num_to_chinese(int(project_data.get('bid_bond'))) ,
-            "廠商基本資格": get_contractor(project_data.get('contract_amount')),
-            "採購金額級距": get_cost_range(project_data.get('contract_amount')),
-            "履約保證金": num_to_chinese(int(project_data.get('performance_bond'))) ,
-            "監造人員": supervisor_text,
-        }
-        
-        # st.json(project_data.to_dict())
-        st.json(replacements)
-
-        # 確保output目錄存在
-        os.makedirs("output", exist_ok=True)
-        
-        # 產生文件
-        read_tender_document(template_path, replacements, output_path)
-        st.success(f"文件已產生：{output_path}")
-        
-        # 提供下載連結
-        with open(output_path, "rb") as file:
-            st.download_button(
-                label="📥 下載文件",
-                data=file,
-                file_name=os.path.basename(output_path),
-                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            )
-            
-        # 關閉檔案後刪除
-        if os.path.exists(output_path):
-            os.remove(output_path)
-
-with tab4:
-    st.markdown("#### 📄 移辦單")
-
-    if project_data.get('outsourcing_items')!="":
-        selected_template="採購案件移辦單(103.2.18版)-有備註.docx"
-    else:
-        selected_template="採購案件移辦單(103.2.18版)-無備註.docx"
-
-    st.write("註記內容",project_data.get('outsourcing_items'))
-
-    os.makedirs("output", exist_ok=True)
-
-    if st.button("產生文件",key="generate_doc"):
-            
-            template_path = os.path.join("src", "移辦單", selected_template)
-            output_path = os.path.join("output", f"{selected_project}_{selected_template}")
-
-            shutil.copyfile(template_path, output_path)
-
-            # 準備替換的資料
-            replacements = {
-                "工程名稱": project_data['project_name'],
-                "再生粒料": project_data['outsourcing_items'],
-            }
-            
-            # 產生文件
-            replace_text_within_percent_signs(output_path, replacements)
-            st.success(f"文件已產生：{output_path}")
-
-            #更新狀態
-
-            response = requests.put(f"{BACKEND_URL}/projects/{project_data['id']}/status", json={
-                "id": str(project_data['id']),
-                "status": "移辦"
-            })
-
-            if response.status_code != 200:
-                st.error("無法更新狀態")
-            else:
-                st.success("狀態已更新")
-
-            # 提供下載連結
-            with open(output_path, "rb") as file:
-                st.download_button(
-                    label="📥 下載文件",
-                    data=file,
-                    file_name=os.path.basename(output_path),
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                )
-                
-            # 關閉檔案後刪除
-            if os.path.exists(output_path):
-                os.remove(output_path)
-
-            # 更新狀態
-            update_project_data={
-                "status" : "上網"
-            }
-
-            if update_project_status(project_data['id'], update_project_data)==200:
-                st.success("狀態已更新")
-
 with tab2:
 
     with st.container(border=True):
@@ -523,14 +392,13 @@ with tab2:
 
         if 'project_data' in st.session_state:
 
-            response = requests.put(f"{BACKEND_URL}/projects/{project_data['id']}/bonds", json={
-                "id": project_data['id'],
+            update_data={
+                "id": st.session_state.project_data['id'],
                 "bid_bond": bid_bond,
                 "performance_bond": performance_bond
-            })
+            }
 
-            if response.status_code != 200:
-                st.error("無法儲存押標金及履約保證金")
+            update_project_bonds(project_data['id'],update_data)
 
         if not os.path.exists("src"):
             os.makedirs("src")
@@ -602,3 +470,141 @@ with tab2:
             )
         else:
             st.warning("沒有文件被成功處理！")
+
+with tab3: 
+    st.markdown("#### 📄 公文DI")
+    document_templates = {
+        "招標簽-已核定": "招標簽(新)-工程-已核定.txt",
+        "招標簽-未核定": "招標簽(新)-工程-未核定.txt",
+        "預算書簽-已核定-委外": "預算書簽(新)-工程-已核定-委外.txt",
+        "預算書簽-已核定": "預算書簽(新)-工程-已核定.txt",
+        "預算書簽-未核定-委外": "預算書簽(新)-工程-未核定-委外.txt",
+        "預算書簽-未核定": "預算書簽(新)-工程-未核定.txt"
+    }
+
+    selected_template = st.selectbox(
+        "選擇文件範本",
+        options=list(document_templates.keys())
+    )
+
+    if st.button("產生文件"):
+        template_path = os.path.join("src", "公文DI", document_templates[selected_template])
+        output_path = os.path.join("output", f"{selected_project}_{document_templates[selected_template]}")
+        
+        if project_data.get('total_budget', 0) < 200000000:
+            project_category = "未達二千萬之第三類工程"
+        else:
+            project_category = "二千萬元以上未達查核金額之第二類工程"
+
+        from utils import get_contractor, get_cost_range,num_to_chinese
+
+        if project_data.get('supervisor_personnel'):
+            supervisor_text=project_data.get('supervisor') +"主辦監造及" + project_data.get('supervisor_personnel') + "監造人員"
+        else:
+            supervisor_text=project_data.get('supervisor') +"主辦監造"
+
+        # 準備替換的資料
+        replacements = {
+            "工程名稱": project_data['project_name'],
+            "經費來源": project_data['funding_source'],
+            "民國年": str(project_data.get('year', '113')),
+            "所屬分處": project_data.get('branch_office'),
+            "委外廠商": project_data.get('outsourcing_company'),
+            "工程編號": project_data.get('project_number', ''),#.replace("雲林","YL"),
+            "採購標的": "工程",
+            "核定經費": format_currency(project_data.get('approved_amount')).replace("NT$ ", "") + "元",
+            "預算書總價": format_currency(project_data.get('total_budget')).replace("NT$ ", "") + "元",
+            "發包工作費總額": format_currency(project_data.get('contract_amount')).replace("NT$ ", "") + "元",
+            "工程分類": project_category,
+            "押標金額度": num_to_chinese(int(project_data.get('bid_bond'))) ,
+            "廠商基本資格": get_contractor(project_data.get('contract_amount')),
+            "採購金額級距": get_cost_range(project_data.get('contract_amount')),
+            "履約保證金": num_to_chinese(int(project_data.get('performance_bond'))) ,
+            "監造人員": supervisor_text,
+        }
+        
+        # st.json(project_data.to_dict())
+        st.json(replacements)
+
+        # 確保output目錄存在
+        os.makedirs("output", exist_ok=True)
+        
+        # 產生文件
+        read_tender_document(template_path, replacements, output_path)
+        st.success(f"文件已產生：{output_path}")
+        
+        # 提供下載連結
+        with open(output_path, "rb") as file:
+            st.download_button(
+                label="📥 下載文件",
+                data=file,
+                file_name=os.path.basename(output_path),
+                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            )
+            
+        # 關閉檔案後刪除
+        if os.path.exists(output_path):
+            os.remove(output_path)
+
+with tab4:
+    st.markdown("#### 📄 移辦單")
+
+    if project_data.get('outsourcing_items')!="":
+        selected_template="採購案件移辦單(103.2.18版)-有備註.docx"
+    else:
+        selected_template="採購案件移辦單(103.2.18版)-無備註.docx"
+
+    st.write("註記內容",project_data.get('outsourcing_items'))
+
+    os.makedirs("output", exist_ok=True)
+
+    if st.button("產生文件",key="generate_doc"):
+            
+            template_path = os.path.join("src", "移辦單", selected_template)
+            output_path = os.path.join("output", f"{selected_project}_{selected_template}")
+
+            shutil.copyfile(template_path, output_path)
+
+            # 準備替換的資料
+            replacements = {
+                "工程名稱": project_data['project_name'],
+                "再生粒料": project_data['outsourcing_items'],
+            }
+            
+            # 產生文件
+            replace_text_within_percent_signs(output_path, replacements)
+            st.success(f"文件已產生：{output_path}")
+
+            #更新狀態
+
+            response = requests.put(f"{BACKEND_URL}/projects/{project_data['id']}/status", json={
+                "id": str(project_data['id']),
+                "status": "移辦"
+            })
+
+            if response.status_code != 200:
+                st.error("無法更新狀態")
+            else:
+                st.success("狀態已更新")
+
+            # 提供下載連結
+            with open(output_path, "rb") as file:
+                st.download_button(
+                    label="📥 下載文件",
+                    data=file,
+                    file_name=os.path.basename(output_path),
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                )
+                
+            # 關閉檔案後刪除
+            if os.path.exists(output_path):
+                os.remove(output_path)
+
+            # 更新狀態
+            update_project_data={
+                "status" : "上網"
+            }
+
+            if update_project_status(project_data['id'], update_project_data)==200:
+                st.success("狀態已更新")
+
