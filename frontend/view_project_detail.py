@@ -44,17 +44,17 @@ df = pd.DataFrame(projects)
 
 st.markdown("### 🔍 專案詳細資訊")
 
-if "project_number" not in st.session_state:
-    st.session_state.project_number = df.iloc[0]['project_number']
+if "project_name" not in st.session_state:
+    st.session_state.project_name = df.iloc[0]['project_name']
 
 selected_project = st.selectbox(
     "選擇專案",
-    options=df['project_number'].tolist(),
-    index=df['project_number'].tolist().index(st.session_state.project_number),
-    format_func=lambda x: f"{x} - {df[df['project_number']==x]['project_name'].iloc[0]}",
+    options=df['project_name'].tolist(),
+    index=df['project_name'].tolist().index(st.session_state.project_name),
+    # format_func=lambda x: f"{x} - {df[df['project_number']==x]['project_name'].iloc[0]}",
 )
 
-st.session_state.project_number = selected_project
+st.session_state.project_name = selected_project
 
 tab1,tab2,tab3=st.tabs(["詳細資訊","簽呈","移辦單"])
 
@@ -62,7 +62,7 @@ with tab1:
 
 # with st.expander("詳細資訊"):
     if selected_project:
-        project_data = df[df['project_number'] == selected_project].iloc[0]
+        project_data = df[df['project_name'] == selected_project].iloc[0]
 
         # Add edit mode toggle
         edit_mode = st.toggle("編輯模式")
