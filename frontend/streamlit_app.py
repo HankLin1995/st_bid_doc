@@ -26,6 +26,9 @@ if "test_mode" not in st.session_state:
 if "password" not in st.session_state:
     st.session_state.password=""
 
+if "project_data" not in st.session_state:
+    st.session_state.project_data = {}
+
 try:
     if st.query_params["test_mode"] == "1":
         st.session_state.test_mode =True
@@ -37,7 +40,7 @@ except:
 bidform_page=st.Page("view_bidform.py",title="預算書審查",icon=":material/contract:",default=True)
 project_page=st.Page("view_project.py",title="審查總表",icon=":material/dashboard:")
 project_detail_page=st.Page("view_project_detail.py",title="審查明細表",icon=":material/dashboard:")
-biddoc_page=st.Page("view_biddoc.py",title="投標文件",icon=":material/assignment:")
+# biddoc_page=st.Page("view_biddoc.py",title="投標文件",icon=":material/assignment:")
 
 st.session_state.password = st.sidebar.text_input("請輸入密碼", type="password", value=st.session_state.password)
 
@@ -51,7 +54,7 @@ else:
 
     pg=st.navigation({
         "工務行政":[bidform_page],
-        "工程管理":[project_page,project_detail_page,biddoc_page],
+        "工程管理":[project_page,project_detail_page],
     })
 
 pg.run()
