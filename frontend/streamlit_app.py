@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-VERSION_NUMBER = "V2.4.1"
+VERSION_NUMBER = "V2.4.2"
 
 @st.dialog("⭕系統公告")
 def msg_content():
@@ -13,7 +13,7 @@ def msg_content():
     st.markdown("---")
     st.write("版本:"+VERSION_NUMBER )
 
-st.set_page_config(page_title=f"工程審查系統 {VERSION_NUMBER}")
+st.set_page_config(page_title=f"工程審查系統 {VERSION_NUMBER}",layout="wide",page_icon=":hammer_and_wrench:")
 st.logo("LOGO.PNG")
 
 if "show_info" not in st.session_state:

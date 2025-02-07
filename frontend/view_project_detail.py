@@ -22,6 +22,23 @@ load_dotenv()
 
 BACKEND_URL = 'http://backend:8000'
 
+# 優化顯示和編輯模式的邏輯
+def display_or_edit(label, value, edit_mode, input_type='text', use_format_currency=False):
+    """在編輯模式下顯示文本輸入框，否則顯示標籤和內容"""
+    if edit_mode:
+        if input_type == 'text':
+            return st.text_input(label, value=value,key=label)
+        elif input_type == 'number':
+            return st.number_input(label, value=value,key=label)
+        elif input_type == 'textarea':
+            return st.text_area(label, value=value)
+    else:
+        st.markdown(f" 🔹 **{label}**")
+        if use_format_currency:  # This avoids the naming conflict
+            return st.markdown(f"{format_currency(value)}")  # 使用 format_currency 函數
+        else:
+            return st.markdown(f"{value}")
+
 def format_currency(value):
     if pd.isna(value):
         return "NT$ 0"
@@ -75,107 +92,50 @@ st.session_state.project_name = selected_project
 
 tab1,tab2,tab3,tab4=st.tabs(["詳細資訊","投標文件","公文DI","移辦單"])
 
+# 主要顯示內容
 with tab1:
 
     if selected_project:
-
         project_data = df[df['project_name'] == selected_project].iloc[0]
+        st.session_state.project_data = project_data.to_dict()
 
-        st.session_state.project_data=project_data.to_dict()
-
-        # st.sidebar.json(st.session_state)
-
-        # Add edit mode toggle
         edit_mode = st.toggle("編輯模式")
 
         with st.container():
             st.markdown("#### 📋 基本資訊")
             cols1 = st.columns(3)
-            with cols1[0]:
-                if edit_mode:
-                    year = st.text_input("年度", value=project_data['year'])
-                else:
-                    st.markdown(" 🔹 **年度**")
-                    st.markdown(f"{project_data['year']}")
 
-                st.markdown(" 🔹 **標案案號**")
-                st.markdown(f"{project_data['project_number']}")
+            with cols1[0]:
+                year = display_or_edit("年度", project_data['year'], edit_mode, 'text')
+                display_or_edit("標案案號", project_data['project_number'], edit_mode, 'text')
             
             with cols1[1]:
-
-                if edit_mode:
-                    project_name = st.text_input("工程名稱", value=project_data['project_name'])
-                else:
-                    st.markdown(" 🔹 **工程名稱**")
-                    st.markdown(f"{project_data['project_name']}")
-
-                if edit_mode:
-                    duration = st.number_input("工期(天)", value=int(project_data['duration']))
-                else:
-                    st.markdown(" 🔹 **工期**")
-                    st.markdown(f"{project_data['duration']} 天")
+                project_name = display_or_edit("工程名稱", project_data['project_name'], edit_mode, 'text')
+                duration = display_or_edit("工期(天)", int(project_data['duration']), edit_mode, 'number')
             
             with cols1[2]:
+                location = display_or_edit("工程地點", project_data['location'], edit_mode, 'text')
 
-                if edit_mode:
-                    location = st.text_input("工程地點", value=project_data['location'])
-                else:
-                    st.markdown(" 🔹 **工程地點**"  )
-                    st.markdown(f"{project_data['location']}")
-
-            if edit_mode:
-                construction_content = st.text_area("工程內容", value=project_data['construction_content'])
-            else:
-                st.markdown(" 🔹 **工程內容**")
-                st.markdown(f"{project_data['construction_content']}")
+            construction_content = display_or_edit("工程內容", project_data['construction_content'], edit_mode, 'textarea')
 
             st.markdown("---")
 
             st.markdown("#### 💰 預算資訊")
             cols2 = st.columns(4)
-            with cols2[0]:
 
-                if edit_mode:
-                    funding_source = st.text_input("經費來源", value=project_data['funding_source'])
-                else:
-                    st.markdown(" 🔹 **經費來源**")
-                    st.markdown(f"{project_data['funding_source']}")
+            with cols2[0]:
+                funding_source = display_or_edit("經費來源", project_data['funding_source'], edit_mode, 'text')
 
             with cols2[1]:
-
-                if edit_mode:
-                    approved_amount = st.number_input("核定金額", value=project_data['approved_amount'] if pd.notna(project_data['approved_amount']) else 0)
-                else:
-                    st.markdown(" 🔹 **核定金額**")
-                    st.markdown(f"{format_currency(project_data['approved_amount'])}")
-
-                if edit_mode:
-                    bid_bond = st.number_input("押標金金額", value=project_data['bid_bond'] if pd.notna(project_data['bid_bond']) else 0)
-                else:
-                    st.markdown(" 🔹 **押標金金額**")
-                    st.markdown(f"{format_currency(project_data['bid_bond'])}")
+                approved_amount = display_or_edit("核定金額", project_data['approved_amount'] if pd.notna(project_data['approved_amount']) else 0, edit_mode, 'number', use_format_currency=True)
+                bid_bond = display_or_edit("押標金金額", project_data['bid_bond'] if pd.notna(project_data['bid_bond']) else 0, edit_mode, 'number', use_format_currency=True)
 
             with cols2[2]:
-
-                if edit_mode:
-                    total_budget = st.number_input("預算金額", value=project_data['total_budget'] if pd.notna(project_data['total_budget']) else 0)
-                else:
-                    st.markdown(" 🔹 **預算金額**")
-                    st.markdown(f"{format_currency(project_data['total_budget'])}")
-
-                if edit_mode:
-                    performance_bond = st.number_input("履約保證金金額", value=project_data['performance_bond'] if pd.notna(project_data['performance_bond']) else 0)
-                else:
-                    st.markdown(" 🔹 **履約保證金金額**")   
-                    st.markdown(f"{format_currency(project_data['performance_bond'])}")
+                total_budget = display_or_edit("預算金額", project_data['total_budget'] if pd.notna(project_data['total_budget']) else 0, edit_mode, 'number', use_format_currency=True)
+                performance_bond = display_or_edit("履約保證金金額", project_data['performance_bond'] if pd.notna(project_data['performance_bond']) else 0, edit_mode, 'number', use_format_currency=True)
 
             with cols2[3]:
-
-                if edit_mode:
-                    contract_amount = st.number_input("契約金額", value=project_data['contract_amount'] if pd.notna(project_data['contract_amount']) else 0)
-                else:
-                    st.markdown(" 🔹 **契約金額**")
-                    st.markdown(f"{format_currency(project_data['contract_amount'])}")
+                contract_amount = display_or_edit("契約金額", project_data['contract_amount'] if pd.notna(project_data['contract_amount']) else 0, edit_mode, 'number', use_format_currency=True)
 
             st.markdown("---")
 
@@ -183,28 +143,13 @@ with tab1:
             cols3 = st.columns(4)
 
             with cols3[0]:
-
-                if edit_mode:
-                    branch_office = st.text_input("分處", value=project_data['branch_office'])
-                else:
-                    st.markdown(" 🔹 **分處**")
-                    st.markdown(f"{project_data['branch_office']}")
+                branch_office = display_or_edit("分處", project_data['branch_office'], edit_mode, 'text')
 
             with cols3[1]:
-
-                if edit_mode:
-                    supervisor = st.text_input("主辦監造", value=project_data['supervisor'])
-                else:
-                    st.markdown(" 🔹 **主辦監造**")
-                    st.markdown(f"{project_data['supervisor']}")
+                supervisor = display_or_edit("主辦監造", project_data['supervisor'], edit_mode, 'text')
 
             with cols3[2]:
-
-                if edit_mode:
-                    supervisor_personnel = st.text_input("監造人員", value=project_data['supervisor_personnel'])
-                else:
-                    st.markdown(" 🔹 **監造人員**")
-                    st.markdown(f"{project_data['supervisor_personnel']}")
+                supervisor_personnel = display_or_edit("監造人員", project_data['supervisor_personnel'], edit_mode, 'text')
 
             if edit_mode:
                 if st.button("儲存", type="primary"):
@@ -229,7 +174,7 @@ with tab1:
                         "outsourcing_company": project_data.get('outsourcing_company'),
                         "status": project_data['status']
                     }
-                    
+
                     if update_project(project_data['id'], updated_data):
                         st.success("更新成功！")
                         time.sleep(2)
@@ -237,7 +182,6 @@ with tab1:
                         st.error("更新失敗，請稍後再試。")
     else:
         st.info("目前沒有工程案件資料")
-            # st.markdown("---")
 
 with tab2:
 
@@ -258,11 +202,10 @@ with tab2:
             year = st.text_input("年度", value="114")
             project_name = st.text_input("標案名稱", value="OOOO改善工程")
             project_number = st.text_input("標案編號",placeholder="YL114OOO")
-
-            if '雲林' in project_number:
-                st.error("請將標案編號中的「雲林」改為「YL」")
-
             location = st.text_input("工程地點")
+
+        if '雲林' in project_number:
+            st.error("請將標案編號中的「雲林」改為「YL」")
 
     with st.container(border=True):
         st.markdown("#### 💰經費相關")
