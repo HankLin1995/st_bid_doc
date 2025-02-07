@@ -364,6 +364,8 @@ with tab2:
         
     }
 
+    data=convert_data(data)
+
     # st.json(convert_data(data))
 
     def create_output_folder(output_dir):
