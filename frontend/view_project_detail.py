@@ -424,7 +424,11 @@ with tab3:
         "預算書簽-已核定-委外": "預算書簽(新)-工程-已核定-委外.txt",
         "預算書簽-已核定": "預算書簽(新)-工程-已核定.txt",
         "預算書簽-未核定-委外": "預算書簽(新)-工程-未核定-委外.txt",
-        "預算書簽-未核定": "預算書簽(新)-工程-未核定.txt"
+        "預算書簽-未核定": "預算書簽(新)-工程-未核定.txt",
+        "預算書簽-已核定-委外-查核金額以上": "預算書簽(新)-工程-已核定-委外-查核金額以上.txt",
+        "檢送預算書函":"預算書送署本部.txt",
+        "公開閱覽":"公開閱覽.txt"
+
     }
 
     selected_template = st.selectbox(
@@ -436,10 +440,14 @@ with tab3:
         template_path = os.path.join("src", "公文DI", document_templates[selected_template])
         output_path = os.path.join("output", f"{selected_project}_{document_templates[selected_template]}")
         
-        if project_data.get('total_budget', 0) < 200000000:
+        st.write("total_budget",project_data.get('total_budget', 0))
+
+        if project_data.get('total_budget', 0) < 20000000:
             project_category = "未達二千萬之第三類工程"
-        else:
+        elif project_data.get('total_budget', 0) < 50000000:
             project_category = "二千萬元以上未達查核金額之第二類工程"
+        else:
+            project_category = "查核金額以上未達巨額之第一類工程"
 
         from utils import get_contractor, get_cost_range,num_to_chinese
 
