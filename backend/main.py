@@ -21,6 +21,13 @@ def read_projects(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
     projects = db.query(models.Project).offset(skip).limit(limit).all()
     return projects
 
+@app.get("/projects/{project_number}", response_model=schemas.Project)
+def read_project(project_number: str, db: Session = Depends(get_db)):
+    project = db.query(models.Project).filter(models.Project.project_number == project_number).first()
+    if project is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return project
+
 @app.get("/projects/{project_id}", response_model=schemas.Project)
 def read_project(project_id: int, db: Session = Depends(get_db)):
     project = db.query(models.Project).filter(models.Project.id == project_id).first()

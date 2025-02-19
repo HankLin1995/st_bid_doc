@@ -11,6 +11,10 @@ def create_project(project_data: dict):
     response = requests.post(f"{API_URL}/projects/", json=project_data)
     return response.json() if response.status_code == 200 else None
 
+def get_project_by_number(project_number: str):
+    response = requests.get(f"{API_URL}/projects/{project_number}")
+    return response.json() if response.status_code == 200 else None
+
 def load_test_data():
     return {
         "project_name": "測試工程-排水改善工程",
@@ -137,7 +141,13 @@ with col_submit1:
                     del st.session_state.test_data
                 st.rerun()
             else:
-                st.error("創建失敗，請檢查資料是否正確")
+                # check if the project is created
+                project = get_project_by_number(project_number)
+                
+                if project:
+                    st.warning("工程已存在，請勿重複創建!",icon="⚠️")
+                else:
+                    st.error("創建失敗，請檢查資料是否正確")
                 
         except Exception as e:
             st.error(f"操作失敗：{str(e)}")
