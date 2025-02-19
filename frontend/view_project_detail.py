@@ -413,6 +413,14 @@ with tab2:
                 file_name=f"{data['標案名稱']}.zip",
                 mime="application/zip"
             )
+
+            st.write('---')
+
+            st.write("### 招標文件後續SOP:")
+
+            st.write("1.招標文件放入招標光碟")
+            st.write("2.審查原本光碟中的預算書檔案放入新的光碟，光碟名稱為有計單價")
+
         else:
             st.warning("沒有文件被成功處理！")
 
@@ -439,8 +447,6 @@ with tab3:
     if st.button("產生文件"):
         template_path = os.path.join("src", "公文DI", document_templates[selected_template])
         output_path = os.path.join("output", f"{selected_project}_{document_templates[selected_template]}")
-        
-        st.write("total_budget",project_data.get('total_budget', 0))
 
         if project_data.get('total_budget', 0) < 20000000:
             project_category = "未達二千萬之第三類工程"
