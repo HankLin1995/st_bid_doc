@@ -264,7 +264,10 @@ with tab2:
         general_days=None
 
         if mode2=="指定開工日":
-            start_date=st.date_input("指定開工日").strftime("%Y-%m-%d")
+            # start_date=st.date_input("指定開工日").strftime("%Y年%m月%d日")
+            start_date=st.date_input("指定開工日")
+            roc_year=start_date.year-1911
+            start_date=f"{roc_year}年{start_date.strftime('%m月%d日')}"
         elif mode2=="一般流程":
             general_days="14"
 
