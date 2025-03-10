@@ -79,7 +79,11 @@ df = pd.DataFrame(projects)
 st.markdown("### 🔍 專案詳細資訊")
 
 if "project_name" not in st.session_state:
-    st.session_state.project_name = df.iloc[0]['project_name']
+
+    try:
+        st.session_state.project_name = df.iloc[0]['project_name']
+    except:
+        st.session_state.project_name = None
 
 selected_project = st.sidebar.selectbox(
     "選擇專案",
