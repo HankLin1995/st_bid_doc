@@ -79,18 +79,26 @@ df = pd.DataFrame(projects)
 st.markdown("### 🔍 專案詳細資訊")
 
 if "project_name" not in st.session_state:
+    st.session_state.project_name = ""
 
-    try:
-        st.session_state.project_name = df.iloc[0]['project_name']
-    except:
-        st.session_state.project_name = None
+    # try:
+    #     st.session_state.project_name = df.iloc[0]['project_name']
+    # except:
+    #     st.session_state.project_name = None
 
-selected_project = st.sidebar.selectbox(
-    "選擇專案",
-    options=df['project_name'].tolist(),
-    index=df['project_name'].tolist().index(st.session_state.project_name),
-    # format_func=lambda x: f"{x} - {df[df['project_number']==x]['project_name'].iloc[0]}",
-)
+if st.session_state.project_name=="":
+    selected_project = st.sidebar.selectbox(
+        "選擇專案",
+        options=df['project_name'].tolist(),
+        # format_func=lambda x: f"{x} - {df[df['project_number']==x]['project_name'].iloc[0]}",
+    )
+else:
+    selected_project = st.sidebar.selectbox(
+        "選擇專案",
+        options=df['project_name'].tolist(),
+        index=df['project_name'].tolist().index(st.session_state.project_name),
+        # format_func=lambda x: f"{x} - {df[df['project_number']==x]['project_name'].iloc[0]}",
+    )
 
 st.session_state.project_name = selected_project
 
