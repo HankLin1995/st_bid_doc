@@ -3,9 +3,29 @@ import requests
 from datetime import datetime
 from typing import List
 import time
+from api import get_project,update_project,update_project_dates
+
 
 # API 配置
 API_URL = "http://backend:8000"
+
+def update_another_db(project_id,status,mydate):
+
+    result=update_project(project_id, {"CurrentStatus": status})
+
+    if "ProjectID" in result:
+        st.success("工程狀態已更新為預算書")
+        time.sleep(1)
+    else:
+        st.error("無法更新工程狀態")
+
+    result_2=update_project_dates(project_id, {"BudgetApprovalDate": mydate})
+    
+    if "ProjectID" in result_2:
+        st.success("預算核定日期已更新")
+        time.sleep(1)
+    else:
+        st.error("無法更新預算核定日期")
 
 def create_project(project_data: dict):
     response = requests.post(f"{API_URL}/projects/", json=project_data)
@@ -40,9 +60,6 @@ if st.session_state.test_mode==True:
         st.rerun()
 
 st.markdown("### 🔷預算書審查")
-
-# if 'test_data' in st.session_state:
-# 設定預設值
 
 if 'test_data' not in st.session_state:
     st.session_state.test_data = {}
@@ -80,22 +97,48 @@ with st.container(border=True):
     year = st.number_input("民國年",min_value=113,value=114)
 
     branch_office_options = ["斗六分處","虎尾分處","西螺分處","北港分處","林內分處","本處"]
-    branch_office = st.selectbox("分處名稱",options=branch_office_options)#,index=0 if 'test_data' not in st.session_state else branch_office_options.index(st.session_state.test_data["branch_office"]))
-    
+    branch_office = st.selectbox("分處名稱",options=branch_office_options)
     supervisor = st.text_input("主辦監造", value=default_values["supervisor"])
     supervisor_personnel = st.text_input("監造人員", value=default_values["supervisor_personnel"])
 
-# col1, col2 = st.columns(2)
 
-# with col1:
 with st.container(border=True):
     st.markdown("#### 🍪基本資料")
-    project_name = st.text_input("工程名稱", value=default_values["project_name"])
     project_number = st.text_input("工程編號", value=default_values["project_number"])
+
+    if project_number:
+        project = get_project(project_number)
+        # st.write(project)
+        if "ProjectName" in project:
+            # st.session_state.project_data = project
+            project_id=project["ProjectID"]
+            st.success(f"工程載入成功！({project['ProjectName']})")
+            
+            if st.button("確定更新"):
+                result=update_project(project_id, {"CurrentStatus": "預算書"})
+
+                if "ProjectID" in result:
+                    st.success("工程狀態已更新為預算書")
+                    time.sleep(1)
+                else:
+                    st.error("無法更新工程狀態")
+
+                result_2=update_project_dates(project_id, {"BudgetApprovalDate": datetime.now().strftime("%Y-%m-%d")})
+                
+                if "ProjectID" in result_2:
+                    st.success("預算核定日期已更新")
+                    time.sleep(1)
+                else:
+                    st.error("無法更新預算核定日期")
+
+        else:
+            st.error("無法載入工程")
+
+    project_name = st.text_input("工程名稱", value=default_values["project_name"])
     location = st.text_input("工程地點", value=default_values["location"])
     duration = st.number_input("工期(天數)", min_value=0, value=default_values["duration"])
     construction_content = st.text_input("施工內容", value=default_values["construction_content"])
-# with col2:
+
 with st.container(border=True):
     st.markdown("#### 👜經費相關")
     funding_source = st.text_input("經費來源",value=default_values["funding_source"])
@@ -104,7 +147,6 @@ with st.container(border=True):
     contract_amount = st.number_input("發包工作費", min_value=0,value=default_values["contract_amount"])
     outsourcing_items=st.pills("選擇契約項目",["瀝青混凝土鋪面", "控制性低強度回填材料(CLSM)", "級配粒料基層", "低密度再生透水混凝土"],selection_mode="multi")
     schedule_type=st.radio("開工型式",options=["一般流程","指定開工日","逕流廢汙水"])
-
 
 # 送出和清除按鈕
 col_submit1, col_submit2 = st.columns([3, 1])
