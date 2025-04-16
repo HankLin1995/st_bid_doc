@@ -1,0 +1,29 @@
+name: CI/CD - Deploy Streamlit via SSH (Safe Version)
+
+on:
+  push:
+    branches:
+      - sql_ver  # 只有 sql_ver 分支才觸發部署
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up SSH key and known hosts
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Deploy to remote server
+      run: |
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
+          cd ${{ secrets.DEPLOY_PATH }}
+          git pull origin sql_ver
+          docker-compose up --build -d
+        EOF
