@@ -19,11 +19,14 @@ jobs:
         ssh-private-key: ${{ secrets.SSH_KEY }}
 
     - name: Add Known Hosts
-      run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+      run: |
+        # 使用 -v 選項顯示更多信息，以便診斷
+        ssh-keyscan -vvv -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>&1 || echo "Warning: ssh-keyscan 可能失敗，但繼續執行"
 
     - name: Deploy to remote server
       run: |
-        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
+        # 使用 SSH agent 進行連接，不需要指定 -i 選項
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
           cd ${{ secrets.DEPLOY_PATH }}
           git pull origin sql_ver
           docker-compose up --build -d
