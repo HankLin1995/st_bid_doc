@@ -4,8 +4,8 @@ services:
   streamlit_app:
     build: ./frontend
     container_name: st_docx
-    ports:
-      - "8501:8501"
+    # ports:
+    #   - "8501:8501"
     depends_on:
       - backend
     networks:
@@ -16,8 +16,8 @@ services:
   backend:
     build: ./backend
     container_name: docx_backend
-    ports:
-      - "8000:8000"
+    # ports:
+    #   - "8001:8000"
     volumes:
       - ./backend:/app
       - ./data:/app/data
@@ -26,11 +26,11 @@ services:
     env_file:
       - .env
 
-  # cloudflared:
-  #   image: cloudflare/cloudflared:latest
-  #   command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TUNNEL_TOKEN}
-  #   networks:
-  #     - docx_network
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TUNNEL_TOKEN}
+    networks:
+      - docx_network
       
 networks:
   docx_network:
