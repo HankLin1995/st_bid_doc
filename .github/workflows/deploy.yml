@@ -18,8 +18,7 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        # 不使用 sudo，直接更改檔案擁有者
-        chown $USER:$USER ~/.ssh/id_rsa
+        # SSH key permissions already set with chmod 600 above
         ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
     - name: Deploy to remote server
