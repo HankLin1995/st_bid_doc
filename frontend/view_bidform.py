@@ -163,58 +163,58 @@ def budget_page():
         schedule_type=st.radio("開工型式",options=["一般流程","指定開工日","逕流廢汙水"])
 
     # 送出和清除按鈕
-    col_submit1, col_submit2 = st.columns([3, 1])
-    with col_submit1:
-        if st.button("送出表單", type="primary",use_container_width=True):
-            try:
-                project_data = {
-                    "branch_office": branch_office,
-                    "project_name": project_name,
-                    "project_number": project_number,
-                    "funding_source": funding_source,
-                    "approved_amount": approved_amount,
-                    "total_budget": total_budget,
-                    "contract_amount": contract_amount,
-                    "duration": duration,
-                    "construction_content": construction_content,
-                    "location": location,
-                    "supervisor": supervisor,
-                    "supervisor_personnel": supervisor_personnel,
-                    "outsourcing_items": ",".join(outsourcing_items),
-                    "procurement_type": "工程",  # 預設為工程
-                    "year": year,  # 預設為當前年度
-                    "schedule_type": schedule_type,
-                    "outsourcing_company": outsourcing_company
-                }
-                
-                result = create_project(project_data)
+    # col_submit1, col_submit2 = st.columns([3, 1])
+    # with col_submit1:
+    if st.button("送出表單", type="primary",use_container_width=True):
+        try:
+            project_data = {
+                "branch_office": branch_office,
+                "project_name": project_name,
+                "project_number": project_number,
+                "funding_source": funding_source,
+                "approved_amount": approved_amount,
+                "total_budget": total_budget,
+                "contract_amount": contract_amount,
+                "duration": duration,
+                "construction_content": construction_content,
+                "location": location,
+                "supervisor": supervisor,
+                "supervisor_personnel": supervisor_personnel,
+                "outsourcing_items": ",".join(outsourcing_items),
+                "procurement_type": "工程",  # 預設為工程
+                "year": year,  # 預設為當前年度
+                "schedule_type": schedule_type,
+                "outsourcing_company": outsourcing_company
+            }
+            
+            result = create_project(project_data)
 
-                if result:
-                    st.success("工程創建成功！")
-                    st.balloons()
+            if result:
+                st.success("工程創建成功！")
+                st.balloons()
 
-                    # Update project status and date
-                    result = update_project_date_and_status(result["ProjectID"], "預算書", datetime.now().strftime("%Y-%m-%d"))
-                    if result == "更新成功":
-                        st.success("狀態更新成功!")
-                    else:
-                        st.error("狀態更新失敗!")
-
-                    time.sleep(2)
-                    if 'test_data' in st.session_state:
-                        del st.session_state.test_data
-                    st.rerun()
+                # Update project status and date
+                result = update_project_date_and_status(result["ProjectID"], "預算書", datetime.now().strftime("%Y-%m-%d"))
+                if result == "更新成功":
+                    st.success("狀態更新成功!")
                 else:
-                    # check if the project is created
-                    project = get_project_by_number(project_number)
-                    
-                    if project:
-                        st.warning("工程已存在，請勿重複創建!",icon="⚠️")
-                    else:
-                        st.error("創建失敗，請檢查資料是否正確")
+                    st.error("狀態更新失敗!")
 
-            except Exception as e:
-                st.error(f"操作失敗：{str(e)}")
+                time.sleep(2)
+                if 'test_data' in st.session_state:
+                    del st.session_state.test_data
+                st.rerun()
+            else:
+                # check if the project is created
+                project = get_project_by_number(project_number)
+                
+                if project:
+                    st.warning("工程已存在，請勿重複創建!",icon="⚠️")
+                else:
+                    st.error("創建失敗，請檢查資料是否正確")
+
+        except Exception as e:
+            st.error(f"操作失敗：{str(e)}")
 
 
 ##### MAIN UI #####
