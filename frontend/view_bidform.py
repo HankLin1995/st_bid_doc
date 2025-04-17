@@ -106,33 +106,33 @@ with st.container(border=True):
     st.markdown("#### 🍪基本資料")
     project_number = st.text_input("工程編號", value=default_values["project_number"])
 
-    if project_number:
-        project = get_project(project_number)
-        # st.write(project)
-        if "ProjectName" in project:
-            # st.session_state.project_data = project
-            project_id=project["ProjectID"]
-            st.success(f"工程載入成功！({project['ProjectName']})")
+    # if project_number:
+    #     project = get_project(project_number)
+    #     # st.write(project)
+    #     if "ProjectName" in project:
+    #         # st.session_state.project_data = project
+    #         project_id=project["ProjectID"]
+    #         st.success(f"工程載入成功！({project['ProjectName']})")
             
-            if st.button("確定更新"):
-                result=update_project(project_id, {"CurrentStatus": "預算書"})
+    #         if st.button("確定更新"):
+    #             result=update_project(project_id, {"CurrentStatus": "預算書"})
 
-                if "ProjectID" in result:
-                    st.success("工程狀態已更新為預算書")
-                    time.sleep(1)
-                else:
-                    st.error("無法更新工程狀態")
+    #             if "ProjectID" in result:
+    #                 st.success("工程狀態已更新為預算書")
+    #                 time.sleep(1)
+    #             else:
+    #                 st.error("無法更新工程狀態")
 
-                result_2=update_project_dates(project_id, {"BudgetApprovalDate": datetime.now().strftime("%Y-%m-%d")})
+    #             result_2=update_project_dates(project_id, {"BudgetApprovalDate": datetime.now().strftime("%Y-%m-%d")})
                 
-                if "ProjectID" in result_2:
-                    st.success("預算核定日期已更新")
-                    time.sleep(1)
-                else:
-                    st.error("無法更新預算核定日期")
+    #             if "ProjectID" in result_2:
+    #                 st.success("預算核定日期已更新")
+    #                 time.sleep(1)
+    #             else:
+    #                 st.error("無法更新預算核定日期")
 
-        else:
-            st.error("無法載入工程")
+    #     else:
+    #         st.error("無法載入工程")
 
     project_name = st.text_input("工程名稱", value=default_values["project_name"])
     location = st.text_input("工程地點", value=default_values["location"])
