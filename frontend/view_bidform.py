@@ -3,29 +3,11 @@ import requests
 from datetime import datetime
 from typing import List
 import time
-from api import get_project,update_project,update_project_dates
+from api import get_project,update_project,update_project_dates,update_project_date_and_status
 
 
 # API 配置
 API_URL = "http://backend:8000"
-
-def update_another_db(project_id,status,mydate):
-
-    result=update_project(project_id, {"CurrentStatus": status})
-
-    if "ProjectID" in result:
-        st.success("工程狀態已更新為預算書")
-        time.sleep(1)
-    else:
-        st.error("無法更新工程狀態")
-
-    result_2=update_project_dates(project_id, {"BudgetApprovalDate": mydate})
-    
-    if "ProjectID" in result_2:
-        st.success("預算核定日期已更新")
-        time.sleep(1)
-    else:
-        st.error("無法更新預算核定日期")
 
 def create_project(project_data: dict):
     response = requests.post(f"{API_URL}/projects/", json=project_data)
@@ -101,38 +83,27 @@ with st.container(border=True):
     supervisor = st.text_input("主辦監造", value=default_values["supervisor"])
     supervisor_personnel = st.text_input("監造人員", value=default_values["supervisor_personnel"])
 
-
 with st.container(border=True):
     st.markdown("#### 🍪基本資料")
     project_number = st.text_input("工程編號", value=default_values["project_number"])
 
-    # if project_number:
-    #     project = get_project(project_number)
-    #     # st.write(project)
-    #     if "ProjectName" in project:
-    #         # st.session_state.project_data = project
-    #         project_id=project["ProjectID"]
-    #         st.success(f"工程載入成功！({project['ProjectName']})")
+    if project_number:
+        project = get_project(project_number)
+        # st.write(project)
+        if "ProjectName" in project:
+            # st.session_state.project_data = project
+            project_id=project["ProjectID"]
+            st.success(f"工程載入成功！({project['ProjectName']})")
             
-    #         if st.button("確定更新"):
-    #             result=update_project(project_id, {"CurrentStatus": "預算書"})
-
-    #             if "ProjectID" in result:
-    #                 st.success("工程狀態已更新為預算書")
-    #                 time.sleep(1)
+    #         if st.button("更新狀態"):
+    #             result=update_project_date_and_status(project_id, "預算書", datetime.now().strftime("%Y-%m-%d"))
+    #             if result == "更新成功":
+    #                 st.success("更新成功")
     #             else:
-    #                 st.error("無法更新工程狀態")
+    #                 st.error("更新失敗")
 
-    #             result_2=update_project_dates(project_id, {"BudgetApprovalDate": datetime.now().strftime("%Y-%m-%d")})
-                
-    #             if "ProjectID" in result_2:
-    #                 st.success("預算核定日期已更新")
-    #                 time.sleep(1)
-    #             else:
-    #                 st.error("無法更新預算核定日期")
-
-    #     else:
-    #         st.error("無法載入工程")
+        else:
+            st.error("無法載入工程，請通知審查人員!")
 
     project_name = st.text_input("工程名稱", value=default_values["project_name"])
     location = st.text_input("工程地點", value=default_values["location"])
@@ -178,6 +149,14 @@ with col_submit1:
             if result:
                 st.success("工程創建成功！")
                 st.balloons()
+
+                # Update project status and date
+                result = update_project_date_and_status(result["ProjectID"], "預算書", datetime.now().strftime("%Y-%m-%d"))
+                if result == "更新成功":
+                    st.success("狀態更新成功!")
+                else:
+                    st.error("狀態更新失敗!")
+
                 time.sleep(2)
                 if 'test_data' in st.session_state:
                     del st.session_state.test_data
@@ -190,6 +169,6 @@ with col_submit1:
                     st.warning("工程已存在，請勿重複創建!",icon="⚠️")
                 else:
                     st.error("創建失敗，請檢查資料是否正確")
-                
+
         except Exception as e:
             st.error(f"操作失敗：{str(e)}")
