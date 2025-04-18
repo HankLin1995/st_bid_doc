@@ -210,6 +210,11 @@ def budget_page():
                 
                 if project:
                     st.warning("工程已存在，請勿重複創建!",icon="⚠️")
+                    result = update_project_date_and_status(result["ProjectID"], "預算書", datetime.now().strftime("%Y-%m-%d"))
+                    if result == "更新成功":
+                        st.success("狀態更新成功!")
+                    else:
+                        st.error("狀態更新失敗!")
                 else:
                     st.error("創建失敗，請檢查資料是否正確")
 
