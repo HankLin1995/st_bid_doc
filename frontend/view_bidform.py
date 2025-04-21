@@ -134,6 +134,8 @@ def budget_page():
         st.markdown("#### 🍪基本資料")
         project_number = st.text_input("工程編號",placeholder="工程編號")
 
+        try:
+
         if project_number:
 
             project = get_project(project_number)
@@ -147,6 +149,10 @@ def budget_page():
                 
             else:
                 st.error("無法載入工程，請通知審查人員!")
+
+        except Exception as e:
+            IsERROR=True
+            st.error(f"載入工程失敗：{str(e)}")
 
         project_name = st.text_input("工程名稱",placeholder="工程名稱",value=project_name_value)
         location = st.text_input("工程地點",placeholder="工程地點")
@@ -193,12 +199,13 @@ def budget_page():
                 st.success("工程創建成功！")
                 st.balloons()
 
-                # Update project status and date
-                result = update_project_date_and_status(project_number, "預算書", datetime.now().strftime("%Y-%m-%d"))
-                if result == "更新成功":
-                    st.success("狀態更新成功!")
-                else:
-                    st.error("狀態更新失敗!")
+                if not IsERROR:
+                    # Update project status and date
+                    result = update_project_date_and_status(project_number, "預算書", datetime.now().strftime("%Y-%m-%d"))
+                    if result == "更新成功":
+                        st.success("狀態更新成功!")
+                    else:
+                        st.error("狀態更新失敗!")
 
                 time.sleep(2)
                 if 'test_data' in st.session_state:
