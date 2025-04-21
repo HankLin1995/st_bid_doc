@@ -136,19 +136,19 @@ def budget_page():
 
         try:
 
-        if project_number:
+            if project_number:
 
-            project = get_project(project_number)
-            approved_amount_value = project["ApprovalBudget"]
-            project_name_value = project["ProjectName"]
+                project = get_project(project_number)
+                approved_amount_value = project["ApprovalBudget"]
+                project_name_value = project["ProjectName"]
 
-            if "ProjectName" in project:
+                if "ProjectName" in project:
 
-                project_id=project["ProjectID"]
-                st.success(f"工程載入成功！")
-                
-            else:
-                st.error("無法載入工程，請通知審查人員!")
+                    project_id=project["ProjectID"]
+                    st.success(f"工程載入成功！")
+                    
+                else:
+                    st.error("無法載入工程，請通知審查人員!")
 
         except Exception as e:
             IsERROR=True
