@@ -9,6 +9,8 @@ import pandas as pd
 # API 配置
 API_URL = "http://backend:8000"
 
+IsERROR=False
+
 def draft_page():
 
     st.subheader(":star: 初稿送審")
