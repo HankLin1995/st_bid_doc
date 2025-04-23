@@ -112,45 +112,36 @@ def get_cost_type(cost_type: str):
 def get_employ_type(qualification: str):
     # Initially set all checkboxes to False
     contractor_a = False
-    contractor_a1 = False
-    contractor_a2 =False
-    contractor_a3 = False
     contractor_b = False
+    contractor_c = False
+    contractor_d = False
+    contractor_e = False
+    contractor_f = False
+    contractor_g = False
 
     # Classifying based on qualification type and selecting appropriate checkboxes
     if qualification == "設立於雲林縣或毗鄰縣市之土木包工業，或丙等以上綜合營造業":
         contractor_a = True
-        contractor_a3 = True  # 丙等 or higher, so select "廠商A丙-BOX"
-        contractor_b = True  # 土包 as well
         
     elif qualification == "設立於雲林縣或毗鄰縣市並依營造業法規定辦理資本額增資之土木包工業，或丙等以上綜合營造業":
-        contractor_a = True
-        contractor_a3 = True  # 丙等 or higher
-        contractor_b = True  # 土包
+        contractor_b = True
         
     elif qualification == "丙等以上綜合營造業":
-        contractor_a = True
-        contractor_a3 = True  # 丙等 or higher
+        contractor_c = True
     
     elif qualification == "依營造業法規定辦理資本額增資之丙等綜合營造業，或乙等以上綜合營造業":
-        contractor_a = True
-        contractor_a2 = True
-        contractor_a3 = True  # 乙等 or higher
+        contractor_d = True
         
     elif qualification == "乙等以上綜合營造業":
-        contractor_a = True
-        contractor_a2 = True  # 乙等 or higher
+        contractor_e = True
 
     elif qualification == "依營造業法規定辦理資本額增資之乙等綜合營造業，或甲等以上綜合營造業":
-        contractor_a = True
-        contractor_a1 = True
-        contractor_a2 = True
+        contractor_f = True
     
     elif qualification == "甲等綜合營造業":
-        contractor_a = True
-        contractor_a1 = True
+        contractor_g = True
 
     else:
         st.toast("小額採購或巨額採購請另外處理!!!",icon="🚫")
 
-    return contractor_a, contractor_a1, contractor_a2, contractor_a3, contractor_b
+    return contractor_a, contractor_b, contractor_c, contractor_d, contractor_e, contractor_f, contractor_g
