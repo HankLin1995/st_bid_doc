@@ -145,4 +145,4 @@ def get_employ_type(qualification: str):
     else:
         st.toast("小額採購或巨額採購請另外處理!!!",icon="🚫")
 
-    return contractor_a, contractor_b, contractor_c, contractor_d, contractor_e, contractor_f, contractor_g
+    return contractor_a, contractor_b, contractor_c, contractor_d, contractor_e, contractor_f, contractor_g, contractor_tubao
