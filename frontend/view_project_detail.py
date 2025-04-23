@@ -284,8 +284,10 @@ with tab2:
             general_days="14"
 
     general_box, specified_box, runoff_box, general_date, specified_date, runoff_date = get_work_type(mode2,work_days)
-    contractor_a, contractor_a1, contractor_a2, contractor_a3, contractor_b = get_employ_type(contractor_qual)
+    # contractor_a, contractor_a1, contractor_a2, contractor_a3, contractor_b = get_employ_type(contractor_qual)
     purchase_a, purchase_b, purchase_c = get_cost_type(purchase_level)
+
+    contractor_a,contractor_b,contractor_c,contractor_d,contractor_e,contractor_f,contractor_g = get_employ_type(contractor_qual)
 
     data = {
         '標案名稱': project_name,
@@ -313,11 +315,18 @@ with tab2:
         '採購A-BOX': purchase_a,
         '採購B-BOX': purchase_b,
         '採購C-BOX': purchase_c,
+        # '廠商A-BOX': contractor_a,
+        # '廠商A甲-BOX': contractor_a1,
+        # '廠商A乙-BOX': contractor_a2,
+        # '廠商A丙-BOX': contractor_a3,
+        # '廠商B土包-BOX': contractor_b,
         '廠商A-BOX': contractor_a,
-        '廠商A甲-BOX': contractor_a1,
-        '廠商A乙-BOX': contractor_a2,
-        '廠商A丙-BOX': contractor_a3,
-        '廠商B土包-BOX': contractor_b,
+        '廠商B-BOX': contractor_b,
+        '廠商C-BOX': contractor_c,
+        '廠商D-BOX': contractor_d,
+        '廠商E-BOX': contractor_e,
+        '廠商F-BOX': contractor_f,
+        '廠商G-BOX': contractor_g,
         '保留-BOX': bid_award
         
     }
