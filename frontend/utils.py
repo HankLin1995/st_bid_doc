@@ -118,14 +118,15 @@ def get_employ_type(qualification: str):
     contractor_e = False
     contractor_f = False
     contractor_g = False
+    contractor_tubao = False
 
     # Classifying based on qualification type and selecting appropriate checkboxes
     if qualification == "設立於雲林縣或毗鄰縣市之土木包工業，或丙等以上綜合營造業":
         contractor_a = True
-        
+        contractor_tubao = True
     elif qualification == "設立於雲林縣或毗鄰縣市並依營造業法規定辦理資本額增資之土木包工業，或丙等以上綜合營造業":
         contractor_b = True
-        
+        contractor_tubao = True
     elif qualification == "丙等以上綜合營造業":
         contractor_c = True
     

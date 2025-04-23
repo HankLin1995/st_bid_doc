@@ -287,7 +287,7 @@ with tab2:
     # contractor_a, contractor_a1, contractor_a2, contractor_a3, contractor_b = get_employ_type(contractor_qual)
     purchase_a, purchase_b, purchase_c = get_cost_type(purchase_level)
 
-    contractor_a,contractor_b,contractor_c,contractor_d,contractor_e,contractor_f,contractor_g = get_employ_type(contractor_qual)
+    contractor_a,contractor_b,contractor_c,contractor_d,contractor_e,contractor_f,contractor_g,contractor_tubao = get_employ_type(contractor_qual)
 
     data = {
         '標案名稱': project_name,
@@ -319,7 +319,7 @@ with tab2:
         # '廠商A甲-BOX': contractor_a1,
         # '廠商A乙-BOX': contractor_a2,
         # '廠商A丙-BOX': contractor_a3,
-        # '廠商B土包-BOX': contractor_b,
+        '廠商B土包-BOX': contractor_tubao,
         '廠商A-BOX': contractor_a,
         '廠商B-BOX': contractor_b,
         '廠商C-BOX': contractor_c,
