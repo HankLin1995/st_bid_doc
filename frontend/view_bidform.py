@@ -157,17 +157,17 @@ def budget_page():
             st.error(f"載入工程失敗：{str(e)}")
 
         project_name = st.text_input("工程名稱",placeholder="工程名稱",value=project_name_value)
-        location = st.text_input("工程地點",placeholder="工程地點")
+        location = st.text_input("工程地點",placeholder="雲林縣斗六市")
         duration = st.number_input("工期(天數)", min_value=0)
         construction_content = st.text_input("施工內容",placeholder="施工內容")
 
     with st.container(border=True):
         st.markdown("#### 👜經費相關")
         funding_source = st.text_input("經費來源",value="固定資產建設改良擴充-土地改良物(國庫撥款)",placeholder="經費來源")
-        approved_amount=st.number_input("核定金額",value=approved_amount_value)
-        total_budget = st.number_input("總工程費", min_value=0)
-        contract_amount = st.number_input("發包工作費", min_value=0)
-        outsourcing_items=st.pills("選擇契約項目",["瀝青混凝土鋪面", "控制性低強度回填材料(CLSM)", "級配粒料基層", "低密度再生透水混凝土"],selection_mode="multi")
+        approved_amount=st.number_input("核定金額",value=approved_amount_value,disabled=not IsERROR)
+        total_budget = st.number_input("總工程費", min_value=1000)
+        contract_amount = st.number_input("發包工作費", min_value=1000)
+        outsourcing_items=st.pills("選擇PCCES有編列項目",["瀝青混凝土鋪面", "控制性低強度回填材料(CLSM)", "級配粒料基層", "低密度再生透水混凝土"],selection_mode="multi")
         schedule_type=st.radio("開工型式",options=["一般流程","指定開工日","逕流廢汙水"])
 
     # 送出和清除按鈕
