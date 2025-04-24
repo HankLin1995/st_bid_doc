@@ -80,6 +80,7 @@ def load_test_data():
     }
 
 def budget_page():
+    global IsERROR
     
     # if st.session_state.test_mode==True:
 
@@ -139,21 +140,21 @@ def budget_page():
         try:
 
             if project_number:
-
                 project = get_project(project_number)
                 approved_amount_value = project["ApprovalBudget"]
                 project_name_value = project["ProjectName"]
 
                 if "ProjectName" in project:
-
-                    project_id=project["ProjectID"]
+                    project_id = project["ProjectID"]
                     st.success(f"工程載入成功！")
-                    
+                    IsERROR = False
                 else:
                     st.error("無法載入工程，請通知審查人員!")
-
+                    IsERROR = True
+            else:
+                IsERROR = False
         except Exception as e:
-            IsERROR=True
+            IsERROR = True
             st.error(f"載入工程失敗：{str(e)}")
 
         project_name = st.text_input("工程名稱",placeholder="工程名稱",value=project_name_value)
