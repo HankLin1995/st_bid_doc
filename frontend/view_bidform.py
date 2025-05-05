@@ -11,6 +11,9 @@ API_URL = "http://backend:8000"
 
 IsERROR=False
 
+if 'construction_content' not in st.session_state:
+    st.session_state.construction_content = ""
+
 def draft_page():
 
     st.subheader(":star: 初稿送審")
@@ -78,6 +81,16 @@ def load_test_data():
         "outsourcing_company": "OOO工程顧問公司",
         "outsourcing_items": ["瀝青混凝土鋪面", "控制性低強度回填材料(CLSM)"]
     }
+
+@st.dialog("施工內容")
+def get_construction():
+    mylen=st.number_input("施工總長度",min_value=0)
+    myline=st.number_input("施工線數",min_value=0)
+    myother=st.text_input("其他內容",placeholder="其他內容")
+
+    if st.button("確認"):
+        st.session_state.construction_content="施工線數:"+str(myline)+"線、"+"施工總長度:"+str(mylen)+"M、"+myother
+        st.rerun()
 
 def budget_page():
     global IsERROR
@@ -160,7 +173,17 @@ def budget_page():
         project_name = st.text_input("工程名稱",placeholder="工程名稱",value=project_name_value)
         location = st.text_input("工程地點",placeholder="雲林縣斗六市")
         duration = st.number_input("工期(天數)", min_value=0)
-        construction_content = st.text_input("施工內容",placeholder="施工內容")
+        #施工總長度、線數、其他內容
+
+        construction_content = st.session_state.construction_content
+
+        if st.button("填寫施工內容"):
+            construction_content = get_construction()
+
+        if construction_content=="":
+            st.warning("請填寫施工內容!")
+        else:
+            st.write("施工內容:",construction_content)
 
     with st.container(border=True):
         st.markdown("#### 👜經費相關")
