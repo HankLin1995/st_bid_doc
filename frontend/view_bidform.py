@@ -91,7 +91,7 @@ def get_construction():
     if st.button("確認"):
 
         if myother=="":
-            st.session_state.construction_content="施工線數:"+str(myline)+"線、"+"施工總長度:"+str(mylen)+"M
+            st.session_state.construction_content="施工線數:"+str(myline)+"線、"+"施工總長度:"+str(mylen)+"M"
         else:
             st.session_state.construction_content="施工線數:"+str(myline)+"線、"+"施工總長度:"+str(mylen)+"M、"+myother
         st.rerun()
@@ -223,33 +223,33 @@ def budget_page():
                 "outsourcing_company": outsourcing_company
             }
             
-            st.write(project_data)
-            # result = create_project(project_data)
+            # st.write(project_data)
+            result = create_project(project_data)
 
-            # if result:
-            #     st.success("工程創建成功！")
-            #     st.balloons()
+            if result:
+                st.success("工程創建成功！")
+                st.balloons()
 
-            #     if not IsERROR:
-            #         # Update project status and date
-            #         result = update_project_date_and_status(project_number, "預算書", datetime.now().strftime("%Y-%m-%d"))
-            #         if result == "更新成功":
-            #             st.success("狀態更新成功!")
-            #         else:
-            #             st.error("狀態更新失敗!")
+                if not IsERROR:
+                    # Update project status and date
+                    result = update_project_date_and_status(project_number, "預算書", datetime.now().strftime("%Y-%m-%d"))
+                    if result == "更新成功":
+                        st.success("狀態更新成功!")
+                    else:
+                        st.error("狀態更新失敗!")
 
-            #     time.sleep(2)
-            #     if 'test_data' in st.session_state:
-            #         del st.session_state.test_data
-            #     st.rerun()
-            # else:
-            #     # check if the project is created
-            #     project = get_project_by_number(project_number)
+                time.sleep(2)
+                if 'test_data' in st.session_state:
+                    del st.session_state.test_data
+                st.rerun()
+            else:
+                # check if the project is created
+                project = get_project_by_number(project_number)
                 
-            #     if project:
-            #         st.warning("工程已存在，請勿重複創建!",icon="⚠️")
-            #     else:
-            #         st.error("創建失敗，請檢查資料是否正確")
+                if project:
+                    st.warning("工程已存在，請勿重複創建!",icon="⚠️")
+                else:
+                    st.error("創建失敗，請檢查資料是否正確")
 
         except Exception as e:
             st.error(f"操作失敗：{str(e)}")
