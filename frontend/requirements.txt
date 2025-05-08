@@ -3,7 +3,7 @@ streamlit
 cn2an
 requests
 python-docx
-OpenCC
+# OpenCC
 opencc-python-reimplemented
 python-dotenv
 line-bot-sdk
