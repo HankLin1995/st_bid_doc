@@ -84,7 +84,7 @@ def load_test_data():
 
 @st.dialog("施工內容")
 def get_construction():
-    mylen=st.number_input("施工總長度",min_value=0)
+    mylen=st.number_input("施工總長度",min_value=0.0)
     myline=st.number_input("施工線數",min_value=0)
     myother=st.text_input("其他內容",placeholder="其他內容")
 
