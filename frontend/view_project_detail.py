@@ -216,8 +216,12 @@ with tab2:
             project_number = st.text_input("標案編號",placeholder="YL114OOO")
             location = st.text_input("工程地點")
 
-        if '雲林' in project_number:
-            st.error("請將標案編號中的「雲林」改為「YL」")
+        # if '雲林' in project_number:
+        #     st.error("請將標案編號中的「雲林」改為「YL」")
+
+        if 'YL' not in project_number:
+            st.error("標案編號應由「YL」開頭!")
+            st.stop()
 
     with st.container(border=True):
         st.markdown("#### 💰經費相關")
