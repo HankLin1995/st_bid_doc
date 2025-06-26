@@ -105,7 +105,8 @@ def get_cost_type(cost_type: str):
     elif cost_type == "查核金額以上未達巨額之採購":
         purchase_c = True
     else:
-        st.toast("小額採購或巨額採購請另外處理!!!",icon="🚫")
+        pass
+        # st.toast("小額採購或巨額採購請另外處理!!!",icon="🚫")
     
     return purchase_a, purchase_b, purchase_c
 
