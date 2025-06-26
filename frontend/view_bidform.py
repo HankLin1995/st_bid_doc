@@ -147,12 +147,12 @@ def budget_page():
 
         branch_office_options = ["斗六分處","虎尾分處","西螺分處","北港分處","林內分處","本處"]
         branch_office = st.selectbox("分處名稱",options=branch_office_options)
-        supervisor = st.text_input("主辦監造",placeholder="姓名")
-        supervisor_personnel = st.text_input("監造人員",placeholder="姓名")
+        supervisor = st.text_input("主辦監造",placeholder="(必填)姓名")
+        supervisor_personnel = st.text_input("監造人員",placeholder="(選填)姓名")
 
     with st.container(border=True):
         st.markdown("#### 🍪基本資料")
-        project_number = st.text_input("工程編號",placeholder="工程編號")
+        project_number = st.text_input("工程編號",placeholder="雲林114TXX")
 
         try:
 
@@ -174,7 +174,7 @@ def budget_page():
             IsERROR = True
             st.error(f"載入工程失敗：{str(e)}")
 
-        project_name = st.text_input("工程名稱",placeholder="工程名稱",value=project_name_value)
+        project_name = st.text_input("工程名稱",value=project_name_value)
         location = st.text_input("工程地點",placeholder="雲林縣斗六市")
         duration = st.number_input("工期(天數)", min_value=0)
         #施工總長度、線數、其他內容
@@ -194,7 +194,11 @@ def budget_page():
         funding_source = st.text_input("經費來源",value="固定資產建設改良擴充-土地改良物(國庫撥款)",placeholder="經費來源")
         approved_amount=st.number_input("核定金額",value=approved_amount_value,disabled=not IsERROR)
         total_budget = st.number_input("總工程費", min_value=1000)
+        if total_budget==1000:
+            st.warning("總工程費未調整，請重新輸入!",icon="⚠️")
         contract_amount = st.number_input("發包工作費", min_value=1000)
+        if contract_amount==1000:
+            st.warning("發包工作費未調整，請重新輸入!",icon="⚠️")
         outsourcing_items=st.pills("選擇PCCES有編列項目",["瀝青混凝土鋪面", "控制性低強度回填材料(CLSM)", "級配粒料基層", "低密度再生透水混凝土"],selection_mode="multi")
         schedule_type=st.radio("開工型式",options=["一般流程","指定開工日","逕流廢汙水"])
 
