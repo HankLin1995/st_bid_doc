@@ -221,7 +221,7 @@ with tab2:
 
         if 'YL' not in project_number:
             st.error("標案編號應由「YL」開頭!")
-            st.stop()
+            # st.stop()
 
     with st.container(border=True):
         st.markdown("#### 💰經費相關")
