@@ -4,8 +4,8 @@ services:
   streamlit_app:
     build: ./frontend
     container_name: st_docx
-    # ports:
-    #   - "8501:8501"
+    ports:
+      - "8501:8501"
     depends_on:
       - backend
     networks:

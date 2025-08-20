@@ -71,6 +71,9 @@ def update_project_bonds(project_id, project_data):
 projects = get_projects()
 df = pd.DataFrame(projects)
 
+#filter status="上網"
+df=df[df['status']!='上網']
+
 # my_pass=st.sidebar.text_input("請輸入密碼",type="password")
 
 # if my_pass!=os.getenv("PASSWORD"):
