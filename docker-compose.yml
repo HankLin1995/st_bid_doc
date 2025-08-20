@@ -10,6 +10,7 @@ services:
       - backend
     networks:
       - docx_network
+      - backend_ylia_app-network
     env_file:
       - .env
 
@@ -35,6 +36,8 @@ services:
 networks:
   docx_network:
     driver: bridge
+  backend_ylia_app-network:
+    external: true
 
 volumes:
   sqlite_data:
