@@ -75,8 +75,8 @@ df = pd.DataFrame(projects)
 
 if st.sidebar.toggle("顯示上網案件",value=False):
     df=df[df['status']=='上網']
-else:
-    df=df[df['status']!='上網']
+# else:
+#     df=df[df['status']!='上網']
 
 # my_pass=st.sidebar.text_input("請輸入密碼",type="password")
 
