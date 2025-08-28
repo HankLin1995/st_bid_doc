@@ -71,12 +71,17 @@ def update_project_bonds(project_id, project_data):
 projects = get_projects()
 df = pd.DataFrame(projects)
 
-#filter status="上網"
+# 使用选择器让用户选择查看全部或只看上網项目
+filter_option = st.sidebar.radio("顯示項目", ["全部", "不顯示上網案件"])
 
-if st.sidebar.toggle("顯示上網案件",value=False):
-    df=df[df['status']=='上網']
-# else:
-#     df=df[df['status']!='上網']
+# 根据选择筛选数据
+if filter_option == "不顯示上網案件":
+    filtered_df = df[df['status']!='上網']
+else:
+    filtered_df = df
+
+# 显示项目数量
+st.sidebar.markdown(f"**總數量: {len(filtered_df)}**")
 
 # my_pass=st.sidebar.text_input("請輸入密碼",type="password")
 
@@ -96,16 +101,25 @@ if "project_name" not in st.session_state:
 if st.session_state.project_name=="":
     selected_project = st.sidebar.selectbox(
         "選擇專案",
-        options=df['project_name'].tolist(),
-        # format_func=lambda x: f"{x} - {df[df['project_number']==x]['project_name'].iloc[0]}",
+        options=filtered_df['project_name'].tolist(),
+        # format_func=lambda x: f"{x} - {filtered_df[filtered_df['project_number']==x]['project_name'].iloc[0]}",
     )
 else:
-    selected_project = st.sidebar.selectbox(
-        "選擇專案",
-        options=df['project_name'].tolist(),
-        index=df['project_name'].tolist().index(st.session_state.project_name),
-        # format_func=lambda x: f"{x} - {df[df['project_number']==x]['project_name'].iloc[0]}",
-    )
+    # 检查当前选中的项目是否在筛选后的数据中
+    if st.session_state.project_name in filtered_df['project_name'].tolist():
+        selected_project = st.sidebar.selectbox(
+            "選擇專案",
+            options=filtered_df['project_name'].tolist(),
+            index=filtered_df['project_name'].tolist().index(st.session_state.project_name),
+            # format_func=lambda x: f"{x} - {filtered_df[filtered_df['project_number']==x]['project_name'].iloc[0]}",
+        )
+    else:
+        # 如果当前选中的项目不在筛选后的数据中，重置选择
+        selected_project = st.sidebar.selectbox(
+            "選擇專案",
+            options=filtered_df['project_name'].tolist(),
+            # format_func=lambda x: f"{x} - {filtered_df[filtered_df['project_number']==x]['project_name'].iloc[0]}",
+        )
 
 st.session_state.project_name = selected_project
 
@@ -115,7 +129,7 @@ tab1,tab2,tab3,tab4=st.tabs(["詳細資訊","投標文件","公文DI","移辦單
 with tab1:
 
     if selected_project:
-        project_data = df[df['project_name'] == selected_project].iloc[0]
+        project_data = filtered_df[filtered_df['project_name'] == selected_project].iloc[0]
         st.session_state.project_data = project_data.to_dict()
 
         edit_mode = st.toggle("編輯模式")
