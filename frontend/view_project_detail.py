@@ -72,7 +72,7 @@ projects = get_projects()
 df = pd.DataFrame(projects)
 
 # 使用选择器让用户选择查看全部或只看上網项目
-filter_option = st.sidebar.radio("顯示項目", ["全部", "不顯示上網案件"])
+filter_option = st.sidebar.radio("顯示項目", ["全部", "不顯示上網案件"],index=1)
 
 # 根据选择筛选数据
 if filter_option == "不顯示上網案件":
