@@ -80,6 +80,8 @@ if filter_option == "不顯示上網案件":
 else:
     filtered_df = df
 
+filtered_df = filtered_df.iloc[::-1].reset_index(drop=True)
+
 # 显示项目数量
 st.sidebar.markdown(f"**總數量: {len(filtered_df)}**")
 
