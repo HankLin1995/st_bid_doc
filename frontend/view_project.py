@@ -17,7 +17,7 @@ def format_currency(value):
     return f"NT$ {value:,.0f}"
 
 def get_projects():
-    response = requests.get(f"{BACKEND_URL}/projects/")
+    response = requests.get(f"{BACKEND_URL}/projects/all")
     if response.status_code == 200:
         return response.json()
     return []
