@@ -10,6 +10,12 @@ app = FastAPI()
 
 @app.post("/projects/", response_model=schemas.Project)
 def create_project(project: schemas.ProjectCreate, db: Session = Depends(get_db)):
+    # Check if a project with the same project_number already exists
+    existing_project = db.query(models.Project).filter(models.Project.project_number == project.project_number).first()
+    if existing_project:
+        raise HTTPException(status_code=400, detail="Project with this project number already exists")
+    
+    # Create new project if it doesn't exist
     db_project = models.Project(**project.model_dump())
     db.add(db_project)
     db.commit()

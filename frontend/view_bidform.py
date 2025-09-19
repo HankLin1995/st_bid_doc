@@ -58,7 +58,14 @@ def draft_page():
 
 def create_project(project_data: dict):
     response = requests.post(f"{API_URL}/projects/", json=project_data)
-    return response.json() if response.status_code == 200 else None
+    if response.status_code == 200:
+        return {"success": True, "data": response.json()}
+    elif response.status_code == 400:
+        # Handle the case where project already exists
+        return {"success": False, "error": response.json().get("detail", "Project already exists")}
+    else:
+        # Handle other errors
+        return {"success": False, "error": "An error occurred"}
 
 def get_project_by_number(project_number: str):
     response = requests.get(f"{API_URL}/projects/{project_number}")
@@ -230,14 +237,14 @@ def budget_page():
             # st.write(project_data)
             result = create_project(project_data)
 
-            if result:
+            if result["success"]:
                 st.success("工程創建成功！")
                 st.balloons()
 
                 if not IsERROR:
                     # Update project status and date
-                    result = update_project_date_and_status(project_number, "預算書", datetime.now().strftime("%Y-%m-%d"))
-                    if result == "更新成功":
+                    update_result = update_project_date_and_status(project_number, "預算書", datetime.now().strftime("%Y-%m-%d"))
+                    if update_result == "更新成功":
                         st.success("狀態更新成功!")
                     else:
                         st.error("狀態更新失敗!")
@@ -247,13 +254,16 @@ def budget_page():
                     del st.session_state.test_data
                 st.rerun()
             else:
-                # check if the project is created
-                project = get_project_by_number(project_number)
-                
-                if project:
-                    st.warning("工程已存在，請勿重複創建!",icon="⚠️")
+                # Display the specific error message from the backend
+                if "already exists" in result["error"].lower():
+                    st.warning(f"工程已存在，請勿重複創建! {result['error']}", icon="⚠️")
                 else:
-                    st.error("創建失敗，請檢查資料是否正確")
+                    st.error(f"創建失敗: {result['error']}")
+                    
+                # Double check if the project exists by project number
+                project = get_project_by_number(project_number)
+                if project and not "already exists" in result["error"].lower():
+                    st.warning("工程已存在，請勿重複創建!", icon="⚠️")
 
         except Exception as e:
             st.error(f"操作失敗：{str(e)}")
