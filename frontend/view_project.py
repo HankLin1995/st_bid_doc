@@ -87,7 +87,7 @@ if projects:
 
     # Delete button
 
-    with st.container(border=True,expanded=False):
+    with st.expander("刪除工程案件",expanded=False):
 
         project_id=st.number_input("案件ID",min_value=0)
 
