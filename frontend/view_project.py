@@ -22,6 +22,10 @@ def get_projects():
         return response.json()
     return []
 
+def delete_project(project_id):
+    response = requests.delete(f"{BACKEND_URL}/projects/{project_id}")
+    return response.status_code == 200
+
 # my_pass=st.sidebar.text_input("請輸入密碼",type="password")
 
 # if my_pass!=os.getenv("PASSWORD"):
@@ -63,9 +67,10 @@ if projects:
     # Display project table
     st.dataframe(
         df[[
-            'project_number', 'project_name', 'branch_office', 
+            'id','project_number', 'project_name', 'branch_office', 
             'total_budget', 'status', 'created_at'
         ]].rename(columns={
+            'id':'案件ID',
             'project_number': '標案案號',
             'project_name': '工程名稱',
             'branch_office': '分處',
@@ -79,6 +84,17 @@ if projects:
         use_container_width=True,
         hide_index=True
     )
+
+    # Delete button
+
+    with st.container(border=True,expanded=False):
+
+        project_id=st.number_input("案件ID",min_value=0)
+
+        if st.button("刪除"):
+            delete_project(project_id)
+            st.success("工程案件已刪除")
+            st.rerun()
 
     # Statistical Analysis Section
     st.markdown("---")

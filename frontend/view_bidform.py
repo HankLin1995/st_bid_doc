@@ -17,6 +17,7 @@ if 'construction_content' not in st.session_state:
 def draft_page():
 
     st.subheader(":star: 初稿送審")
+
     with st.container(border=True):
         
         #顯示工程清單
@@ -27,6 +28,8 @@ def draft_page():
         df=df[(df["CurrentStatus"]=="核定") | (df["CurrentStatus"]=="提報")]
 
         df_distinct_workstation=["無"]+df["Workstation"].unique().tolist()
+
+        st.caption("如果看不到自己的工作站或工程編號可以跳過不用填寫初稿送審!")
 
         workstation=st.selectbox("選擇工作站",df_distinct_workstation,index=0)
 
@@ -179,10 +182,10 @@ def budget_page():
                 IsERROR = False
         except Exception as e:
             IsERROR = True
-            st.error(f"載入工程失敗：{str(e)}")
+            st.error(f"請自行輸入核定金額：{str(e)}")
 
         project_name = st.text_input("工程名稱",value=project_name_value)
-        location = st.text_input("工程地點",placeholder="雲林縣斗六市")
+        location = st.text_input("工程地點",placeholder="OO縣OO市")
         duration = st.number_input("工期(天數)", min_value=0)
         #施工總長度、線數、其他內容
 

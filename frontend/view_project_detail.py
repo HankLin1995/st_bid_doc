@@ -166,11 +166,11 @@ with tab1:
                 bid_bond = display_or_edit("押標金金額", project_data['bid_bond'] if pd.notna(project_data['bid_bond']) else 0, edit_mode, 'number', use_format_currency=True)
 
             with cols2[2]:
-                total_budget = display_or_edit("預算金額", project_data['total_budget'] if pd.notna(project_data['total_budget']) else 0, edit_mode, 'number', use_format_currency=True)
+                total_budget = display_or_edit("總工程費", project_data['total_budget'] if pd.notna(project_data['total_budget']) else 0, edit_mode, 'number', use_format_currency=True)
                 performance_bond = display_or_edit("履約保證金金額", project_data['performance_bond'] if pd.notna(project_data['performance_bond']) else 0, edit_mode, 'number', use_format_currency=True)
 
             with cols2[3]:
-                contract_amount = display_or_edit("契約金額", project_data['contract_amount'] if pd.notna(project_data['contract_amount']) else 0, edit_mode, 'number', use_format_currency=True)
+                contract_amount = display_or_edit("發包工作費", project_data['contract_amount'] if pd.notna(project_data['contract_amount']) else 0, edit_mode, 'number', use_format_currency=True)
 
             st.markdown("---")
 
