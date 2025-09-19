@@ -21,6 +21,11 @@ def read_projects(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
     projects = db.query(models.Project).offset(skip).limit(limit).all()
     return projects
 
+@app.get("/projects/all", response_model=List[schemas.Project])
+def read_all_projects(db: Session = Depends(get_db)):
+    projects = db.query(models.Project).all()
+    return projects
+
 @app.get("/projects/{project_number}", response_model=schemas.Project)
 def read_project(project_number: str, db: Session = Depends(get_db)):
     project = db.query(models.Project).filter(models.Project.project_number == project_number).first()
