@@ -166,8 +166,10 @@ def delete_plan(plan_id: int, db: Session = Depends(get_db)):
     return {"message": "計畫已刪除"}
 
 # PDF 檔案上傳端點
-UPLOAD_DIR = Path("../data/pdfs")
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+UPLOAD_DIR1 = Path("../data/pdfs/生態檢核")
+UPLOAD_DIR2 = Path("../data/pdfs/碳排計算")
+UPLOAD_DIR1.mkdir(parents=True, exist_ok=True)
+UPLOAD_DIR2.mkdir(parents=True, exist_ok=True)
 
 @app.post("/upload-pdf/{year}/{project_name}/{pdf_type}")
 async def upload_pdf(
@@ -189,12 +191,16 @@ async def upload_pdf(
     # 驗證 pdf_type
     if pdf_type not in ['ecological', 'carbon']:
         raise HTTPException(status_code=400, detail="無效的PDF類型")
-    
+
     # 建立檔案名稱：年度-工程名稱_PDF類型.pdf
     pdf_type_name = "生態檢核" if pdf_type == "ecological" else "碳排計算"
-    filename = f"{year}-{project_name}_{pdf_type_name}.pdf"
-    file_path = UPLOAD_DIR / filename
-    
+    filename = f"{year}-{project_name}.pdf"
+
+    if pdf_type == "ecological":
+        file_path = UPLOAD_DIR1 / filename
+    else:
+        file_path = UPLOAD_DIR2 / filename
+
     # 儲存檔案
     try:
         with open(file_path, "wb") as buffer:

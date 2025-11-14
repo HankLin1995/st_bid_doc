@@ -212,11 +212,90 @@ def budget_page():
         outsourcing_items=st.pills("選擇PCCES有編列項目",["瀝青混凝土鋪面", "控制性低強度回填材料(CLSM)", "級配粒料基層", "低密度再生透水混凝土"],selection_mode="multi")
         schedule_type=st.radio("開工型式",options=["一般流程","指定開工日","逕流廢汙水"])
 
+    with st.container(border=True):
+        st.markdown("#### 📄PDF文件上傳")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("**生態檢核用印PDF**")
+            ecological_pdf = st.file_uploader(
+                "上傳生態檢核PDF",
+                type=['pdf'],
+                key="ecological_pdf",
+                help="請上傳生態檢核用印PDF檔案"
+            )
+            if ecological_pdf:
+                st.success(f"✅ 已選擇: {ecological_pdf.name}")
+        
+        with col2:
+            st.markdown("**碳排計算PDF**")
+            carbon_pdf = st.file_uploader(
+                "上傳碳排計算PDF",
+                type=['pdf'],
+                key="carbon_pdf",
+                help="請上傳碳排計算PDF檔案"
+            )
+            if carbon_pdf:
+                st.success(f"✅ 已選擇: {carbon_pdf.name}")
+
     # 送出和清除按鈕
     # col_submit1, col_submit2 = st.columns([3, 1])
     # with col_submit1:
     if st.button("送出表單", type="primary",use_container_width=True):
         try:
+            # 驗證PDF檔案是否都已上傳
+            if not ecological_pdf:
+                st.error("❌ 請上傳生態檢核用印PDF")
+                st.stop()
+            
+            if not carbon_pdf:
+                st.error("❌ 請上傳碳排計算PDF")
+                # st.stop()
+            
+            # 步驟1: 先上傳PDF檔案
+            pdf_upload_success = True
+            with st.spinner("正在上傳PDF檔案..."):
+                # 上傳生態檢核PDF
+                if ecological_pdf:
+                    try:
+                        files = {"file": (ecological_pdf.name, ecological_pdf, "application/pdf")}
+                        response = requests.post(
+                            f"{API_URL}/upload-pdf/{year}/{project_name}/ecological",
+                            files=files
+                        )
+                        if response.status_code == 200:
+                            st.success("✅ 生態檢核PDF上傳成功")
+                        else:
+                            st.error(f"❌ 生態檢核PDF上傳失敗: {response.json().get('detail', '未知錯誤')}")
+                            pdf_upload_success = False
+                    except Exception as e:
+                        st.error(f"❌ 生態檢核PDF上傳失敗: {str(e)}")
+                        pdf_upload_success = False
+                
+                # 上傳碳排計算PDF
+                if carbon_pdf and pdf_upload_success:
+                    try:
+                        files = {"file": (carbon_pdf.name, carbon_pdf, "application/pdf")}
+                        response = requests.post(
+                            f"{API_URL}/upload-pdf/{year}/{project_name}/carbon",
+                            files=files
+                        )
+                        if response.status_code == 200:
+                            st.success("✅ 碳排計算PDF上傳成功")
+                        else:
+                            st.error(f"❌ 碳排計算PDF上傳失敗: {response.json().get('detail', '未知錯誤')}")
+                            pdf_upload_success = False
+                    except Exception as e:
+                        st.error(f"❌ 碳排計算PDF上傳失敗: {str(e)}")
+                        pdf_upload_success = False
+            
+            # 如果PDF上傳失敗，停止後續流程
+            if not pdf_upload_success:
+                st.error("⚠️ PDF檔案上傳失敗，工程資料未建立，請重新上傳")
+                st.stop()
+            
+            # 步驟2: PDF上傳成功後，才創建工程資料
             project_data = {
                 "branch_office": branch_office,
                 "project_name": project_name,
@@ -241,17 +320,17 @@ def budget_page():
             result = create_project(project_data)
 
             if result["success"]:
-                st.success("工程創建成功！")
-                st.balloons()
-
+                st.success("✅ 工程資料創建成功！")
+                
+                # 步驟3: 更新專案狀態
                 if not IsERROR:
-                    # Update project status and date
                     update_result = update_project_date_and_status(project_number, "預算書", datetime.now().strftime("%Y-%m-%d"))
                     if update_result == "更新成功":
-                        st.success("狀態更新成功!")
+                        st.success("✅ 狀態更新成功!")
                     else:
-                        st.error("狀態更新失敗!")
-
+                        st.error("❌ 狀態更新失敗!")
+                
+                st.balloons()
                 time.sleep(2)
                 if 'test_data' in st.session_state:
                     del st.session_state.test_data
