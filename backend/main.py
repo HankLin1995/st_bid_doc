@@ -1,8 +1,11 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from typing import List
 import models, schemas, crud
 from database import engine, get_db
+import os
+import shutil
+from pathlib import Path
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -141,7 +144,7 @@ def delete_project(project_id: int, db: Session = Depends(get_db)):
 #     return {"message": "User deleted successfully"}
 
 @app.post("/plans/", response_model=schemas.Plan)
-def create_plan(plan: schemas.Plan, db: Session = Depends(get_db)):
+def create_plan(plan: schemas.PlanCreate, db: Session = Depends(get_db)):
     return crud.create_plan(db=db, plan=plan)
 
 @app.get("/plans/{plan_id}", response_model=schemas.Plan)
@@ -161,3 +164,62 @@ def delete_plan(plan_id: int, db: Session = Depends(get_db)):
     if not crud.delete_plan(db, plan_id=plan_id):
         raise HTTPException(status_code=404, detail="計畫未找到")
     return {"message": "計畫已刪除"}
+
+# PDF 檔案上傳端點
+UPLOAD_DIR = Path("../data/pdfs")
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
+@app.post("/upload-pdf/{year}/{project_name}/{pdf_type}")
+async def upload_pdf(
+    year: int,
+    project_name: str,
+    pdf_type: str,
+    file: UploadFile = File(...)
+):
+    """
+    上傳PDF檔案
+    year: 民國年度
+    project_name: 工程名稱
+    pdf_type: 'ecological' (生態檢核) 或 'carbon' (碳排計算)
+    """
+    # 驗證檔案類型
+    if not file.filename.endswith('.pdf'):
+        raise HTTPException(status_code=400, detail="只接受PDF檔案")
+    
+    # 驗證 pdf_type
+    if pdf_type not in ['ecological', 'carbon']:
+        raise HTTPException(status_code=400, detail="無效的PDF類型")
+    
+    # 建立檔案名稱：年度-工程名稱_PDF類型.pdf
+    pdf_type_name = "生態檢核" if pdf_type == "ecological" else "碳排計算"
+    filename = f"{year}-{project_name}_{pdf_type_name}.pdf"
+    file_path = UPLOAD_DIR / filename
+    
+    # 儲存檔案
+    try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        return {
+            "message": "檔案上傳成功",
+            "filename": filename,
+            "path": str(file_path)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"檔案上傳失敗: {str(e)}")
+
+@app.get("/check-pdf/{year}/{project_name}/{pdf_type}")
+def check_pdf_exists(year: int, project_name: str, pdf_type: str):
+    """
+    檢查PDF檔案是否存在
+    """
+    if pdf_type not in ['ecological', 'carbon']:
+        raise HTTPException(status_code=400, detail="無效的PDF類型")
+    
+    pdf_type_name = "生態檢核" if pdf_type == "ecological" else "碳排計算"
+    filename = f"{year}-{project_name}_{pdf_type_name}.pdf"
+    file_path = UPLOAD_DIR / filename
+    
+    return {
+        "exists": file_path.exists(),
+        "filename": filename if file_path.exists() else None
+    }

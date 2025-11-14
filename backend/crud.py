@@ -7,7 +7,7 @@ def get_plan(db: Session, plan_id: int):
 def get_plans(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Plan).offset(skip).limit(limit).all()
 
-def create_plan(db: Session, plan: schemas.Plan):
+def create_plan(db: Session, plan: schemas.PlanCreate):
     db_plan = models.Plan(
         plan_name=plan.plan_name,
         plan_code=plan.plan_code,

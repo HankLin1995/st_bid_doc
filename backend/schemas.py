@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
 from typing import Optional, List
 
@@ -41,8 +41,7 @@ class Project(ProjectBase):
     created_at: datetime
     status: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 # ----------------------------------------
 
@@ -74,11 +73,18 @@ class Project(ProjectBase):
 
 # ----------------------------------------
         
-class Plan(BaseModel):
+class PlanBase(BaseModel):
     plan_name: str
-    plan_code: Optional[str]= None
+    plan_code: Optional[str] = None
     description: Optional[str] = None
-    projects: List[ProjectBase] #= []
 
-# class PlanCreate(Plan):
-#     projects: List[ProjectBase] = []
+
+class PlanCreate(PlanBase):
+    projects: List[ProjectBase] = Field(default_factory=list)
+
+
+class Plan(PlanBase):
+    id: int
+    projects: List[ProjectBase] = Field(default_factory=list)
+
+    model_config = ConfigDict(from_attributes=True)

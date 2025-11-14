@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  backend-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: docx_backend_test
+    volumes:
+      - ./tests:/app/tests
+      - ./data:/app/data
+      - test-results:/app/test-results
+    environment:
+      - TESTING=true
+      - DATABASE_URL=sqlite:///./test.db
+    networks:
+      - test_network
+    command: pytest tests/ -v --tb=short --junit-xml=/app/test-results/junit.xml
+
+networks:
+  test_network:
+    driver: bridge
+
+volumes:
+  test-results:
