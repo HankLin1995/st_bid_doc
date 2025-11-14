@@ -203,11 +203,11 @@ def budget_page():
         st.markdown("#### 👜經費相關")
         funding_source = st.text_input("經費來源",value="固定資產建設改良擴充-土地改良物(國庫撥款)",placeholder="經費來源")
         approved_amount=st.number_input("核定金額",value=approved_amount_value,disabled=not IsERROR)
-        total_budget = st.number_input("總工程費", min_value=1000)
-        if total_budget==1000:
+        total_budget = st.number_input("總工程費", min_value=0)
+        if total_budget==0:
             st.warning("總工程費未調整，請重新輸入!",icon="⚠️")
-        contract_amount = st.number_input("發包工作費", min_value=1000)
-        if contract_amount==1000:
+        contract_amount = st.number_input("發包工作費", min_value=0)
+        if contract_amount==0:
             st.warning("發包工作費未調整，請重新輸入!",icon="⚠️")
         outsourcing_items=st.pills("選擇PCCES有編列項目",["瀝青混凝土鋪面", "控制性低強度回填材料(CLSM)", "級配粒料基層", "低密度再生透水混凝土"],selection_mode="multi")
         schedule_type=st.radio("開工型式",options=["一般流程","指定開工日","逕流廢汙水"])
@@ -218,23 +218,21 @@ def budget_page():
         col1, col2 = st.columns(2)
         
         with col1:
-            st.markdown("**生態檢核用印PDF**")
+            # st.markdown("**生態檢核用印PDF**")
             ecological_pdf = st.file_uploader(
                 "上傳生態檢核PDF",
                 type=['pdf'],
-                key="ecological_pdf",
-                help="請上傳生態檢核用印PDF檔案"
+                key="ecological_pdf"
             )
             if ecological_pdf:
                 st.success(f"✅ 已選擇: {ecological_pdf.name}")
         
         with col2:
-            st.markdown("**碳排計算PDF**")
+            # st.markdown("**碳排計算PDF**")
             carbon_pdf = st.file_uploader(
                 "上傳碳排計算PDF",
                 type=['pdf'],
-                key="carbon_pdf",
-                help="請上傳碳排計算PDF檔案"
+                key="carbon_pdf"
             )
             if carbon_pdf:
                 st.success(f"✅ 已選擇: {carbon_pdf.name}")
