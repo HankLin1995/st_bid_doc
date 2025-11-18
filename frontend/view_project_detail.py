@@ -54,7 +54,7 @@ def update_project(project_id, project_data):
     response = requests.put(f"{BACKEND_URL}/projects/{project_id}", json=project_data)
     if response.status_code != 200:
         print(f"Error: {response.status_code}", response.json())
-    return response.status_code == 200
+    return response
 
 def update_project_status(project_id, project_data):
     response = requests.put(f"{BACKEND_URL}/projects/{project_id}/status", json=project_data)
@@ -142,7 +142,7 @@ with tab1:
 
             with cols1[0]:
                 year = display_or_edit("年度", project_data['year'], edit_mode, 'text')
-                display_or_edit("標案案號", project_data['project_number'], edit_mode, 'text')
+                project_number = display_or_edit("標案案號", project_data['project_number'], edit_mode, 'text')
             
             with cols1[1]:
                 project_name = display_or_edit("工程名稱", project_data['project_name'], edit_mode, 'text')
@@ -190,7 +190,7 @@ with tab1:
                 if st.button("儲存", type="primary"):
                     updated_data = {
                         "year": int(year),
-                        "project_number": project_data['project_number'],
+                        "project_number": project_number,
                         "project_name": project_name,
                         "duration": int(duration),
                         "location": location,
@@ -210,11 +210,14 @@ with tab1:
                         "status": project_data['status']
                     }
 
-                    if update_project(project_data['id'], updated_data):
+                    response = update_project(project_data['id'], updated_data)
+                    if response.status_code == 200:
                         st.success("更新成功！")
                         time.sleep(2)
+                        st.rerun()
                     else:
-                        st.error("更新失敗，請稍後再試。")
+                        error_detail = response.json().get('detail', '更新失敗，請稍後再試。')
+                        st.error(f"更新失敗：{error_detail}")
     else:
         st.info("目前沒有工程案件資料")
 

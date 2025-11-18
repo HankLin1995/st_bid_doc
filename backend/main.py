@@ -79,6 +79,15 @@ def update_project(project_id: int, project: schemas.ProjectUpdate, db: Session 
     if db_project is None:
         raise HTTPException(status_code=404, detail="Project not found")
     
+    # Check if project_number is being updated and if it already exists
+    if project.project_number and project.project_number != db_project.project_number:
+        existing_project = db.query(models.Project).filter(
+            models.Project.project_number == project.project_number,
+            models.Project.id != project_id
+        ).first()
+        if existing_project:
+            raise HTTPException(status_code=400, detail="Project with this project number already exists")
+    
     for key, value in project.model_dump().items():
         setattr(db_project, key, value)
     
