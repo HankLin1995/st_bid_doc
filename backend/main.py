@@ -176,8 +176,10 @@ def delete_plan(plan_id: int, db: Session = Depends(get_db)):
     return {"message": "計畫已刪除"}
 
 # PDF 檔案上傳端點
-UPLOAD_DIR1 = Path("../data/pdfs/生態檢核")
-UPLOAD_DIR2 = Path("../data/pdfs/碳排計算")
+# 使用絕對路徑確保在容器內正確指向掛載的 volume
+BASE_DIR = Path(__file__).parent
+UPLOAD_DIR1 = BASE_DIR / "data" / "pdfs" / "生態檢核"
+UPLOAD_DIR2 = BASE_DIR / "data" / "pdfs" / "碳排計算"
 UPLOAD_DIR1.mkdir(parents=True, exist_ok=True)
 UPLOAD_DIR2.mkdir(parents=True, exist_ok=True)
 
