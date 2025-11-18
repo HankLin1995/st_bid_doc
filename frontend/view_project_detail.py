@@ -22,6 +22,10 @@ load_dotenv()
 
 BACKEND_URL = 'http://backend:8000'
 
+@st.dialog("顯示PDF",width ="large")
+def show_pdf(content):
+    st.pdf(content)
+
 # 優化顯示和編輯模式的邏輯
 def display_or_edit(label, value, edit_mode, input_type='text', use_format_currency=False):
     """在編輯模式下顯示文本輸入框，否則顯示標籤和內容"""
@@ -184,7 +188,28 @@ with tab1:
                 supervisor = display_or_edit("主辦監造", project_data['supervisor'], edit_mode, 'text')
 
             with cols3[2]:
-                supervisor_personnel = display_or_edit("監造人員", project_data['supervisor_personnel'], edit_mode, 'text')
+                supervisor_personnel = display_or_edit("監造人員2", project_data['supervisor_personnel'], edit_mode, 'text')
+
+            with cols3[3]:
+                schedule_type = display_or_edit("開工型式(不能修改)", project_data['schedule_type'], edit_mode, 'text')
+
+            st.markdown("---")
+
+            st.markdown("#### 🌱 生態檢核PDF")
+
+            if st.button("顯示生態檢核PDF"):
+            
+                try:
+                    pdf_url = f"{BACKEND_URL}/pdf/ecological/{project_data['year']}/{project_data['project_name']}"
+                    response = requests.get(pdf_url)
+                    if response.status_code == 200:
+                        show_pdf(response.content)
+                    elif response.status_code == 404:
+                        st.info("尚未找到對應的生態檢核PDF檔案")
+                    else:
+                        st.error(f"取得生態檢核PDF失敗：{response.status_code}")
+                except Exception as e:
+                    st.error(f"顯示生態檢核PDF時發生錯誤: {e}")
 
             if edit_mode:
                 if st.button("儲存", type="primary"):

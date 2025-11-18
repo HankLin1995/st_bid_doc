@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  streamlit_app:
+    build: ./frontend
+    container_name: st_docx
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend
+    networks:
+      - docx_network
+      # - backend_ylia_app-network
+    env_file:
+      - .env
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    container_name: docx_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./data:/data
+    networks:
+      - docx_network
+    env_file:
+      - .env
+    restart: unless-stopped
+
+  # cloudflared:
+  #   image: cloudflare/cloudflared:latest
+  #   command: tunnel --no-autoupdate run --protocol http2 --token ${CLOUDFLARED_TUNNEL_TOKEN}
+  #   networks:
+  #     - docx_network
+  #   restart: unless-stopped
+      
+networks:
+  docx_network:
+    driver: bridge
+  # backend_ylia_app-network:
+  #   external: true
+
+volumes:
+  sqlite_data:

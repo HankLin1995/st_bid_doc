@@ -9,3 +9,4 @@ python-dotenv
 line-bot-sdk
 pandas
 plotly>=5.18.0
+streamlit[pdf]

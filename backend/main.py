@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from typing import List
 import models, schemas, crud
@@ -179,6 +180,21 @@ UPLOAD_DIR1 = Path("../data/pdfs/生態檢核")
 UPLOAD_DIR2 = Path("../data/pdfs/碳排計算")
 UPLOAD_DIR1.mkdir(parents=True, exist_ok=True)
 UPLOAD_DIR2.mkdir(parents=True, exist_ok=True)
+
+@app.get("/pdf/ecological/{year}/{project_name}")
+def get_ecological_pdf(year: int, project_name: str):
+    """取得生態檢核 PDF 檔案"""
+    filename = f"{year}-{project_name}.pdf"
+    file_path = UPLOAD_DIR1 / filename
+
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="PDF not found")
+
+    return FileResponse(
+        path=str(file_path),
+        media_type="application/pdf",
+        filename=filename
+    )
 
 @app.post("/upload-pdf/{year}/{project_name}/{pdf_type}")
 async def upload_pdf(
