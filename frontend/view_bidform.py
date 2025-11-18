@@ -245,7 +245,7 @@ def budget_page():
             # 驗證PDF檔案是否都已上傳
             if not ecological_pdf:
                 st.error("❌ 請上傳生態檢核用印PDF")
-                st.stop()
+                # st.stop()
             
             if not carbon_pdf:
                 st.error("❌ 請上傳碳排計算PDF")
