@@ -17,6 +17,7 @@ from utils import (
     get_contractor,
     num_to_chinese
 )
+from api import get_project,get_plan
 
 load_dotenv()
 
@@ -525,6 +526,16 @@ with tab3:
         options=list(document_templates.keys())
     )
 
+    project_json=get_project(project_data.get('project_number'))
+
+    if 'detail' in project_json:
+        st.toast("無法取得專案資料，請確認專案是否已正確儲存至後端系統。")
+        plan_name=""
+    else:
+        plan_json=get_plan(project_json['PlanID'])
+        plan_name=(plan_json['PlanName'])
+        
+
     if st.button("產生文件"):
         template_path = os.path.join("src", "公文DI", document_templates[selected_template])
         output_path = os.path.join("output", f"{selected_project}_{document_templates[selected_template]}")
@@ -546,6 +557,7 @@ with tab3:
         # 準備替換的資料
         replacements = {
             "工程名稱": project_data['project_name'],
+            "計畫名稱": plan_name,
             "經費來源": project_data['funding_source'],
             "民國年": str(project_data.get('year', '113')),
             "所屬分處": project_data.get('branch_office'),

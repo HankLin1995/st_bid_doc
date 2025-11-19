@@ -22,7 +22,7 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/app
-      - ./data:/data
+      - ./data:/app/data
     networks:
       - docx_network
     env_file:
