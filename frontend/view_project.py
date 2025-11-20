@@ -24,7 +24,9 @@ def get_projects():
 
 def delete_project(project_id):
     response = requests.delete(f"{BACKEND_URL}/projects/{project_id}")
-    return response.status_code == 200
+    if response.status_code == 200:
+        return True, response.json()
+    return False, None
 
 # my_pass=st.sidebar.text_input("請輸入密碼",type="password")
 
@@ -81,7 +83,8 @@ if projects:
             '預算金額': format_currency,
             '建立時間': lambda x: pd.to_datetime(x).strftime('%Y-%m-%d')
         }),
-        use_container_width=True,
+        # use_container_width=True,
+        width="stretch",
         hide_index=True
     )
 
@@ -92,9 +95,18 @@ if projects:
         project_id=st.number_input("案件ID",min_value=0)
 
         if st.button("刪除"):
-            delete_project(project_id)
-            st.success("工程案件已刪除")
-            st.rerun()
+            success, result = delete_project(project_id)
+            if success:
+                st.success("✅ 工程案件已刪除")
+                if result and result.get("deleted_files"):
+                    st.info(f"📄 已刪除 {len(result['deleted_files'])} 個 PDF 檔案:")
+                    for file in result["deleted_files"]:
+                        st.caption(f"  • {file}")
+                else:
+                    st.info("📄 未找到對應的 PDF 檔案")
+                st.rerun()
+            else:
+                st.error("❌ 刪除失敗，請檢查案件 ID 是否正確")
 
     # Statistical Analysis Section
     st.markdown("---")

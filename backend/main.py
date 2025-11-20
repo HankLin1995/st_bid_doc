@@ -15,6 +15,13 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+# PDF 檔案目錄設定
+BASE_DIR = Path(__file__).parent
+UPLOAD_DIR1 = BASE_DIR / "data" / "pdfs" / "生態檢核"
+UPLOAD_DIR2 = BASE_DIR / "data" / "pdfs" / "碳排計算"
+UPLOAD_DIR1.mkdir(parents=True, exist_ok=True)
+UPLOAD_DIR2.mkdir(parents=True, exist_ok=True)
+
 @app.post("/projects/", response_model=schemas.Project)
 def create_project(project: schemas.ProjectCreate, db: Session = Depends(get_db)):
     # Check if a project with the same project_number already exists
@@ -105,9 +112,40 @@ def delete_project(project_id: int, db: Session = Depends(get_db)):
     if project is None:
         raise HTTPException(status_code=404, detail="Project not found")
     
+    # 刪除對應的 PDF 檔案
+    deleted_files = []
+    
+    # 1. 刪除生態檢核 PDF (格式: {year}-{project_name}.pdf)
+    if project.year and project.project_name:
+        ecological_filename = f"{project.year}-{project.project_name}.pdf"
+        ecological_path = UPLOAD_DIR1 / ecological_filename
+        if ecological_path.exists():
+            ecological_path.unlink()
+            deleted_files.append(f"生態檢核: {ecological_filename}")
+    
+    # 2. 刪除碳排計算 PDF (格式: {project_number}_{plan_name}_減碳簡易檢核表_{project_name}.pdf)
+    if project.project_number and project.project_name:
+        # 判斷計畫名稱
+        plan_name = "未定"
+        if "擴大灌溉" in project.project_name:
+            plan_name = "擴大灌溉"
+        elif "更新改善" in project.project_name:
+            plan_name = "更新改善"
+        
+        carbon_filename = f"{project.project_number}_{plan_name}_減碳簡易檢核表_{project.project_name}.pdf"
+        carbon_path = UPLOAD_DIR2 / carbon_filename
+        if carbon_path.exists():
+            carbon_path.unlink()
+            deleted_files.append(f"碳排計算: {carbon_filename}")
+    
+    # 刪除資料庫記錄
     db.delete(project)
     db.commit()
-    return {"message": "Project deleted successfully"}
+    
+    return {
+        "message": "Project deleted successfully",
+        "deleted_files": deleted_files
+    }
 
 # @app.post("/users/", response_model=schemas.User)
 # def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
@@ -179,12 +217,6 @@ def delete_plan(plan_id: int, db: Session = Depends(get_db)):
     return {"message": "計畫已刪除"}
 
 # PDF 檔案上傳端點
-# 使用絕對路徑確保在容器內正確指向掛載的 volume
-BASE_DIR = Path(__file__).parent
-UPLOAD_DIR1 = BASE_DIR / "data" / "pdfs" / "生態檢核"
-UPLOAD_DIR2 = BASE_DIR / "data" / "pdfs" / "碳排計算"
-UPLOAD_DIR1.mkdir(parents=True, exist_ok=True)
-UPLOAD_DIR2.mkdir(parents=True, exist_ok=True)
 
 @app.get("/pdf/list")
 def list_all_pdfs():
