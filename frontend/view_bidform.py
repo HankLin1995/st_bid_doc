@@ -275,9 +275,12 @@ def budget_page():
                 if carbon_pdf and pdf_upload_success:
                     try:
                         files = {"file": (carbon_pdf.name, carbon_pdf, "application/pdf")}
+                        # 碳排計算需要傳遞工程編號
+                        params = {"project_number": project_number}
                         response = requests.post(
                             f"{API_URL}/upload-pdf/{year}/{project_name}/carbon",
-                            files=files
+                            files=files,
+                            params=params
                         )
                         if response.status_code == 200:
                             st.success("✅ 碳排計算PDF上傳成功")

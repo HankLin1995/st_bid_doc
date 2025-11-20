@@ -196,7 +196,7 @@ with tab1:
 
             st.markdown("---")
 
-            st.markdown("#### 🌱 生態檢核PDF")
+            st.markdown("#### 上傳的PDF")
 
             if st.button("顯示生態檢核PDF"):
             
@@ -211,6 +211,19 @@ with tab1:
                         st.error(f"取得生態檢核PDF失敗：{response.status_code}")
                 except Exception as e:
                     st.error(f"顯示生態檢核PDF時發生錯誤: {e}")
+
+            if st.button("顯示碳排計算PDF"):
+                try:
+                    pdf_url = f"{BACKEND_URL}/pdf/carbon/{project_data['project_number']}/{project_data['project_name']}"
+                    response = requests.get(pdf_url)
+                    if response.status_code == 200:
+                        show_pdf(response.content)
+                    elif response.status_code == 404:
+                        st.info("尚未找到對應的碳排計算PDF檔案")
+                    else:
+                        st.error(f"取得碳排計算PDF失敗：{response.status_code}")
+                except Exception as e:
+                    st.error(f"顯示碳排計算PDF時發生錯誤: {e}")
 
             if edit_mode:
                 if st.button("儲存", type="primary"):

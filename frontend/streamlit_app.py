@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-VERSION_NUMBER = "V2.8.3"
+VERSION_NUMBER = "V2.9.0"
 
 @st.dialog("⭕系統公告")
 def msg_content():
@@ -40,6 +40,7 @@ except:
 bidform_page=st.Page("view_bidform.py",title="預算書審查",icon=":material/contract:",default=True)
 project_page=st.Page("view_project.py",title="審查總表",icon=":material/dashboard:")
 project_detail_page=st.Page("view_project_detail.py",title="審查明細表",icon=":material/dashboard:")
+files_page=st.Page("view_files.py",title="PDF檔案管理",icon=":material/folder:")
 # biddoc_page=st.Page("view_biddoc.py",title="投標文件",icon=":material/assignment:")
 
 st.session_state.password = st.sidebar.text_input("請輸入密碼", type="password", value=st.session_state.password)
@@ -55,6 +56,7 @@ else:
     pg=st.navigation({
         "工務行政":[bidform_page],
         "工程管理":[project_page,project_detail_page],
+        "檔案管理":[files_page],
     })
 
 pg.run()
