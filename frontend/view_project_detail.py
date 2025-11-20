@@ -484,23 +484,25 @@ with tab2:
             memory_file.seek(0)
 
             shutil.rmtree(output_dir)
-                
-            # Add download button
-            st.download_button(
-                key="download_processed_files",
-                label="下載處理後的文件 (ZIP)",
-                data=memory_file,
-                file_name=f"{data['標案名稱']}.zip",
-                mime="application/zip"
-            )
 
             st.write('---')
 
             st.write("### 招標文件後續SOP:")
 
-            st.write("1.輸出的招標文件放入原本的招標光碟")
-            st.write("2.審查原本光碟中的預算書檔案放入新的光碟，外殼寫有記單價")
-            st.write("3.將新的光碟放入審查原本信封中(不可以洩漏!)")
+            st.write("1.審查原本光碟中的預算書檔案放入新的光碟，外殼寫有記單價")
+            st.write("2.將**新的光碟**放入審查原本信封中(不可以洩漏!)") 
+            st.write("3.輸出的招標文件放入原本的招標光碟")
+            st.info("總共會有3個光碟，2個在審查信封中，1個在招標信封中!!!!")
+
+            st.write('---')     
+            # Add download button
+            st.download_button(
+                key="download_processed_files",
+                label=":star: 我已經做好有記單價的光碟!可以準備下載招標文件了",
+                data=memory_file,
+                file_name=f"{data['標案名稱']}.zip",
+                mime="application/zip"
+            )
 
         else:
             st.warning("沒有文件被成功處理！")
