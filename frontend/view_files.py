@@ -145,12 +145,12 @@ def render_file_list(files: List[Dict], pdf_type: str, search_key: str, sort_key
         return
     
     # 排序選項
-    col_sort, col_batch = st.columns([3, 1])
-    with col_sort:
-        sort_option = st.selectbox("排序方式", SORT_OPTIONS, key=sort_key)
+    # col_sort, col_batch = st.columns([3, 1])
+    # with col_sort:
+        # sort_option = st.selectbox("排序方式", SORT_OPTIONS, key=sort_key)
     
     # 排序檔案
-    sorted_files = sort_files(filtered_files, sort_option)
+    sorted_files =files# sort_files(filtered_files, sort_option)
     
     # 顯示檔案數量
     st.caption(f"顯示 {len(sorted_files)} 個檔案")
