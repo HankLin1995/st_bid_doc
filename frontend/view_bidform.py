@@ -106,6 +106,103 @@ def get_construction():
             st.session_state.construction_content="施工線數:"+str(myline)+"線、"+"施工總長度:"+str(mylen)+"M、"+myother
         st.rerun()
 
+def budget_year_page():
+
+    approved_amount_value = 0
+    project_name_value = ""
+
+    st.markdown("### 🔷 開口契約預算書審查")
+
+    # 新增/編輯表單
+    with st.container(border=True):
+
+        st.markdown("#### 🎯任務分配")
+
+        year = st.number_input("民國年",min_value=113,value=datetime.now().year-1911+1)
+
+        branch_office_options = ["斗六分處","虎尾分處","西螺分處","北港分處","林內分處","本處"]
+        branch_office = st.selectbox("分處名稱",options=branch_office_options)
+
+    with st.container(border=True):
+        st.markdown("#### 🍪基本資料")
+        project_number = st.text_input("工程編號",placeholder="115512XXX")
+        project_name = st.text_input("工程名稱",value=project_name_value)
+        location = st.text_input("工程地點",placeholder="OO縣OO市")
+        #施工總長度、線數、其他內容
+
+        if not str(year) in project_name:
+            st.warning("民國年與工程名稱不一致!",icon="⚠️") 
+
+    with st.container(border=True):
+        st.markdown("#### 👜經費相關")
+
+        FUNDING_SOURCE_OPTIONS = [
+            "業務費用-土地改良物修護費",
+            "固定資產建設改良擴充-土地改良物(國庫撥款)",
+            "土地改良物(營運資金)"]
+
+        funding_source = st.selectbox("經費來源",options=FUNDING_SOURCE_OPTIONS)
+        total_budget = st.number_input("總工程費", min_value=0)
+        if total_budget==0:
+            st.warning("總工程費未調整，請重新輸入!",icon="⚠️")
+        contract_amount = st.number_input("發包工作費", min_value=0)
+        if contract_amount==0:
+            st.warning("發包工作費未調整，請重新輸入!",icon="⚠️")
+        outsourcing_items=st.pills("選擇PCCES有編列項目",["瀝青混凝土鋪面", "控制性低強度回填材料(CLSM)", "級配粒料基層", "低密度再生透水混凝土"],selection_mode="multi")
+        #schedule_type=st.radio("開工型式",options=["一般流程","指定開工日","逕流廢汙水"])
+
+    # 送出和清除按鈕
+    # col_submit1, col_submit2 = st.columns([3, 1])
+    # with col_submit1:
+    if st.button("送出表單", type="primary",use_container_width=True):
+        try:
+            # 步驟2: PDF上傳成功後，才創建工程資料
+            project_data = {
+                "branch_office": branch_office,
+                "project_name": project_name,
+                "project_number": project_number,
+                "funding_source": funding_source,
+                "approved_amount": 0,  # 開口契約預設為0
+                "total_budget": total_budget,
+                "contract_amount": contract_amount,
+                "duration": 0,  # 開口契約預設為0
+                "construction_content": "依事件陳報內容辦理",
+                "location": location,
+                "supervisor": "無",  # 開口契約預設為"無"
+                "supervisor_personnel": "無",  # 開口契約預設為"無"
+                "outsourcing_items": ",".join(outsourcing_items),
+                "procurement_type": "工程",  # 預設為工程
+                "year": year,  # 預設為當前年度
+                "schedule_type": "一般流程",
+                "outsourcing_company": None  # 開口契約不使用委外公司
+            }
+            
+            result = create_project(project_data)
+
+            if result["success"]:
+                st.success("✅ 工程資料創建成功！")
+                
+                st.balloons()
+                time.sleep(2)
+                st.rerun()
+            else:
+                # Display the specific error message from the backend
+                if "already exists" in result["error"].lower():
+                    st.warning(f"工程已存在，請勿重複創建! {result['error']}", icon="⚠️")
+                else:
+                    st.error(f"創建失敗: {result['error']}")
+                    
+                # Double check if the project exists by project number
+                project = get_project_by_number(project_number)
+                if project and not "already exists" in result["error"].lower():
+                    st.warning("工程已存在，請勿重複創建!", icon="⚠️")
+
+        except Exception as e:
+            st.error(f"操作失敗：{str(e)}")
+
+
+
+
 def budget_page():
     global IsERROR
     
@@ -119,26 +216,6 @@ def budget_page():
     project_name_value = ""
 
     st.markdown("### 🔷預算書審查")
-
-    # if 'test_data' not in st.session_state:
-    #     st.session_state.test_data = {}
-
-    # default_values = {
-    #     "outsourcing_company": st.session_state.test_data.get("outsourcing_company", ""),
-    #     "branch_office": st.session_state.test_data.get("branch_office", ""),
-    #     "supervisor": st.session_state.test_data.get("supervisor", ""),
-    #     "supervisor_personnel": st.session_state.test_data.get("supervisor_personnel", ""),
-    #     "project_name": st.session_state.test_data.get("project_name", ""),
-    #     "project_number": st.session_state.test_data.get("project_number", ""),
-    #     "location": st.session_state.test_data.get("location", ""),
-    #     "duration": st.session_state.test_data.get("duration", 0),
-    #     "construction_content": st.session_state.test_data.get("construction_content", ""),
-    #     "funding_source": st.session_state.test_data.get("funding_source", "固定資產建設改良擴充-土地改良物(國庫撥款)"),
-    #     "approved_amount": st.session_state.test_data.get("approved_amount", 0),
-    #     "total_budget": st.session_state.test_data.get("total_budget", 0),
-    #     "contract_amount": st.session_state.test_data.get("contract_amount", 0),
-    #     "outsourcing_items": st.session_state.test_data.get("outsourcing_items", [])
-    # }
 
     # 新增/編輯表單
     with st.container(border=True):
@@ -185,6 +262,11 @@ def budget_page():
             st.error(f"請自行輸入核定金額：{str(e)}")
 
         project_name = st.text_input("工程名稱",value=project_name_value)
+
+        if "開口契約" in project_name:
+            st.warning("請移動至開口契約審查進行!",icon="⚠️")
+            st.stop()
+
         location = st.text_input("工程地點",placeholder="OO縣OO市")
         duration = st.number_input("工期(天數)", min_value=0)
         #施工總長度、線數、其他內容
@@ -362,11 +444,14 @@ def budget_page():
 ##### MAIN UI #####
 
 # mypage=st.selectbox("選擇功能",["初稿送審","預算書審查"])
-mypage=st.radio("選擇功能",["初稿送審","預算書審查"],horizontal=True)
+mypage=st.radio("選擇功能",["初稿送審","預算書審查","開口契約審查"],horizontal=True)
 
 if mypage=="預算書審查":
     budget_page()
 
 if mypage=="初稿送審":
     draft_page()
+
+if mypage=="開口契約審查":
+    budget_year_page()
     
