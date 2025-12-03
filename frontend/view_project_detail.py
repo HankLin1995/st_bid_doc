@@ -325,7 +325,12 @@ with tab2:
     with st.container(border=True):
 
         st.markdown("#### 🍰資格及進度")
-        contractor_qual=get_contractor(float(budget))
+
+        if mode=="開口契約":
+            contractor_qual=get_contractor(float(purchase_limit))
+        else:
+            contractor_qual=get_contractor(float(budget))
+
         contractor_qual=st.selectbox("廠商資格",options=["設立於雲林縣或毗鄰縣市之土木包工業，或丙等以上綜合營造業","設立於雲林縣或毗鄰縣市並依營造業法規定辦理資本額增資之土木包工業，或丙等以上綜合營造業","丙等以上綜合營造業","依營造業法規定辦理資本額增資之丙等綜合營造業，或乙等以上綜合營造業","乙等以上綜合營造業","依營造業法規定辦理資本額增資之乙等綜合營造業，或甲等以上綜合營造業","甲等綜合營造業"],index=["設立於雲林縣或毗鄰縣市之土木包工業，或丙等以上綜合營造業","設立於雲林縣或毗鄰縣市並依營造業法規定辦理資本額增資之土木包工業，或丙等以上綜合營造業","丙等以上綜合營造業","依營造業法規定辦理資本額增資之丙等綜合營造業，或乙等以上綜合營造業","乙等以上綜合營造業","依營造業法規定辦理資本額增資之乙等綜合營造業，或甲等以上綜合營造業","甲等綜合營造業"].index(contractor_qual))
 
         if mode=="開口契約":
