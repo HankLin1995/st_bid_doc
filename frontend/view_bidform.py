@@ -201,7 +201,14 @@ def budget_page():
 
     with st.container(border=True):
         st.markdown("#### 👜經費相關")
-        funding_source = st.text_input("經費來源",value="固定資產建設改良擴充-土地改良物(國庫撥款)",placeholder="經費來源")
+
+        FUNDING_SOURCE_OPTIONS = [
+            "固定資產建設改良擴充-土地改良物(國庫撥款)",
+            "業務費用-土地改良物修護費",
+            "土地改良物(營運資金)",
+            "其他機關"]
+
+        funding_source = st.selectbox("經費來源",options=FUNDING_SOURCE_OPTIONS)
         approved_amount=st.number_input("核定金額",value=approved_amount_value,disabled=not IsERROR)
         total_budget = st.number_input("總工程費", min_value=0)
         if total_budget==0:
