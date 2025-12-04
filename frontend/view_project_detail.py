@@ -266,7 +266,12 @@ with tab2:
 
         st.markdown("#### 🍪基本資料")
         
-        mode=st.radio("選擇模式",["一般工程","開口契約"])
+        if "開口契約" in project_data['project_name']:
+            mode="開口契約"
+        else:
+            mode="一般工程"
+
+        # mode=st.radio("選擇模式",["一般工程","開口契約"])
 
         # 如果有選擇現有工程，使用其資料
         if 'project_data' in st.session_state:
