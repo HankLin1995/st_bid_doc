@@ -526,6 +526,7 @@ with tab3:
     document_templates = {
         "招標簽-已核定": "招標簽(新)-工程-已核定.txt",
         "招標簽-未核定": "招標簽(新)-工程-未核定.txt",
+        "招標簽-工程-開口-公開招標":"招標簽(新)-工程-開口-公開招標.txt",
         "預算書簽-已核定-委外": "預算書簽(新)-工程-已核定-委外.txt",
         "預算書簽-已核定": "預算書簽(新)-工程-已核定.txt",
         "預算書簽-已核定-開口":"預算書簽(新)-工程-已核定-開口.txt",
@@ -590,6 +591,7 @@ with tab3:
             "採購金額級距": get_cost_range(project_data.get('contract_amount')),
             "履約保證金": num_to_chinese(int(project_data.get('performance_bond'))) ,
             "監造人員": supervisor_text,
+            "採購金額上限":1.5*project_data.get('contract_amount')
         }
         
         # st.json(project_data.to_dict())
