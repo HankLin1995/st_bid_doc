@@ -577,6 +577,9 @@ with tab3:
         else:
             supervisor_text=project_data.get('supervisor') +"主辦監造"
 
+        # 判斷是否為開口契約
+        is_open_contract = "開口契約" in project_data['project_name']
+        
         # 準備替換的資料
         replacements = {
             "工程名稱": project_data['project_name'],
@@ -593,7 +596,7 @@ with tab3:
             "工程分類": project_category,
             "押標金額度": num_to_chinese(int(project_data.get('bid_bond'))) ,
             "廠商基本資格": get_contractor(project_data.get('contract_amount')),
-            "採購金額級距": get_cost_range(project_data.get('contract_amount')),
+            "採購金額級距": get_cost_range(project_data.get('contract_amount') * 1.5 if is_open_contract else project_data.get('contract_amount')),
             "履約保證金": num_to_chinese(int(project_data.get('performance_bond'))) ,
             "監造人員": supervisor_text,
             "採購金額上限":format_currency(1.5*project_data.get('contract_amount')).replace("NT$ ", "") + "元",
