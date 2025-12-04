@@ -320,7 +320,7 @@ with tab2:
         # st.write(f"履約保證金為:{performance_bond_chinese}")
 
         if mode=="開口契約":
-            purchase_limit=st.text_input("採購金額上限",value=1.5*budget)
+            purchase_limit=st.text_input("採購金額上限",value=1.5*budget_value)
             purchase_level = get_cost_range(float(purchase_limit))
         else:
             purchase_level = get_cost_range(float(budget))
