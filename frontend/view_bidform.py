@@ -303,6 +303,7 @@ def budget_page():
 
     with st.container(border=True):
         st.markdown("#### 📄PDF文件上傳")
+        st.caption("2026/1/1起，請上傳生態檢核用印PDF和碳排計算PDF")
         
         col1, col2 = st.columns(2)
         
@@ -332,12 +333,12 @@ def budget_page():
     if st.button("送出表單", type="primary",use_container_width=True):
         try:
             # 驗證PDF檔案是否都已上傳
-            if not ecological_pdf:
-                st.error("❌ 請上傳生態檢核用印PDF")
+            # if not ecological_pdf:
+            #     st.error("❌ 請上傳生態檢核用印PDF")
                 # st.stop()
             
-            if not carbon_pdf:
-                st.error("❌ 請上傳碳排計算PDF")
+            # if not carbon_pdf:
+            #     st.error("❌ 請上傳碳排計算PDF")
                 # st.stop()
             
             # 步驟1: 先上傳PDF檔案
