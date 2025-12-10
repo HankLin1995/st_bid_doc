@@ -130,7 +130,7 @@ else:
 
 st.session_state.project_name = selected_project
 
-tab1,tab2,tab3,tab4=st.tabs(["詳細資訊","投標文件","公文DI","移辦單"])
+tab1,tab2,tab3,tab4,tab5=st.tabs(["詳細資訊","投標文件","公文DI","移辦單","退回移辦單"])
 
 # 主要顯示內容
 with tab1:
@@ -687,3 +687,49 @@ with tab4:
             if update_project_status(project_data['id'], update_project_data)==200:
                 st.success("狀態已更新")
 
+with tab5:
+    st.markdown("#### 📄 採購案件退回移辦單")
+
+    selected_template="採購案件退回移辦單.docx"
+
+    os.makedirs("output", exist_ok=True)
+
+    if st.button("產生文件",key="generate_return_doc"):
+            
+            template_path = os.path.join("src", "移辦單", selected_template)
+            output_path = os.path.join("output", f"{selected_project}_{selected_template}")
+
+            shutil.copyfile(template_path, output_path)
+            
+            # 準備替換的資料
+            replacements = {
+                "工程名稱": project_data['project_name'],
+                "所屬分處": project_data.get('branch_office'),
+                "工程編號": project_data.get('project_number', ''),
+                "採購金額級距": get_cost_range(project_data.get('contract_amount'))
+            }
+            
+            # 產生文件
+            replace_text_within_percent_signs(output_path, replacements)
+            st.success(f"文件已產生：{output_path}")
+
+            # 提供下載連結
+            with open(output_path, "rb") as file:
+                st.download_button(
+                    label="📥 下載文件",
+                    data=file,
+                    file_name=os.path.basename(output_path),
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                )
+                
+            # 關閉檔案後刪除
+            if os.path.exists(output_path):
+                os.remove(output_path)
+
+            # 更新狀態
+            update_project_data={
+                "status" : "預算書"
+            }
+
+            if update_project_status(project_data['id'], update_project_data)==200:
+                st.success("狀態已更新")
