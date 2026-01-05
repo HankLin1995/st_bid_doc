@@ -17,7 +17,7 @@ from utils import (
     get_contractor,
     num_to_chinese
 )
-from api import get_project,get_plan
+from api import get_project, get_plan, upload_project_attachment, get_project_attachments
 
 load_dotenv()
 
@@ -427,6 +427,48 @@ with tab2:
         doc_folder=os.path.join("src", "廠商投標表單(開口)")
 
     output_dir=os.path.join(".", data['標案名稱'])
+
+    st.divider()
+    
+    # 檔案上傳區塊
+    with st.expander("📎 上傳工程相關檔案", expanded=False):
+        st.caption("在製作投標文件時，可以上傳與該工程相關的檔案（如：設計圖、規範文件等）")
+        
+        upload_file = st.file_uploader(
+            "選擇檔案", 
+            type=["pdf", "docx", "xlsx", "jpg", "png", "zip"],
+            help="支援格式：PDF, Word, Excel, 圖片, ZIP"
+        )
+        
+        file_description = st.text_input("檔案說明（選填）", placeholder="例如：設計圖、規範文件等")
+        
+        if st.button("上傳檔案", type="secondary"):
+            if upload_file:
+                try:
+                    # 獲取工程編號
+                    if 'project_data' in st.session_state:
+                        project_number = st.session_state.project_data['project_number']
+                        
+                        with st.spinner("上傳中..."):
+                            result = upload_project_attachment(
+                                project_number,
+                                upload_file,
+                                file_description if file_description else None
+                            )
+                            
+                            if result:
+                                st.success(f"✅ 檔案「{upload_file.name}」上傳成功！")
+                                st.info("您可以在工程內容頁面的「附件管理」標籤查看已上傳的檔案")
+                                time.sleep(1)
+                                st.rerun()
+                            else:
+                                st.error("❌ 檔案上傳失敗")
+                    else:
+                        st.warning("⚠️ 請先選擇專案")
+                except Exception as e:
+                    st.error(f"❌ 上傳失敗：{str(e)}")
+            else:
+                st.warning("⚠️ 請先選擇要上傳的檔案")
 
     submitted = st.button("產製招標文件",type="primary")
 

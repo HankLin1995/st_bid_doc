@@ -167,3 +167,30 @@ def update_project_date_and_status(project_id, new_status, new_date):
                 return result2["detail"]
 
             return "更新成功"
+
+# 工程附件相關 API
+def upload_project_attachment(project_id, file, description=None):
+    """上傳工程附件"""
+    files = {"file": file}
+    data = {}
+    if description:
+        data["Description"] = description
+    response = requests.post(f"{BASE_URL}/projects/{project_id}/attachments", data=data, files=files)
+    return response.json()
+
+def get_project_attachments(project_id):
+    """獲取工程的所有附件"""
+    response = requests.get(f"{BASE_URL}/projects/{project_id}/attachments")
+    return response.json()
+
+def download_project_attachment(project_id, attachment_id):
+    """下載工程附件"""
+    response = requests.get(f"{BASE_URL}/projects/{project_id}/attachments/{attachment_id}")
+    if response.status_code == 200:
+        return response.content
+    return None
+
+def delete_project_attachment(project_id, attachment_id):
+    """刪除工程附件"""
+    response = requests.delete(f"{BASE_URL}/projects/{project_id}/attachments/{attachment_id}")
+    return response.json()
