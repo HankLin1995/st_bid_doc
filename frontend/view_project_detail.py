@@ -433,8 +433,8 @@ with tab2:
     # 檔案上傳區塊
     # with st.expander("📎 上傳工程相關檔案", expanded=False):
     with st.container(border=True):
-        st.caption("在製作投標文件時，可以上傳與該工程相關的檔案（如：設計圖、規範文件等）")
-        
+        st.subheader("📎 上傳工程相關檔案(選填)")
+
         upload_file = st.file_uploader(
             "選擇檔案", 
             type=["pdf", "docx", "xlsx", "jpg", "png", "zip"],
