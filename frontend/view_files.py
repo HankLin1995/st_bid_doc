@@ -48,8 +48,12 @@ def filter_files(files: List[Dict], search_term: str) -> List[Dict]:
             filtered.append(f)
             continue
         # 搜尋工程編號
-        if f.get('project_number') and search_lower in f['project_number'].lower():
-            filtered.append(f)
+        project_number = f.get('project_number')
+        if project_number:
+            # 確保工程編號是字串
+            project_number_str = str(project_number).lower()
+            if search_lower in project_number_str:
+                filtered.append(f)
     
     return filtered
 
