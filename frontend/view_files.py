@@ -114,7 +114,9 @@ def render_file_item(file: Dict, pdf_type: str, idx: int, selected_files: List[D
         
         with col1:
             st.markdown(f"**📄 {file['filename']}**")
+            project_number_text = f"工程編號: {file.get('project_number', '未知')}" if file.get('project_number') else "工程編號: 未知"
             st.caption(
+                f"{project_number_text} | "
                 f"大小: {format_file_size(file['size'])} | "
                 f"修改時間: {format_timestamp(file['modified_time'])}"
             )
