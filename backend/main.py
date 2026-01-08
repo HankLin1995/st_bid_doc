@@ -266,13 +266,28 @@ def list_all_pdfs(db: Session = Depends(get_db)):
                 "project_number": None
             }
             
-            # 從檔案名稱解析工程編號 (格式: {project_number}_{plan_name}_減碳簡易檢核表_{project_name}.pdf)
+            # 從檔案名稱解析工程編號
             try:
                 name_without_ext = file_path.stem
-                parts = name_without_ext.split("_", 1)
-                if len(parts) >= 1:
-                    project_number = parts[0]
-                    file_info["project_number"] = project_number
+                
+                # 格式1: {project_number}_{plan_name}_減碳簡易檢核表_{project_name}.pdf
+                if "_" in name_without_ext and "減碳簡易檢核表" in name_without_ext:
+                    parts = name_without_ext.split("_", 1)
+                    if len(parts) >= 1:
+                        project_number = parts[0]
+                        file_info["project_number"] = project_number
+                # 格式2: {year}-{project_name}.pdf (與生態檢核相同格式)
+                elif "-" in name_without_ext:
+                    parts = name_without_ext.split("-", 1)
+                    if len(parts) == 2:
+                        year, project_name = parts
+                        # 從資料庫查詢工程編號
+                        project = db.query(models.Project).filter(
+                            models.Project.year == int(year),
+                            models.Project.project_name == project_name
+                        ).first()
+                        if project:
+                            file_info["project_number"] = project.project_number
             except:
                 pass
             
