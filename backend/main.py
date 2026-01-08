@@ -219,8 +219,8 @@ def delete_plan(plan_id: int, db: Session = Depends(get_db)):
 # PDF 檔案上傳端點
 
 @app.get("/pdf/list")
-def list_all_pdfs():
-    """列出所有已上傳的 PDF 檔案"""
+def list_all_pdfs(db: Session = Depends(get_db)):
+    """列出所有已上傳的 PDF 檔案，包含工程編號資訊"""
     ecological_files = []
     carbon_files = []
     
@@ -228,23 +228,55 @@ def list_all_pdfs():
     if UPLOAD_DIR1.exists():
         for file_path in UPLOAD_DIR1.glob("*.pdf"):
             file_stat = file_path.stat()
-            ecological_files.append({
+            file_info = {
                 "filename": file_path.name,
                 "size": file_stat.st_size,
                 "modified_time": file_stat.st_mtime,
-                "type": "ecological"
-            })
+                "type": "ecological",
+                "project_number": None
+            }
+            
+            # 從檔案名稱解析工程資訊 (格式: {year}-{project_name}.pdf)
+            try:
+                name_without_ext = file_path.stem
+                parts = name_without_ext.split("-", 1)
+                if len(parts) == 2:
+                    year, project_name = parts
+                    # 從資料庫查詢工程編號
+                    project = db.query(models.Project).filter(
+                        models.Project.year == int(year),
+                        models.Project.project_name == project_name
+                    ).first()
+                    if project:
+                        file_info["project_number"] = project.project_number
+            except:
+                pass
+            
+            ecological_files.append(file_info)
     
     # 列出碳排計算檔案
     if UPLOAD_DIR2.exists():
         for file_path in UPLOAD_DIR2.glob("*.pdf"):
             file_stat = file_path.stat()
-            carbon_files.append({
+            file_info = {
                 "filename": file_path.name,
                 "size": file_stat.st_size,
                 "modified_time": file_stat.st_mtime,
-                "type": "carbon"
-            })
+                "type": "carbon",
+                "project_number": None
+            }
+            
+            # 從檔案名稱解析工程編號 (格式: {project_number}_{plan_name}_減碳簡易檢核表_{project_name}.pdf)
+            try:
+                name_without_ext = file_path.stem
+                parts = name_without_ext.split("_", 1)
+                if len(parts) >= 1:
+                    project_number = parts[0]
+                    file_info["project_number"] = project_number
+            except:
+                pass
+            
+            carbon_files.append(file_info)
     
     return {
         "ecological": ecological_files,

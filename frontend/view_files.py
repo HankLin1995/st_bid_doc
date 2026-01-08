@@ -36,10 +36,22 @@ def format_timestamp(timestamp: float) -> str:
     return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
 
 def filter_files(files: List[Dict], search_term: str) -> List[Dict]:
-    """根據搜尋關鍵字過濾檔案"""
+    """根據搜尋關鍵字過濾檔案（支援檔案名稱和工程編號）"""
     if not search_term:
         return files
-    return [f for f in files if search_term.lower() in f['filename'].lower()]
+    
+    search_lower = search_term.lower()
+    filtered = []
+    for f in files:
+        # 搜尋檔案名稱
+        if search_lower in f['filename'].lower():
+            filtered.append(f)
+            continue
+        # 搜尋工程編號
+        if f.get('project_number') and search_lower in f['project_number'].lower():
+            filtered.append(f)
+    
+    return filtered
 
 def sort_files(files: List[Dict], sort_option: str) -> List[Dict]:
     """根據排序選項排序檔案"""
@@ -132,9 +144,9 @@ def render_file_list(files: List[Dict], pdf_type: str, search_key: str, sort_key
     
     # 搜尋功能
     search_term = st.text_input(
-        "🔍 搜尋檔案名稱",
+        "🔍 搜尋檔案名稱或工程編號",
         key=search_key,
-        placeholder="輸入關鍵字搜尋..."
+        placeholder="輸入工程編號或關鍵字搜尋..."
     )
     
     # 過濾檔案
@@ -150,7 +162,7 @@ def render_file_list(files: List[Dict], pdf_type: str, search_key: str, sort_key
         # sort_option = st.selectbox("排序方式", SORT_OPTIONS, key=sort_key)
     
     # 排序檔案
-    sorted_files =files# sort_files(filtered_files, sort_option)
+    sorted_files = sort_files(filtered_files, "檔案名稱 (A-Z)")  # 將 filtered_files 傳入 sort_files
     
     # 顯示檔案數量
     st.caption(f"顯示 {len(sorted_files)} 個檔案")
