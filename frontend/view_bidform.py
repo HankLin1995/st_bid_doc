@@ -333,13 +333,13 @@ def budget_page():
     if st.button("送出表單", type="primary",use_container_width=True):
         try:
             # 驗證PDF檔案是否都已上傳
-            # if not ecological_pdf:
-            #     st.error("❌ 請上傳生態檢核用印PDF")
-                # st.stop()
+            if not ecological_pdf:
+                st.error("❌ 請上傳生態檢核用印PDF")
+                st.stop()
             
-            # if not carbon_pdf:
-            #     st.error("❌ 請上傳碳排計算PDF")
-                # st.stop()
+            if not carbon_pdf:
+                st.error("❌ 請上傳碳排計算PDF")
+                st.stop()
             
             # 步驟1: 先上傳PDF檔案
             pdf_upload_success = True
