@@ -431,6 +431,34 @@ async def download_batch_pdfs(files: List[dict]):
         headers={"Content-Disposition": "attachment; filename=pdfs.zip"}
     )
 
+@app.delete("/pdf/delete/{pdf_type}/{filename}")
+def delete_pdf(pdf_type: str, filename: str):
+    """
+    刪除 PDF 檔案
+    pdf_type: 'ecological' 或 'carbon'
+    filename: 檔案名稱
+    """
+    if pdf_type not in ['ecological', 'carbon']:
+        raise HTTPException(status_code=400, detail="無效的PDF類型")
+    
+    if pdf_type == "ecological":
+        file_path = UPLOAD_DIR1 / filename
+    else:
+        file_path = UPLOAD_DIR2 / filename
+    
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="檔案不存在")
+    
+    try:
+        file_path.unlink()
+        return {
+            "message": "檔案刪除成功",
+            "filename": filename,
+            "pdf_type": pdf_type
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"檔案刪除失敗: {str(e)}")
+        
 @app.post("/upload-pdf/{year}/{project_name}/{pdf_type}")
 async def upload_pdf(
     year: int,

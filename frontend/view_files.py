@@ -23,6 +23,29 @@ def show_pdf(content: bytes) -> None:
     """顯示 PDF 內容"""
     st.pdf(content)
 
+@st.dialog("確認刪除", width="small")
+def confirm_delete_dialog(filename: str, pdf_type: str) -> bool:
+    """刪除確認對話框"""
+    st.warning(f"確定要刪除檔案 **{filename}** 嗎？")
+    st.caption("此操作無法復原")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("✅ 確認刪除", type="primary", use_container_width=True):
+            try:
+                response = requests.delete(f"{BACKEND_URL}/pdf/delete/{pdf_type}/{filename}")
+                if response.status_code == 200:
+                    st.success("檔案已刪除")
+                    st.session_state.refresh_files = True
+                    st.rerun()
+                else:
+                    st.error(f"刪除失敗: {response.json().get('detail', '未知錯誤')}")
+            except Exception as e:
+                st.error(f"刪除錯誤: {e}")
+    with col2:
+        if st.button("❌ 取消", use_container_width=True):
+            st.rerun()
+
 def format_file_size(size_bytes: int) -> str:
     """將檔案大小轉換為可讀格式"""
     for unit in ['B', 'KB', 'MB', 'GB']:
@@ -102,7 +125,7 @@ def download_single_pdf(pdf_url: str, filename: str) -> None:
 def render_file_item(file: Dict, pdf_type: str, idx: int, selected_files: List[Dict]) -> None:
     """渲染單個檔案項目"""
     with st.container(border=True):
-        col0, col1, col2, col3 = st.columns([0.5, 3, 1, 1])
+        col0, col1, col2, col3, col4 = st.columns([0.5, 3, 1, 1, 1])
         
         with col0:
             # 勾選框
@@ -141,6 +164,10 @@ def render_file_item(file: Dict, pdf_type: str, idx: int, selected_files: List[D
                     mime="application/pdf",
                     key=f"dl_{pdf_type}_{idx}"
                 )
+        
+        with col4:
+            if st.button("🗑️ 刪除", key=f"delete_{pdf_type}_{idx}", type="secondary"):
+                confirm_delete_dialog(file['filename'], pdf_type)
 
 def render_file_list(files: List[Dict], pdf_type: str, search_key: str, sort_key: str) -> None:
     """渲染檔案列表"""
