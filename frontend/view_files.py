@@ -46,6 +46,96 @@ def confirm_delete_dialog(filename: str, pdf_type: str) -> bool:
         if st.button("❌ 取消", use_container_width=True):
             st.rerun()
 
+@st.dialog("上傳 PDF 檔案", width="medium")
+def upload_file_dialog(pdf_type: str) -> None:
+    """上傳檔案對話框"""
+    st.markdown(f"### 上傳 {'生態檢核' if pdf_type == 'ecological' else '碳排計算'} PDF")
+    
+    uploaded_file = st.file_uploader(
+        "選擇 PDF 檔案",
+        type=['pdf'],
+        key=f"uploader_{pdf_type}"
+    )
+    
+    if uploaded_file is not None:
+        st.info(f"已選擇檔案: {uploaded_file.name}")
+        
+        st.markdown("---")
+        st.markdown("#### 檔案資訊")
+        
+        year = st.number_input(
+            "民國年度",
+            min_value=100,
+            max_value=200,
+            value=113,
+            step=1,
+            key=f"year_{pdf_type}"
+        )
+        
+        project_name = st.text_input(
+            "工程名稱",
+            placeholder="例如: XX水路改善工程",
+            key=f"project_name_{pdf_type}"
+        )
+        
+        if pdf_type == "carbon":
+            project_number = st.text_input(
+                "工程編號 (必填)",
+                placeholder="例如: 113-001",
+                key=f"project_number_{pdf_type}"
+            )
+            
+            plan_name = st.selectbox(
+                "計畫名稱",
+                options=["擴大灌溉", "更新改善", "未定"],
+                key=f"plan_name_{pdf_type}"
+            )
+        else:
+            project_number = None
+            plan_name = None
+        
+        st.markdown("---")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("📤 上傳", type="primary", use_container_width=True):
+                if not project_name:
+                    st.error("請輸入工程名稱")
+                elif pdf_type == "carbon" and not project_number:
+                    st.error("碳排計算 PDF 需要提供工程編號")
+                else:
+                    try:
+                        files = {"file": (uploaded_file.name, uploaded_file.getvalue(), "application/pdf")}
+                        
+                        params = {
+                            "project_number": project_number,
+                            "plan_name": plan_name
+                        }
+                        
+                        params = {k: v for k, v in params.items() if v is not None}
+                        
+                        response = requests.post(
+                            f"{BACKEND_URL}/upload-pdf/{year}/{project_name}/{pdf_type}",
+                            files=files,
+                            params=params
+                        )
+                        
+                        if response.status_code == 200:
+                            result = response.json()
+                            st.success(f"✅ {result.get('message', '上傳成功')}")
+                            st.info(f"檔案名稱: {result.get('filename')}")
+                            st.session_state.refresh_files = True
+                            st.balloons()
+                        else:
+                            error_detail = response.json().get('detail', '未知錯誤')
+                            st.error(f"❌ 上傳失敗: {error_detail}")
+                    except Exception as e:
+                        st.error(f"❌ 上傳錯誤: {e}")
+        
+        with col2:
+            if st.button("❌ 取消", use_container_width=True):
+                st.rerun()
+
 def format_file_size(size_bytes: int) -> str:
     """將檔案大小轉換為可讀格式"""
     for unit in ['B', 'KB', 'MB', 'GB']:
@@ -171,6 +261,11 @@ def render_file_item(file: Dict, pdf_type: str, idx: int, selected_files: List[D
 
 def render_file_list(files: List[Dict], pdf_type: str, search_key: str, sort_key: str) -> None:
     """渲染檔案列表"""
+    col_title, col_upload = st.columns([4, 1])
+    with col_upload:
+        if st.button("➕ 上傳檔案", key=f"upload_btn_{pdf_type}", type="primary"):
+            upload_file_dialog(pdf_type)
+    
     if not files:
         st.info(f"目前沒有{pdf_type}檔案")
         return
@@ -207,10 +302,10 @@ def render_file_list(files: List[Dict], pdf_type: str, search_key: str, sort_key
     for idx, file in enumerate(sorted_files):
         render_file_item(file, pdf_type, idx, selected_files)
     
-    # 批次下載按鈕
+    # 批次操作按鈕
     if selected_files:
         st.markdown("---")
-        col1, col2 = st.columns([3, 1])
+        col1, col2, col3 = st.columns([2, 1, 1])
         with col1:
             st.info(f"已選擇 {len(selected_files)} 個檔案")
         with col2:
@@ -232,6 +327,30 @@ def render_file_list(files: List[Dict], pdf_type: str, search_key: str, sort_key
                         st.error("批次下載失敗")
                 except Exception as e:
                     st.error(f"批次下載錯誤: {e}")
+        with col3:
+            if st.button(f"🗑️ 批次刪除", key=f"batch_delete_{pdf_type}", type="secondary"):
+                if st.session_state.get(f"confirm_batch_delete_{pdf_type}", False):
+                    try:
+                        response = requests.post(
+                            f"{BACKEND_URL}/pdf/delete-batch",
+                            json=selected_files
+                        )
+                        if response.status_code == 200:
+                            result = response.json()
+                            st.success(result.get('message', '刪除成功'))
+                            if result.get('failed_files'):
+                                st.warning(f"部分檔案刪除失敗: {result['failed_files']}")
+                            st.session_state.refresh_files = True
+                            st.session_state[f"confirm_batch_delete_{pdf_type}"] = False
+                            st.rerun()
+                        else:
+                            st.error("批次刪除失敗")
+                    except Exception as e:
+                        st.error(f"批次刪除錯誤: {e}")
+                else:
+                    st.session_state[f"confirm_batch_delete_{pdf_type}"] = True
+                    st.warning("⚠️ 再次點擊確認批次刪除")
+                    st.rerun()
 
 def fetch_pdf_files() -> tuple:
     """從後端獲取 PDF 檔案列表"""
