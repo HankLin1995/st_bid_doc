@@ -78,20 +78,19 @@ def upload_file_dialog(pdf_type: str) -> None:
             key=f"project_name_{pdf_type}"
         )
         
+        project_number = st.text_input(
+            "工程編號 (必填)",
+            placeholder="例如: 雲林114T033",
+            key=f"project_number_{pdf_type}"
+        )
+        
         if pdf_type == "carbon":
-            project_number = st.text_input(
-                "工程編號 (必填)",
-                placeholder="例如: 113-001",
-                key=f"project_number_{pdf_type}"
-            )
-            
             plan_name = st.selectbox(
                 "計畫名稱",
                 options=["擴大灌溉", "更新改善", "未定"],
                 key=f"plan_name_{pdf_type}"
             )
         else:
-            project_number = None
             plan_name = None
         
         st.markdown("---")
@@ -101,8 +100,8 @@ def upload_file_dialog(pdf_type: str) -> None:
             if st.button("📤 上傳", type="primary", use_container_width=True):
                 if not project_name:
                     st.error("請輸入工程名稱")
-                elif pdf_type == "carbon" and not project_number:
-                    st.error("碳排計算 PDF 需要提供工程編號")
+                elif not project_number:
+                    st.error("請輸入工程編號")
                 else:
                     try:
                         files = {"file": (uploaded_file.name, uploaded_file.getvalue(), "application/pdf")}

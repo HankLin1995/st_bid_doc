@@ -486,8 +486,10 @@ async def upload_pdf(
 
     # 建立檔案名稱
     if pdf_type == "ecological":
-        # 生態檢核檔案名稱：年度-工程名稱.pdf
-        filename = f"{year}-{project_name}.pdf"
+        # 生態檢核檔案名稱：工程編號_核定及規劃設計階段_工程名稱.pdf
+        if not project_number:
+            raise HTTPException(status_code=400, detail="生態檢核PDF需提供工程編號")
+        filename = f"{project_number}_核定及規劃設計階段_{project_name}.pdf"
         file_path = UPLOAD_DIR1 / filename
     else:
         # 碳排計算檔案名稱：工程編號_計畫名稱_減碳簡易檢核表_工程名稱.pdf
