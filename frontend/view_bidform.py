@@ -348,9 +348,11 @@ def budget_page():
                 if ecological_pdf:
                     try:
                         files = {"file": (ecological_pdf.name, ecological_pdf, "application/pdf")}
+                        params = {"project_number": project_number}
                         response = requests.post(
                             f"{API_URL}/upload-pdf/{year}/{project_name}/ecological",
-                            files=files
+                            files=files,
+                            params=params
                         )
                         if response.status_code == 200:
                             st.success("✅ 生態檢核PDF上傳成功")

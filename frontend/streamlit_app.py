@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-VERSION_NUMBER = "V2.10.5"
+VERSION_NUMBER = "V2.10.6"
 
 @st.dialog("⭕系統公告")
 def msg_content():
