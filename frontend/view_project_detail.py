@@ -606,9 +606,9 @@ with tab3:
         template_path = os.path.join("src", "公文DI", document_templates[selected_template])
         output_path = os.path.join("output", f"{selected_project}_{document_templates[selected_template]}")
 
-        if project_data.get('total_budget', 0) < 20000000:
+        if project_data.get('contract_amount', 0) < 20000000:
             project_category = "未達二千萬之第三類工程"
-        elif project_data.get('total_budget', 0) < 50000000:
+        elif project_data.get('contract_amount', 0) < 50000000:
             project_category = "二千萬元以上未達查核金額之第二類工程"
         else:
             project_category = "查核金額以上未達巨額之第一類工程"
