@@ -296,7 +296,13 @@ with tab2:
     with st.container(border=True):
         st.markdown("#### 💰經費相關")
         
-        bid_award = st.checkbox("保留決標")
+        project_number_for_flags = project_data['project_number'] if 'project_data' in st.session_state else project_number
+        is_sa_sb = ("SA" in project_number_for_flags) or ("SB" in project_number_for_flags)
+
+        if is_sa_sb:
+            bid_award = st.checkbox("保留決標", value=False, disabled=True, help="工程序號含 SA/SB，停用保留決標")
+        else:
+            bid_award = st.checkbox("保留決標")
 
         if 'project_data' in st.session_state:
             funding_source = st.text_input("經費來源", value=project_data['funding_source'])
@@ -571,6 +577,9 @@ with tab2:
 
 with tab3: 
     st.markdown("#### 📄 公文DI")
+    project_number_for_flags = project_data.get('project_number', '') if 'project_data' in st.session_state else ''
+    is_sa_sb = ("SA" in project_number_for_flags) or ("SB" in project_number_for_flags)
+
     document_templates = {
         "招標簽-已核定": "招標簽(新)-工程-已核定.txt",
         "招標簽-未核定": "招標簽(新)-工程-未核定.txt",
@@ -586,6 +595,9 @@ with tab3:
         "公開閱覽":"公開閱覽.txt"
 
     }
+
+    if is_sa_sb:
+        document_templates = {k: v for k, v in document_templates.items() if "未核定" not in k}
 
     selected_template = st.selectbox(
         "選擇文件範本",
