@@ -305,6 +305,7 @@ def budget_page():
         st.markdown("#### 📄PDF文件上傳")
         st.caption("2026/1/1起，請上傳生態檢核用印PDF和碳排計算PDF")
         
+        pass_code=st.text_input("忽略PDF上傳驗證密碼(承辦人用)")
         col1, col2 = st.columns(2)
         
         with col1:
@@ -332,14 +333,19 @@ def budget_page():
     # with col_submit1:
     if st.button("送出表單", type="primary",use_container_width=True):
         try:
-            # 驗證PDF檔案是否都已上傳
-            if not ecological_pdf:
-                st.error("❌ 請上傳生態檢核用印PDF")
-                st.stop()
-            
-            if not carbon_pdf:
-                st.error("❌ 請上傳碳排計算PDF")
-                st.stop()
+
+            # 如果承辦人輸入了特定密碼，則跳過PDF驗證，密碼為今天日期
+            if pass_code == datetime.now().strftime("%Y-%m-%d"):
+                st.info("✅ 已跳過PDF驗證")
+            else:
+                # 驗證PDF檔案是否都已上傳
+                if not ecological_pdf :
+                    st.error("❌ 請上傳生態檢核用印PDF")
+                    st.stop()
+
+                if not carbon_pdf:
+                    st.error("❌ 請上傳碳排計算PDF")
+                    st.stop()
             
             # 步驟1: 先上傳PDF檔案
             pdf_upload_success = True
