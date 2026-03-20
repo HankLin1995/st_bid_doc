@@ -12,6 +12,7 @@ def msg_content():
     st.write("這是用於產製招標文件的工具")
     st.markdown("---")
     st.write("版本:"+VERSION_NUMBER )
+    st.link_button("改版過程", "https://github.com/HankLin1995/st_bid_doc/blob/sql_ver/CHANGELOG.md")
 
 st.set_page_config(page_title=f"工程審查系統 {VERSION_NUMBER}",layout="wide",page_icon=":hammer_and_wrench:")
 st.logo("LOGO.PNG")
