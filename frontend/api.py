@@ -4,7 +4,7 @@ import os
 
 load_dotenv()
 
-BASE_URL = os.getenv("API_NEW_URL")
+BASE_URL = os.getenv("API_NEW_URL", "").rstrip("/")
 
 def get_plans():
     response = requests.get(f"{BASE_URL}/plans/")
@@ -41,7 +41,11 @@ def create_project(project_id,plan_id,project_name,approval_budget,current_statu
 
 def get_projects():
     response = requests.get(f"{BASE_URL}/projects/all")
-    return response.json()
+    if response.status_code != 200:
+        return []
+
+    data = response.json()
+    return data if isinstance(data, list) else []
 
 def get_project(project_id):
     response = requests.get(f"{BASE_URL}/projects/{project_id}")

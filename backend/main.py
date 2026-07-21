@@ -320,6 +320,27 @@ def get_ecological_pdf(year: int, project_name: str):
         }
     )
 
+@app.get("/pdf/ecological/V2/{project_number}/{project_name}")
+def get_ecological_pdf(project_number: str, project_name: str):
+    """取得生態檢核 PDF 檔案"""
+    filename = f"{project_number}_核定及規劃設計階段_{project_name}.pdf"
+    file_path = UPLOAD_DIR1 / filename
+
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="PDF not found")
+
+    # 對中文檔名進行 URL 編碼（RFC 5987）
+    encoded_filename = quote(filename)
+
+    return FileResponse(
+        path=str(file_path),
+        media_type="application/pdf",
+        filename=filename,
+        headers={
+            "Content-Disposition": f"attachment; filename*=UTF-8''{encoded_filename}"
+        }
+    )
+
 @app.get("/pdf/carbon/{project_number}/{project_name}")
 def get_carbon_pdf(
     project_number: str, 

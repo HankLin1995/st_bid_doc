@@ -22,10 +22,20 @@ def draft_page():
         
         #顯示工程清單
         projects=get_projects()
+        if not isinstance(projects, list) or not projects:
+            st.warning("目前無法取得工程清單，請稍後再試或確認 API_NEW_URL 設定。")
+            return
 
         df=pd.DataFrame(projects)
+        required_columns = {"CurrentStatus", "Workstation", "ProjectID", "ProjectName"}
+        if not required_columns.issubset(df.columns):
+            st.error("工程清單資料格式不符合初稿送審頁需求。")
+            return
 
         df=df[(df["CurrentStatus"]=="核定") | (df["CurrentStatus"]=="提報")]
+        if df.empty:
+            st.info("目前沒有可送初稿的工程。")
+            return
 
         df_distinct_workstation=["無"]+df["Workstation"].unique().tolist()
 

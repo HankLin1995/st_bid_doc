@@ -206,7 +206,14 @@ with tab1:
                     if response.status_code == 200:
                         show_pdf(response.content)
                     elif response.status_code == 404:
-                        st.info("尚未找到對應的生態檢核PDF檔案")
+                        pdf_url2 = f"{BACKEND_URL}/pdf/ecological/V2/{project_data['project_number']}/{project_data['project_name']}"
+                        response2 = requests.get(pdf_url2)
+                        if response2.status_code == 200:
+                            show_pdf(response2.content)
+                        elif response2.status_code == 404:
+                            st.info("真的找不到對應的生態檢核PDF檔案!")
+                        else:
+                            st.error(f"取得新版生態檢核PDF失敗：{response2.status_code}")
                     else:
                         st.error(f"取得生態檢核PDF失敗：{response.status_code}")
                 except Exception as e:
